@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Profile</title>
+    <link rel="stylesheet" href="{% static 'create_profile.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h2>Create Your Profile</h2>
+        <form method="post" enctype="multipart/form-data">  <!-- Ensure to add enctype for file uploads -->
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <!-- Render the form fields as paragraphs -->
+                {{ form.as_p }} 
+            </div>
+
+            <!-- Display errors for the entire form -->
+            {% for field in form %}
+                {% if field.errors %}
+                    <div class="error-message">
+                        {% for error in field.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <button type="submit" class="submit-btn">Save Profile</button>
+        </form>
+    </div>
+</body>
+</html>

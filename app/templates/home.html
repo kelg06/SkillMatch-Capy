@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="{% static 'home.css' %}">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="logo">StudySwipe</div>
+            <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <h1>Welcome, {{ user.username }}</h1>
+            
+            {% if not profile %}
+                <p>You haven't created a profile yet!</p>
+                <a href="{% url 'create_profile' %}" class="btn">Create Profile</a>
+            {% else %}
+                <h2>Swipe through profiles!</h2>
+                <div id="profile-container">
+                    {% for profile in profiles %}
+                        <div class="profile-card" data-profile-id="{{ profile.user.id }}">
+                            <!-- Profile Picture Container -->
+                            <div class="profile-pic-container">
+                                {% if profile.profile_picture %}
+                                    <img src="{{ profile.profile_picture.url }}" alt="{{ profile.user.username }}'s Profile Picture" class="profile-pic">
+                                {% else %}
+                                    <img src="{% static 'default_profile_pic.jpg' %}" alt="Default Profile Picture" class="profile-pic">
+                                {% endif %}
+                            </div>
+                            
+                            <h3>{{ profile.user.username }}</h3>
+                            <p><strong>Bio:</strong> {{ profile.bio }}</p>
+                            <p><strong>Age:</strong> {{ profile.age }}</p>
+                            <p><strong>Study Times:</strong> {{ profile.study_times }}</p>
+                            <p><strong>Classes:</strong> 
+                                {% for class in profile.classes.all %} 
+                                    {{ class.name }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </p>
+                            <div class="actions">
+                                <button class="dislike-btn">❌</button>
+                                <button class="like-btn">✔️</button>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p>No more profiles to show.</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <script src="{% static 'home.js' %}"></script>
+</body>
+</html>
