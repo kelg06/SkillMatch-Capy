@@ -9,7 +9,13 @@ urlpatterns = [
     path("login/", login_view, name="login"),
     path("logout/", logout_view, name="logout"),
     path("home/", home, name="home"),
-    path("create-profile/", create_profile, name="create_profile"),  # Add this
+    path("create-profile/", create_profile, name="create_profile"),
+    path('accept-friend-request/<int:profile_id>/', accept_friend_request, name='accept_friend_request'),
+    path('decline-friend-request/<int:profile_id>/', decline_friend_request, name='decline_friend_request'),
+    path('send-friend-request/<int:profile_id>/', send_friend_request, name='send_friend_request'),
+    path('chat/<str:chat_partner_username>/', chat_view, name='chat'),
+     path('update-profile/<int:profile_id>/', update_profile, name='update_profile'),
+    path('delete-profile/<int:profile_id>/', delete_profile, name='delete_profile')
 ]
 
 if settings.DEBUG:

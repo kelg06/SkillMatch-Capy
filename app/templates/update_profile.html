@@ -1,0 +1,11 @@
+<h2>Update Profile</h2>
+<form method="POST">
+    {% csrf_token %}
+    <label>Bio:</label>
+    <input type="text" name="bio" value="{{ profile.bio }}"><br>
+    <label>Age:</label>
+    <input type="number" name="age" value="{{ profile.age }}"><br>
+    <label>Study Times:</label>
+    <input type="text" name="study_times" value="{{ profile.study_times }}"><br>
+    <button type="submit">Update</button>
+</form>

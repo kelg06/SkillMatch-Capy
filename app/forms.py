@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .models import Profile, Class
+from .models import Profile, Class, Chat
 
 class CustomSignupForm(UserCreationForm):
     username = forms.CharField(
@@ -25,7 +25,6 @@ class CustomSignupForm(UserCreationForm):
         model = User
         fields = ['username', 'email', 'password1', 'password2']
 
-
 class CustomLoginForm(AuthenticationForm):
     username = forms.CharField(
         widget=forms.TextInput(attrs={'placeholder': 'Username', 'class': 'form-control'})
@@ -34,17 +33,24 @@ class CustomLoginForm(AuthenticationForm):
         widget=forms.PasswordInput(attrs={'placeholder': 'Password', 'class': 'form-control'})
     )
 
-
 class ProfileForm(forms.ModelForm):
+    bio = forms.CharField(required=True, widget=forms.Textarea(attrs={"placeholder": "Tell us about yourself"}))
+    age = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={"placeholder": "Enter your age"}))
+    study_times = forms.CharField(required=True, widget=forms.TextInput(attrs={"placeholder": "e.g. 10 AM - 2 PM"}))
+    classes = forms.ModelMultipleChoiceField(
+        queryset=Class.objects.all(),
+        required=False,
+        widget=forms.SelectMultiple()
+    )
+    profile_picture = forms.ImageField(required=True, error_messages={'required': 'Please upload a profile picture.'})
+
     class Meta:
         model = Profile
         fields = ["bio", "age", "study_times", "classes", "profile_picture"]
-        widgets = {
-            "study_times": forms.TextInput(attrs={"placeholder": "e.g. 10 AM - 2 PM"}),
-            "classes": forms.SelectMultiple(),
-        }
 
-    # Correctly define the required profile_picture field here
-    profile_picture = forms.ImageField(required=True, error_messages={
-        'required': 'Please upload a profile picture.'
-    })
+class ChatForm(forms.ModelForm):
+    message = forms.CharField(widget=forms.Textarea(attrs={"placeholder": "Type a message..."}))
+
+    class Meta:
+        model = Chat
+        fields = ['message']

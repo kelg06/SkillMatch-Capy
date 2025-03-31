@@ -4,7 +4,8 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from .forms import CustomSignupForm, ProfileForm
-from .models import Profile, Class
+from django.views.decorators.http import require_POST
+from .models import *
 
 def signup_view(request):
     if request.method == "POST":
@@ -12,7 +13,7 @@ def signup_view(request):
         if form.is_valid():
             user = form.save()
             messages.success(request, "Account created successfully! Please log in.")
-            return redirect("login")  # Redirect to login after signup
+            return redirect("login")
     else:
         form = CustomSignupForm()
     return render(request, "signup.html", {"form": form})
@@ -25,33 +26,50 @@ def login_view(request):
         
         if user:
             login(request, user)
-            return redirect("home")  # Redirect to the home page or logged-in page
+            return redirect("home")
         else:
-            # If authentication fails, add an error message
             messages.error(request, "Invalid credentials! Please try again.")
-            return render(request, "login.html")  # Render the login page with error message
+            return render(request, "login.html")
 
-    return render(request, "login.html")  # Render login page on GET request
+    return render(request, "login.html")
 
 @login_required
 def home(request):
-    # Check if the user has a profile
     try:
         user_profile = Profile.objects.get(user=request.user)
     except Profile.DoesNotExist:
         user_profile = None
 
-    # If no profile, return home with no profile
     if not user_profile:
         return render(request, "home.html", {"profile": None})
 
-    # Get profiles that the user hasn't interacted with
+
     liked_profiles = user_profile.liked_profiles.values_list("id", flat=True)
     disliked_profiles = user_profile.disliked_profiles.values_list("id", flat=True)
 
-    profiles = Profile.objects.exclude(user=request.user).exclude(id__in=liked_profiles).exclude(id__in=disliked_profiles)
 
-    return render(request, "home.html", {"profiles": profiles, "profile": user_profile})
+    sent_requests = FriendRequest.objects.filter(sender=request.user).values_list("receiver__profile__id", flat=True)
+
+
+    received_requests = FriendRequest.objects.filter(receiver=request.user, accepted=False)
+
+    profiles = Profile.objects.exclude(user=request.user).exclude(id__in=liked_profiles).exclude(id__in=disliked_profiles).exclude(id__in=sent_requests)
+
+    friends = user_profile.friends.all()
+
+    pending_requests = [req.sender.profile for req in received_requests]
+
+    print("Pending friend requests:", pending_requests)
+
+    return render(request, "home.html", {
+        "profiles": profiles,
+        "profile": user_profile,
+        "pending_requests": pending_requests,
+        "friends": friends,
+        "sent_requests": sent_requests,
+    })
+
+
 
 def logout_view(request):
     logout(request)
@@ -81,17 +99,179 @@ def dislike_profile(request, profile_id):
 @login_required
 def create_profile(request):
     if request.method == "POST":
-        form = ProfileForm(request.POST, request.FILES)  # Ensure to include request.FILES for file uploads
+        form = ProfileForm(request.POST, request.FILES)
         if form.is_valid():
             profile = form.save(commit=False)
-            profile.user = request.user  # Link profile to logged-in user
+            profile.user = request.user
             profile.save()
-            form.save_m2m()  # Save many-to-many relationships (classes)
-            return redirect("home")  # Redirect to home after profile creation
+            form.save_m2m()
+            return redirect("home")
         else:
-            # If form is not valid, include the error messages in the context
             return render(request, "create_profile.html", {"form": form})
     else:
         form = ProfileForm()
 
     return render(request, "create_profile.html", {"form": form})
+
+@login_required
+def send_friend_request(request, profile_id):
+    receiver = User.objects.get(id=profile_id)
+    sender = request.user
+    if sender == receiver:
+        return JsonResponse({'success': False, 'message': "You can't send a friend request to yourself."})
+    
+    # Check if a request already exists
+    if FriendRequest.objects.filter(sender=sender, receiver=receiver).exists():
+        return JsonResponse({'success': False, 'message': "Friend request already sent."})
+    
+    # Check if they are already friends
+    sender_profile = Profile.objects.get(user=sender)
+    if receiver in sender_profile.friends.all():
+        return JsonResponse({'success': False, 'message': "You are already friends."})
+    
+    # Create friend request
+    FriendRequest.objects.create(sender=sender, receiver=receiver)
+    return JsonResponse({'success': True, 'message': "Friend request sent."})
+
+
+
+@login_required
+def accept_friend_request(request, profile_id):
+    try:
+        sender_profile = Profile.objects.get(id=profile_id)
+        receiver_profile = request.user.profile
+
+        # Find the friend request where the logged-in user is the receiver
+        friend_request = FriendRequest.objects.filter(
+            sender=sender_profile.user,
+            receiver=request.user,
+            accepted=False
+        ).first()
+
+        if friend_request:
+            # Update the friend request to accepted
+            friend_request.accepted = True
+            friend_request.save()
+
+            # Add each other as friends
+            receiver_profile.friends.add(sender_profile)
+            sender_profile.friends.add(receiver_profile)
+
+            print(f"Accepted friend request from {sender_profile.user.username}. Friends: {receiver_profile.friends.all()}")
+            return JsonResponse({"success": True, "message": "Friend request accepted!"})
+
+        return JsonResponse({"success": False, "message": "No pending friend request from this user."})
+
+    except Profile.DoesNotExist:
+        return JsonResponse({"success": False, "message": "Profile not found."}, status=404)
+
+
+
+
+@login_required
+def decline_friend_request(request, request_id):
+    friend_request = FriendRequest.objects.get(id=request_id)
+    if friend_request.receiver == request.user:
+        friend_request.delete()
+    return redirect('home')
+
+def chat_view(request, chat_partner_username):
+
+    try:
+        chat_partner = User.objects.get(username=chat_partner_username)
+    except User.DoesNotExist:
+        messages.error(request, f"User {chat_partner_username} not found")
+        return redirect('some_fallback_url')
+    chat_room, created = Chat.objects.get_or_create(
+        user1=request.user, user2=chat_partner
+    )
+
+    if created:
+        print(f"New chat room created between {request.user.username} and {chat_partner.username}")
+    context = {
+        'chat_partner': chat_partner,
+        'user': request.user,
+        'chat_room': chat_room,
+    }
+
+    return render(request, 'chat.html', context)
+
+@login_required
+def update_profile(request, profile_id):
+    profile = get_object_or_404(Profile, id=profile_id, user=request.user)
+
+    if request.method == "POST":
+        profile.bio = request.POST.get("bio", profile.bio)
+        profile.age = request.POST.get("age", profile.age)
+        profile.study_times = request.POST.get("study_times", profile.study_times)
+        profile.save()
+        messages.success(request, "Profile updated successfully!")
+        return redirect("home")
+
+    return render(request, "update_profile.html", {"profile": profile})
+
+@login_required
+def delete_profile(request, profile_id):
+    profile = get_object_or_404(Profile, id=profile_id, user=request.user)
+
+    if request.method == "POST":
+        profile.delete()
+        messages.success(request, "Profile deleted successfully!")
+        return redirect("home")
+
+    return render(request, "delete_profile.html", {"profile": profile})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# def send_friend_request(request, profile_id):
+#     try:
+#         target_profile = Profile.objects.get(id=profile_id)
+
+#         if request.user == target_profile.user:
+#             return JsonResponse({"success": False, "message": "You cannot send a friend request to yourself."})
+
+#         # Check if a friend request already exists in either direction
+#         friend_request = FriendRequest.objects.filter(
+#             sender=request.user, receiver=target_profile.user
+#         ).first()
+
+#         reverse_request = FriendRequest.objects.filter(
+#             sender=target_profile.user, receiver=request.user
+#         ).first()
+
+#         if friend_request:
+#             if friend_request.accepted:
+#                 return JsonResponse({"success": False, "message": "You are already friends with this user."})
+#             return JsonResponse({"success": False, "message": "Friend request already sent."})
+
+#         if reverse_request:
+#             if reverse_request.accepted:
+#                 return JsonResponse({"success": False, "message": "You are already friends with this user."})
+#             return JsonResponse({"success": False, "message": "You have a pending friend request from this user."})
+
+#         # Create a new friend request
+#         new_request = FriendRequest(sender=request.user, receiver=target_profile.user, accepted=False)
+#         new_request.save()
+#         return JsonResponse({"success": True, "message": "Friend request sent!"})
+
+#     except Profile.DoesNotExist:
+#         return JsonResponse({"success": False, "message": "Profile not found."}, status=404)

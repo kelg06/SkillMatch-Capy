@@ -10,7 +10,7 @@
 <body>
     <div class="container">
         <h2>Create Your Profile</h2>
-        <form method="post" enctype="multipart/form-data">  <!-- Ensure to add enctype for file uploads -->
+        <form method="post" enctype="multipart/form-data"> <!-- Ensure to add enctype for file uploads -->
             {% csrf_token %}
             
             <div class="form-group">
@@ -31,6 +31,47 @@
 
             <button type="submit" class="submit-btn">Save Profile</button>
         </form>
+
+        <!-- Friend Request Section -->
+        <div class="friend-requests">
+            <h3>Pending Friend Requests</h3>
+            {% if friend_requests %}
+                <ul>
+                    {% for request in friend_requests %}
+                        <li>
+                            {{ request.user.username }}
+                            <button onclick="acceptFriend('{{ request.user.id }}')">✔️</button>
+                            <button onclick="declineFriend('{{ request.user.id }}')">❌</button>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No pending friend requests.</p>
+            {% endif %}
+        </div>
     </div>
+
+    <script>
+        function acceptFriend(profileId) {
+            fetch(`/accept-friend-request/${profileId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    alert("Friend request accepted!");
+                    location.reload();
+                } else {
+                    alert("Failed to accept friend request.");
+                }
+            });
+        }
+
+        function declineFriend(profileId) {
+            alert("Friend request declined!");
+        }
+    </script>
 </body>
 </html>

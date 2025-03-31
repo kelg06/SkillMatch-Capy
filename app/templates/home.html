@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <link rel="stylesheet" href="{% static 'home.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    <script>
+        // Include CSRF token as a global variable
+        const csrfToken = '{{ csrf_token }}';
+    </script>
 </head>
 <body>
     <nav>
@@ -18,46 +23,199 @@
     <main>
         <div class="container">
             <h1>Welcome, {{ user.username }}</h1>
-            
-            {% if not profile %}
-                <p>You haven't created a profile yet!</p>
-                <a href="{% url 'create_profile' %}" class="btn">Create Profile</a>
-            {% else %}
-                <h2>Swipe through profiles!</h2>
-                <div id="profile-container">
-                    {% for profile in profiles %}
-                        <div class="profile-card" data-profile-id="{{ profile.user.id }}">
-                            <!-- Profile Picture Container -->
-                            <div class="profile-pic-container">
-                                {% if profile.profile_picture %}
-                                    <img src="{{ profile.profile_picture.url }}" alt="{{ profile.user.username }}'s Profile Picture" class="profile-pic">
-                                {% else %}
-                                    <img src="{% static 'default_profile_pic.jpg' %}" alt="Default Profile Picture" class="profile-pic">
-                                {% endif %}
-                            </div>
-                            
-                            <h3>{{ profile.user.username }}</h3>
-                            <p><strong>Bio:</strong> {{ profile.bio }}</p>
-                            <p><strong>Age:</strong> {{ profile.age }}</p>
-                            <p><strong>Study Times:</strong> {{ profile.study_times }}</p>
-                            <p><strong>Classes:</strong> 
-                                {% for class in profile.classes.all %} 
-                                    {{ class.name }}{% if not forloop.last %}, {% endif %}
-                                {% endfor %}
-                            </p>
-                            <div class="actions">
-                                <button class="dislike-btn">❌</button>
-                                <button class="like-btn">✔️</button>
-                            </div>
-                        </div>
-                    {% empty %}
-                        <p>No more profiles to show.</p>
-                    {% endfor %}
+            <div>
+                <a href="{% url 'update_profile' profile.id %}">Update Profile</a>
+                <a href="{% url 'delete_profile' profile.id %}">Delete Profile</a>
+            </div>
+
+            <div class="content">
+                <!-- Sidebar for Friend Requests and Chats -->
+                <div class="sidebar">
+                    <h3>Friend Requests</h3>
+                    {% if pending_requests %}
+                        <ul>
+                            {% for profile in pending_requests %}
+                                <li>
+                                    {{ profile.user.username }}
+                                    <button onclick="acceptFriend('{{ profile.user.id }}')">✔️</button>
+                                    <button onclick="declineFriend('{{ profile.user.id }}')">❌</button>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No friend requests</p>
+                    {% endif %}
+
+                    <h3>Friends</h3>
+                    {% if friends %}
+                        <ul class="friends-list">
+                            {% for friend in friends %}
+                                <li>{{ friend.user.username }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No friends yet</p>
+                    {% endif %}
+
+                    <h3>Chats</h3>
+                    {% if chats %}
+                        <ul>
+                            {% for chat in chats %}
+                                <li>
+                                    <a href="{% url 'chat' chat.friend.username %}">{{ chat.friend.username }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No active chats</p>
+                    {% endif %}
                 </div>
-            {% endif %}
+
+                <!-- Main Content Area -->
+                <div class="main-content">
+                    {% if not profile %}
+                        <p>You haven't created a profile yet!</p>
+                        <a href="{% url 'create_profile' %}" class="btn">Create Profile</a>
+                    {% else %}
+                        <h2>Swipe through profiles!</h2>
+                        <div id="profile-container" class="tinder-cards">
+                            {% for profile in profiles %}
+                                <div class="profile-card" id="profile-{{ profile.user.id }}" data-profile-id="{{ profile.user.id }}">
+                                    <div class="profile-pic-container">
+                                        {% if profile.profile_picture %}
+                                            <img src="{{ profile.profile_picture.url }}" alt="{{ profile.user.username }}'s Profile Picture" class="profile-pic">
+                                        {% else %}
+                                            <img src="{% static 'default_profile_pic.jpg' %}" alt="Default Profile Picture" class="profile-pic">
+                                        {% endif %}
+                                    </div>
+                
+                                    <h3>{{ profile.user.username }}</h3>
+                                    <p><strong>Bio:</strong> {{ profile.bio }}</p>
+                                    <p><strong>Age:</strong> {{ profile.age }}</p>
+                                    <p><strong>Study Times:</strong> {{ profile.study_times }}</p>
+                                    <p><strong>Classes:</strong>
+                                        {% for class in profile.classes.all %}
+                                            {{ class.name }}{% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+                                    </p>
+                                    
+                                    {% if profile.id in sent_requests %}
+                                    <p>Friend request sent</p>
+                                    <button onclick="removeCard('{{ profile.user.id }}')">❌</button>
+                                {% elif profile.id in pending_request_ids %}
+                                    <p>Friend request received</p>
+                                    <button onclick="acceptFriend('{{ profile.id }}')">✔️</button>
+                                    <button onclick="declineFriend('{{ profile.id }}')">❌</button>
+                                {% elif profile.user in friends %}
+                                    <p>Already Friends</p>
+                                {% else %}
+                                    <button onclick="sendFriendRequest('{{ profile.user.id }}')">✔️ Add Friend</button>
+                                    <button onclick="removeCard('{{ profile.user.id }}')">❌</button>
+                                {% endif %}</div>
+                            {% empty %}
+                                <p>No more profiles to show.</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+            </div>
         </div>
     </main>
 
-    <script src="{% static 'home.js' %}"></script>
+    <!-- WebSocket for Chat -->
+    {% if chat_partner %}
+        <div class="chat-section">
+            <h3>Chat with {{ chat_partner.username }}</h3>
+            <div id="chat-log" style="border: 1px solid #ccc; height: 200px; overflow-y: scroll;"></div>
+            <input id="chat-message-input" type="text" placeholder="Type a message">
+            <button id="chat-message-submit">Send</button>
+        </div>
+
+        <script>
+            const user = "{{ user.username }}";  // Get logged-in user's username dynamically
+            const chatPartnerUsername = "{{ chat_partner.username }}";  // Get the chat partner's username dynamically
+            const roomName = `${user}-${chatPartnerUsername}`;  // Create dynamic room name
+
+            const chatSocket = new WebSocket(
+                'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
+            );
+
+            chatSocket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                const message = `${data.username}: ${data.message}`;
+                document.getElementById('chat-log').innerHTML += message + '<br>';
+            };
+
+            document.getElementById('chat-message-submit').onclick = function() {
+                const messageInput = document.getElementById('chat-message-input');
+                const message = messageInput.value;
+                chatSocket.send(JSON.stringify({'message': message, 'username': user}));
+                messageInput.value = '';
+            };
+        </script>
+    {% endif %}
+
+    <script>
+        function removeCard(profileId) {
+            const card = document.getElementById(`profile-${profileId}`);
+            if (card) {
+                card.style.transform = 'translateX(100%)';
+                setTimeout(() => card.remove(), 300);
+            }
+        }
+
+        function sendFriendRequest(profileId) {
+            fetch(`/send-friend-request/${profileId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken  // Use the CSRF token here
+                }
+            }).then(response => {
+                if (response.ok) {
+                    removeCard(profileId);
+                    alert("Friend request sent!");
+                } else {
+                    alert("Failed to send friend request.");
+                }
+            });
+        }
+
+        function acceptFriend(profileId) {
+            fetch(`/accept-friend-request/${profileId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken  // Use the CSRF token here
+                }
+            }).then(response => {
+                if (response.ok) {
+                    alert("Friend request accepted!");
+                    location.reload();
+                } else {
+                    alert("Failed to accept friend request.");
+                }
+            });
+        }
+
+        function declineFriend(profileId) {
+            alert("Friend request declined!");
+        }
+
+        // Handle swiping effect using Hammer.js
+        document.addEventListener("DOMContentLoaded", () => {
+            const cards = document.querySelectorAll('.profile-card');
+            cards.forEach(card => {
+                const hammer = new Hammer(card);
+                hammer.on('swipeleft', () => {
+                    removeCard(card.dataset.profileId);
+                });
+                hammer.on('swiperight', () => {
+                    sendFriendRequest(card.dataset.profileId);
+                });
+            });
+        });
+    </script>
 </body>
 </html>

@@ -48,6 +48,42 @@ main {
     min-height: 80vh;
 }
 
+/* Sidebar */
+.sidebar {
+    background-color: #fff;
+    padding: 15px;
+    margin: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 250px;
+    text-align: left;
+}
+
+.sidebar h3 {
+    margin-bottom: 10px;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar li {
+    margin: 5px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.sidebar button {
+    background: #4caf50;
+    color: white;
+    border: none;
+    padding: 5px;
+    margin-left: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
 /* Profile cards */
 #profile-container {
     display: flex;
@@ -55,7 +91,6 @@ main {
     align-items: center;
 }
 
-/* Profile card styling */
 .profile-card {
     background: white;
     padding: 20px;
@@ -64,41 +99,23 @@ main {
     width: 320px;
     text-align: center;
     margin: 15px 0;
-    position: relative;
     transition: transform 0.3s ease-in-out;
 }
 
-/* Profile picture container */
+/* Profile picture */
 .profile-pic-container {
     width: 120px;
     height: 120px;
     margin-bottom: 10px;
     border-radius: 50%;
     overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     background-color: #f0f2f5;
 }
 
-/* Profile picture styling */
 .profile-pic {
     width: 100%;
     height: 100%;
-    object-fit: cover;  /* Ensures the image scales nicely */
-    border-radius: 50%;  /* Makes it circular */
-}
-
-/* Profile name and bio */
-.profile-card h3 {
-    margin-bottom: 10px;
-    font-size: 20px;
-    color: #333;
-}
-
-.profile-card p {
-    margin: 5px 0;
-    color: #555;
+    object-fit: cover;
 }
 
 /* Swipe buttons */
@@ -119,7 +136,6 @@ main {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    transition: transform 0.2s;
 }
 
 .dislike-btn {
@@ -132,11 +148,6 @@ main {
     color: white;
 }
 
-.actions button:hover {
-    transform: scale(1.1);
-}
-
-/* Create Profile Button */
 .btn {
     background-color: #007bff;
     color: white;
@@ -144,8 +155,6 @@ main {
     text-decoration: none;
     border-radius: 5px;
     font-weight: bold;
-    margin-top: 15px;
-    display: inline-block;
 }
 
 .btn:hover {

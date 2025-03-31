@@ -29,3 +29,65 @@ document.addEventListener("DOMContentLoaded", function () {
 
     setupSwipeButtons();
 });
+function acceptFriend(profileId) {
+    fetch(`/accept-friend-request/${profileId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        }
+    }).then(response => {
+        if (response.ok) {
+            alert("Friend request accepted!");
+            // Remove from pending requests
+            const pendingRequestItem = document.querySelector(`li[data-profile-id='${profileId}']`);
+            if (pendingRequestItem) {
+                pendingRequestItem.remove();
+            }
+            // Add to friends section
+            const friendsList = document.querySelector('.friends-list'); // Ensure you have a class for the friends list
+            const newFriendItem = document.createElement('li');
+            newFriendItem.textContent = `Friend: ${profileId}`; // Adjust as necessary
+            friendsList.appendChild(newFriendItem);
+        } else {
+            alert("Failed to accept friend request.");
+        }
+    });
+}
+
+
+
+function declineFriend(profileId) {
+    fetch(`/decline-friend-request/${profileId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    }).then(response => {
+        if (response.ok) {
+            alert("Friend request declined!");
+            location.reload();  // Refresh to update the profile list
+        } else {
+            alert("Failed to decline friend request.");
+        }
+    });
+}
+
+function sendFriendRequest(profileId) {
+    fetch(`/send-friend-request/${profileId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        }
+    }).then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        if (data.success) {
+            removeCard(profileId);
+        }
+    }).catch(error => {
+        console.error("Error sending friend request:", error);
+    });
+}
