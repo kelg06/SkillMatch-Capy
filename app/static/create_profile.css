@@ -101,3 +101,27 @@ button.submit-btn:hover {
         font-size: 14px;
     }
 }
+form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.form-field {
+    width: 48%;
+    margin-bottom: 15px;
+}
+
+.form-control {
+    width: 100%;
+}
+
+.form-field.profile-picture {
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .form-field {
+        width: 100%;
+    }
+}

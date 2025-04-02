@@ -160,3 +160,22 @@ main {
 .btn:hover {
     background-color: #0056b3;
 }
+.friend-requests-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.friend-requests-list li {
+    margin: 5px 0;
+    padding: 5px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.friend-requests-list button {
+    margin-left: 5px;
+}
