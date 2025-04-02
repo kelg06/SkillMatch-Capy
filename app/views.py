@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from .forms import CustomSignupForm, ProfileForm
 from django.views.decorators.http import require_POST
 from .models import *
@@ -57,7 +58,8 @@ def home(request):
 
     friends = user_profile.friends.all()
 
-    pending_requests = [req.sender.profile for req in received_requests]
+    pending_requests = [getattr(req.sender, 'profile', None) for req in received_requests if hasattr(req.sender, 'profile')]
+
 
     print("Pending friend requests:", pending_requests)
 
@@ -113,6 +115,7 @@ def create_profile(request):
 
     return render(request, "create_profile.html", {"form": form})
 
+@csrf_exempt
 @login_required
 def send_friend_request(request, profile_id):
     receiver = User.objects.get(id=profile_id)
@@ -149,7 +152,7 @@ def accept_friend_request(request, profile_id):
         ).first()
 
         if friend_request:
-            # Update the friend request to accepted
+            # Update the friend request to accepted and save
             friend_request.accepted = True
             friend_request.save()
 
@@ -157,8 +160,16 @@ def accept_friend_request(request, profile_id):
             receiver_profile.friends.add(sender_profile)
             sender_profile.friends.add(receiver_profile)
 
-            print(f"Accepted friend request from {sender_profile.user.username}. Friends: {receiver_profile.friends.all()}")
-            return JsonResponse({"success": True, "message": "Friend request accepted!"})
+            # Delete the friend request after acceptance
+            friend_request.delete()
+
+            print(f"Accepted friend request from {sender_profile.user.username}")
+            return JsonResponse({
+                "success": True, 
+                "message": "Friend request accepted!", 
+                "friend_username": sender_profile.user.username,
+                "profile_id": profile_id
+            })
 
         return JsonResponse({"success": False, "message": "No pending friend request from this user."})
 
@@ -168,12 +179,28 @@ def accept_friend_request(request, profile_id):
 
 
 
+
 @login_required
-def decline_friend_request(request, request_id):
-    friend_request = FriendRequest.objects.get(id=request_id)
-    if friend_request.receiver == request.user:
-        friend_request.delete()
-    return redirect('home')
+def decline_friend_request(request, profile_id):
+    try:
+        # Find the friend request where the logged-in user is the receiver
+        friend_request = FriendRequest.objects.filter(
+            sender__profile__id=profile_id,
+            receiver=request.user,
+            accepted=False
+        ).first()
+
+        if friend_request:
+            # Delete the friend request from the database
+            friend_request.delete()
+            print(f"Declined friend request from profile ID {profile_id}")
+            return JsonResponse({"success": True, "message": "Friend request declined!", "profile_id": profile_id})
+
+        return JsonResponse({"success": False, "message": "No pending friend request from this user."})
+
+    except Exception as e:
+        return JsonResponse({"success": False, "message": str(e)}, status=500)
+
 
 def chat_view(request, chat_partner_username):
 
@@ -201,14 +228,27 @@ def update_profile(request, profile_id):
     profile = get_object_or_404(Profile, id=profile_id, user=request.user)
 
     if request.method == "POST":
-        profile.bio = request.POST.get("bio", profile.bio)
+        profile.first_name = request.POST.get("first_name", profile.first_name)
+        profile.last_name = request.POST.get("last_name", profile.last_name)
         profile.age = request.POST.get("age", profile.age)
+        profile.hometown = request.POST.get("hometown", profile.hometown)
+        profile.major = request.POST.get("major", profile.major)
+        profile.minor = request.POST.get("minor", profile.minor)
+        profile.grade = request.POST.get("grade", profile.grade)
         profile.study_times = request.POST.get("study_times", profile.study_times)
+        profile.hobbies = request.POST.get("hobbies", profile.hobbies)
+        profile.clubs_and_extracurriculars = request.POST.get("clubs_and_extracurriculars", profile.clubs_and_extracurriculars)
+        profile.goals_after = request.POST.get("goals_after", profile.goals_after)
+
+        if 'profile_picture' in request.FILES:
+            profile.profile_picture = request.FILES['profile_picture']
+
         profile.save()
         messages.success(request, "Profile updated successfully!")
         return redirect("home")
 
     return render(request, "update_profile.html", {"profile": profile})
+
 
 @login_required
 def delete_profile(request, profile_id):
@@ -221,12 +261,22 @@ def delete_profile(request, profile_id):
 
     return render(request, "delete_profile.html", {"profile": profile})
 
+@login_required
+def unfriend(request, profile_id):
+    try:
+        user_profile = request.user.profile
+        friend_profile = Profile.objects.get(id=profile_id)
 
+        # Remove the friend relationship both ways
+        if friend_profile in user_profile.friends.all():
+            user_profile.friends.remove(friend_profile)
+            friend_profile.friends.remove(user_profile)
 
+        print(f"Unfriended {friend_profile.user.username}")
+        return JsonResponse({"success": True, "message": "Unfriended successfully!"})
 
-
-
-
+    except Profile.DoesNotExist:
+        return JsonResponse({"success": False, "message": "Friend not found."}, status=404)
 
 
 

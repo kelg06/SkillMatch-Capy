@@ -17,10 +17,9 @@ urlpatterns = [
     path('send-friend-request/<int:profile_id>/', send_friend_request, name='send_friend_request'),
 
     path('chat/<str:chat_partner_username>/', chat_view, name='chat'),
-
-    path("create-profile/", create_profile, name="create_profile"),
-    path('update-profile/<int:profile_id>/', update_profile, name='update_profile'),
-    path('delete-profile/<int:profile_id>/', delete_profile, name='delete_profile')
+     path('update-profile/<int:profile_id>/', update_profile, name='update_profile'),
+    path('delete-profile/<int:profile_id>/', delete_profile, name='delete_profile'),
+    path('unfriend/<int:profile_id>/', unfriend, name='unfriend')
 ]
 
 if settings.DEBUG:
