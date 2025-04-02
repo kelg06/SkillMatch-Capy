@@ -23,10 +23,10 @@
     <main>
         <div class="container">
             <h1>Welcome, {{ user.username }}</h1>
-            <div>
+            {% comment %} <div>
                 <a href="{% url 'update_profile' profile.id %}">Update Profile</a>
                 <a href="{% url 'delete_profile' profile.id %}">Delete Profile</a>
-            </div>
+            </div> {% endcomment %}
 
             <div class="content">
                 <!-- Sidebar for Friend Requests and Chats -->
@@ -37,8 +37,8 @@
                             {% for profile in pending_requests %}
                                 <li>
                                     {{ profile.user.username }}
-                                    <button onclick="acceptFriend('{{ profile.user.id }}')">✔️</button>
                                     <button onclick="declineFriend('{{ profile.user.id }}')">❌</button>
+                                    <button onclick="acceptFriend('{{ profile.user.id }}')">✔️</button>
                                 </li>
                             {% endfor %}
                         </ul>
