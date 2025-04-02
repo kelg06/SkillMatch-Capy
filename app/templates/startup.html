@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>StuddyBuddy startup</title>
+        {% load static %}
+        <link rel="stylesheet" href="{% static '../static/startup-styles.css' %}">
+        <link rel="stylesheet" href="{% static '../static/button.css' %}">
+    </head>
+    <body>
+        <div id="main">
+            <div id="first-block">
+                <nav class="navbar">
+                    <div class="logo-container">
+                        <img src="../static/images/logo-transparent.png" alt="" class="logo">
+                        <p class="logo-text">Study Buddy</p>
+                    </div>
+                    <ul class="nav-links">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </nav>
+            </div>
+            
+            <div class="in-between-block">
+                <div class="first-block-text">
+                    <h1>Find Your</h1>
+                </div>
+                <div class="login-btn-container">
+                    <a href="{% url 'login' %}" class="login-button">Sign in</a>
+                </div>
+                <div class="first-block-text">
+                    <h1>Study Buddy</h1>
+                </div>
+            </div>
+                
+            <div id="second-block">
+                <footer>
+                    <p class="about-statement"><strong>About our Site:</strong> <br>The purpose of this site is to provide users with an easier way to find study partners. <br>By utilizing technology, we match individuals based on similar study preferences and the classes they are taking.
+                        <br> Users can choose to input their syllabus or select the classes they wish to study for, facilitating a more efficient study partnership experience.</p>
+                    <hr class="footer-hr">
+                    <p>&copy; 2025 Study Buddy. All rights reserved.</p>
+                </footer>
+            </div>
+        </div>
+
+        <script>
+
+            function smoothScroll() {
+                let inBetweenBlock = document.querySelector('.in-between-block');
+                const scrollPosition = window.scrollY;
+                const speed = scrollPosition / 2;
+                const maxMovement = 350;
+                const movement = Math.min(speed, maxMovement);
+
+                inBetweenBlock.style.transform = `translateY(${movement}px)`;
+
+                requestAnimationFrame(smoothScroll);
+            }
+
+            smoothScroll();
+            window.addEventListener('scroll', () => {
+                const fadeText = document.querySelector('.in-between-block');
+                const scrollPosition = window.scrollY;
+                const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                const opacity = 1.26 - (scrollPosition / maxScroll);
+                
+                fadeText.style.opacity = opacity;
+            });
+
+            smoothScroll();
+            window.addEventListener('scroll', () => {
+                const fadeText = document.querySelector('.navbar');
+                const scrollPosition = window.scrollY;
+                const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+              
+                const opacity = 1.26 - (scrollPosition / maxScroll);
+                
+                fadeText.style.opacity = opacity;
+            });
+
+        </script>
+    </body>
+</html>
