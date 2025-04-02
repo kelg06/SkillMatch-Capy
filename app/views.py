@@ -77,8 +77,8 @@ def logout_view(request):
     logout(request)
     return redirect("index")
 
-def index(request):
-    return render(request, "landing.html")
+def startup(request):
+    return render(request, "startup.html")
 
 @login_required
 def like_profile(request, profile_id):
