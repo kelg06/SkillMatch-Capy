@@ -289,39 +289,3 @@ def unfriend(request, profile_id):
 
 
 
-
-
-
-# def send_friend_request(request, profile_id):
-#     try:
-#         target_profile = Profile.objects.get(id=profile_id)
-
-#         if request.user == target_profile.user:
-#             return JsonResponse({"success": False, "message": "You cannot send a friend request to yourself."})
-
-#         # Check if a friend request already exists in either direction
-#         friend_request = FriendRequest.objects.filter(
-#             sender=request.user, receiver=target_profile.user
-#         ).first()
-
-#         reverse_request = FriendRequest.objects.filter(
-#             sender=target_profile.user, receiver=request.user
-#         ).first()
-
-#         if friend_request:
-#             if friend_request.accepted:
-#                 return JsonResponse({"success": False, "message": "You are already friends with this user."})
-#             return JsonResponse({"success": False, "message": "Friend request already sent."})
-
-#         if reverse_request:
-#             if reverse_request.accepted:
-#                 return JsonResponse({"success": False, "message": "You are already friends with this user."})
-#             return JsonResponse({"success": False, "message": "You have a pending friend request from this user."})
-
-#         # Create a new friend request
-#         new_request = FriendRequest(sender=request.user, receiver=target_profile.user, accepted=False)
-#         new_request.save()
-#         return JsonResponse({"success": True, "message": "Friend request sent!"})
-
-#     except Profile.DoesNotExist:
-#         return JsonResponse({"success": False, "message": "Profile not found."}, status=404)
