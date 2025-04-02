@@ -33,20 +33,99 @@ class CustomLoginForm(AuthenticationForm):
         widget=forms.PasswordInput(attrs={'placeholder': 'Password', 'class': 'form-control'})
     )
 
-class ProfileForm(forms.ModelForm):
-    bio = forms.CharField(required=True, widget=forms.Textarea(attrs={"placeholder": "Tell us about yourself"}))
-    age = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={"placeholder": "Enter your age"}))
-    study_times = forms.CharField(required=True, widget=forms.TextInput(attrs={"placeholder": "e.g. 10 AM - 2 PM"}))
-    classes = forms.ModelMultipleChoiceField(
-        queryset=Class.objects.all(),
-        required=False,
-        widget=forms.SelectMultiple()
-    )
-    profile_picture = forms.ImageField(required=True, error_messages={'required': 'Please upload a profile picture.'})
+from django import forms
+from .models import Profile
 
+class ProfileForm(forms.ModelForm):
+    # First Name (Required)
+    first_name = forms.CharField(
+        max_length=50,
+        required=True,
+        widget=forms.TextInput(attrs={"placeholder": "Enter your first name", "class": "form-control form-field"})
+    )
+    
+    # Last Name (Required)
+    last_name = forms.CharField(
+        max_length=50,
+        required=True,
+        widget=forms.TextInput(attrs={"placeholder": "Enter your last name", "class": "form-control form-field"})
+    )
+    
+    # Age (Required)
+    age = forms.IntegerField(
+        required=True,
+        widget=forms.NumberInput(attrs={"placeholder": "Enter your age", "class": "form-control form-field"})
+    )
+    
+    # Hometown (Required)
+    hometown = forms.CharField(
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={"placeholder": "Enter your hometown", "class": "form-control form-field"})
+    )
+    
+    # Major (Required)
+    major = forms.CharField(
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={"placeholder": "Enter your major", "class": "form-control form-field"})
+    )
+    
+    # Minor (Optional)
+    minor = forms.CharField(
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Enter your minor (optional)", "class": "form-control form-field"})
+    )
+    
+    # Grade (Required)
+    grade = forms.CharField(
+        max_length=20,
+        required=True,
+        widget=forms.TextInput(attrs={"placeholder": "Enter your grade", "class": "form-control form-field"})
+    )
+    
+    # Study Times (Dropdown with predefined choices)
+    study_times = forms.ChoiceField(
+        choices=Profile.STUDY_TIME_CHOICES,
+        required=True,
+        widget=forms.Select(attrs={"class": "form-control form-field"})
+    )
+    
+    # Hobbies (Optional)
+    hobbies = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={"placeholder": "Tell us about your hobbies (optional)", "class": "form-control form-field"})
+    )
+    
+    # Clubs and Extracurriculars (Optional)
+    clubs_and_extracurriculars = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={"placeholder": "Tell us about your clubs and extracurricular activities (optional)", "class": "form-control form-field"})
+    )
+    
+    # Goals After Graduation (Required)
+    goals_after = forms.CharField(
+        max_length=255,
+        required=True,
+        widget=forms.Textarea(attrs={"placeholder": "What are your goals after graduation?", "class": "form-control form-field"})
+    )
+    
+    # Profile Picture (Required)
+    profile_picture = forms.ImageField(
+        required=True,
+        error_messages={'required': 'Please upload a profile picture.'},
+        widget=forms.ClearableFileInput(attrs={"class": "form-control form-field"})
+    )
+    
     class Meta:
         model = Profile
-        fields = ["bio", "age", "study_times", "classes", "profile_picture"]
+        fields = [
+            "first_name", "last_name", "age", "hometown", "major", 
+            "minor", "grade", "study_times", "hobbies", 
+            "clubs_and_extracurriculars", "goals_after", "profile_picture"
+        ]
+
 
 class ChatForm(forms.ModelForm):
     message = forms.CharField(widget=forms.Textarea(attrs={"placeholder": "Type a message..."}))

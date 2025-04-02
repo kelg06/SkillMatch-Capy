@@ -1,11 +1,61 @@
 <h2>Update Profile</h2>
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    <label>Bio:</label>
-    <input type="text" name="bio" value="{{ profile.bio }}"><br>
+    
+    <!-- First Name -->
+    <label>First Name:</label>
+    <input type="text" name="first_name" value="{{ profile.first_name }}"><br>
+
+    <!-- Last Name -->
+    <label>Last Name:</label>
+    <input type="text" name="last_name" value="{{ profile.last_name }}"><br>
+
+    <!-- Age -->
     <label>Age:</label>
     <input type="number" name="age" value="{{ profile.age }}"><br>
+
+    <!-- Hometown -->
+    <label>Hometown:</label>
+    <input type="text" name="hometown" value="{{ profile.hometown }}"><br>
+
+    <!-- Major -->
+    <label>Major:</label>
+    <input type="text" name="major" value="{{ profile.major }}"><br>
+
+    <!-- Minor -->
+    <label>Minor:</label>
+    <input type="text" name="minor" value="{{ profile.minor }}"><br>
+
+    <!-- Grade -->
+    <label>Grade:</label>
+    <input type="text" name="grade" value="{{ profile.grade }}"><br>
+
+    <!-- Study Times -->
     <label>Study Times:</label>
-    <input type="text" name="study_times" value="{{ profile.study_times }}"><br>
+    <select name="study_times">
+        {% for choice in profile.STUDY_TIME_CHOICES %}
+            <option value="{{ choice.0 }}" {% if profile.study_times == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+        {% endfor %}
+    </select><br>
+
+    <!-- Hobbies -->
+    <label>Hobbies:</label>
+    <textarea name="hobbies">{{ profile.hobbies }}</textarea><br>
+
+    <!-- Clubs and Extracurriculars -->
+    <label>Clubs and Extracurriculars:</label>
+    <textarea name="clubs_and_extracurriculars">{{ profile.clubs_and_extracurriculars }}</textarea><br>
+
+    <!-- Goals After Graduation -->
+    <label>Goals After Graduation:</label>
+    <textarea name="goals_after">{{ profile.goals_after }}</textarea><br>
+
+    <!-- Profile Picture -->
+    <label>Profile Picture:</label>
+    <input type="file" name="profile_picture"><br>
+    {% if profile.profile_picture %}
+        <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" width="100"><br>
+    {% endif %}
+
     <button type="submit">Update</button>
 </form>
