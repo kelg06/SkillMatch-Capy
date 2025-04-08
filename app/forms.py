@@ -144,11 +144,6 @@ class EventForm(forms.ModelForm):
         }
 
 
-class GroupPostForm(forms.ModelForm):
-    class Meta:
-        model = Chat
-        fields = ['message']
-
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
