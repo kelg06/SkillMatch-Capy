@@ -1,23 +1,12 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-# List of Ole Miss classes
-OLE_MISS_CLASSES = [
-    ("CSCI 111", "CSCI 111 - Computer Science I"),
-    ("CSCI 112", "CSCI 112 - Computer Science II"),
-    ("MATH 261", "MATH 261 - Calculus I"),
-    ("MATH 262", "MATH 262 - Calculus II"),
-    # Add more classes here...
-]
-
-class Class(models.Model):
-    name = models.CharField(max_length=100, choices=OLE_MISS_CLASSES, unique=True)
-
-    def __str__(self):
-        return self.name
-
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    # Admin roles
+    is_super_admin = models.BooleanField(default=False)
+    is_group_admin = models.BooleanField(default=False)
     
     # First and last name (Required)
     first_name = models.CharField(max_length=50, null=False, blank=False)
@@ -80,7 +69,10 @@ class Profile(models.Model):
     profile_picture = models.ImageField(upload_to='profile_pics/', default='default_profile_pic.jpg', blank=False, null=False)
     
     # Many-to-many relationships
-    friends = models.ManyToManyField("self", blank=True)
+    friends = models.ManyToManyField("self", blank=True)  # For confirmed friends
+    
+    # Track pending requests (sent and received)
+    pending_sent_requests = models.ManyToManyField("self", symmetrical=False, related_name="pending_received_requests", blank=True)
     
     # Liked and disliked profiles for swipe functionality
     liked_profiles = models.ManyToManyField("self", symmetrical=False, related_name="liked_by", blank=True)
@@ -88,17 +80,19 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.user.username})"
+
 class FriendRequest(models.Model):
     sender = models.ForeignKey(User, related_name='sent_requests', on_delete=models.CASCADE)
     receiver = models.ForeignKey(User, related_name='received_requests', on_delete=models.CASCADE)
     accepted = models.BooleanField(default=False)
+    declined = models.BooleanField(default=False)  # Added declined field
     timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('sender', 'receiver')
-        
+
     def __str__(self):
-        return f"{self.sender} -> {self.receiver} ({'Accepted' if self.accepted else 'Pending'})"
+        return f"Request from {self.sender.username} to {self.receiver.username} - {'Accepted' if self.accepted else 'Pending'}"
 
 class Chat(models.Model):
     user1 = models.ForeignKey(User, related_name='chat_user1', on_delete=models.CASCADE)
@@ -121,3 +115,35 @@ class Message(models.Model):
 
     def __str__(self):
         return f"Message from {self.sender.username}: {self.content[:30]}..."
+
+class Event(models.Model):
+    title = models.CharField(max_length=200)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    days = models.CharField(max_length=100)
+    
+    def __str__(self):
+        return self.title
+    
+
+# FLYER AREA---
+class GroupPost(models.Model):
+    title = models.CharField(max_length=200,blank=True)
+    image = models.ImageField(upload_to='group_flyers/')
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+
+
+
+
+
+
+
+
+
+
+

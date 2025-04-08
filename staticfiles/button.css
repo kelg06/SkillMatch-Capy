@@ -1,0 +1,24 @@
+.login-btn-container {
+    display: flex;
+    justify-content: center;
+}
+
+.login-button {
+    display: inline-block;
+    background-color: #CE1126; 
+    color: #f0f0f0; 
+    /* border: 2px solid #14213D; */
+    border-radius: 15px;
+    padding: 10px 35px;
+    text-decoration: none; 
+    font-size: 1.5em;
+    cursor: pointer; 
+    transition: background-color 0.5s ease, transform 0.5s ease, box-shadow 0.5s ease; 
+}
+
+.login-button:hover {
+    background-color: #bb0016; 
+    cursor: pointer; 
+    transform: scale(1.1); 
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 1); 
+}
