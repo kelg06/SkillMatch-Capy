@@ -1,0 +1,39 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Group Posts</title>
+    <link rel="stylesheet" href="{% static 'group_posts.css' %}">
+</head>
+<body>
+
+    <h2>Group Posts</h2>
+
+    {% if user.profile and user.profile.is_group_admin %}
+        <a href="{% url 'create_group_post' %}" class="create-post-btn">➕ Create a New Post</a>
+    {% endif %}
+
+    <a href="{% url 'home' %}" class="back-home">🏠 Back Home</a>
+
+    {% for post in posts %}
+        <div class="post-container">
+            <h3 class="post-title">{{ post.title }}</h3>
+            {% if post.image %}
+                <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image">
+            {% endif %}
+            <p class="post-meta">By <strong>{{ post.created_by.username }}</strong> on {{ post.created_at|date:"F d, Y H:i" }}</p>
+
+            {% if user.profile and user.profile.is_super_admin or user.profile.is_group_admin and user == post.created_by %}
+                <form method="post" action="{% url 'delete_group_post' post.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="delete-btn">🗑️ Delete</button>
+                </form>
+            {% endif %}
+        </div>
+    {% empty %}
+        <p>No posts available.</p>
+    {% endfor %}
+
+</body>
+</html>

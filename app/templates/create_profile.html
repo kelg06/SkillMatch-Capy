@@ -34,22 +34,6 @@
         </form>
 
         <!-- Friend Request Section -->
-        <div class="friend-requests">
-            <h3>Pending Friend Requests</h3>
-            {% if friend_requests %}
-                <ul>
-                    {% for request in friend_requests %}
-                        <li>
-                            {{ request.user.username }}
-                            <button onclick="acceptFriend('{{ request.user.id }}')">✔️</button>
-                            <button onclick="declineFriend('{{ request.user.id }}')">❌</button>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>No pending friend requests.</p>
-            {% endif %}
-        </div>
     </div>
 
     <script>

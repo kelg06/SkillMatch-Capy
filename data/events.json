@@ -1,0 +1,369 @@
+[
+    {
+      "title": "Academic Advising (Summer and Fall)",
+      "start_date": "2025-03-10T00:00:00",
+      "end_date": "2025-04-07T23:59:59",
+      "days": "Monday to Monday"
+    },
+    {
+      "title": "Priority Registration (Summer and Fall)",
+      "start_date": "2025-03-31T00:00:00",
+      "end_date": "2025-04-14T23:59:59",
+      "days": "Monday to Monday"
+    },
+    {
+      "title": "Phase 1 registration period",
+      "start_date": "2025-03-31T00:00:00",
+      "end_date": "2025-07-31T23:59:59",
+      "days": "Monday to Thursday"
+    },
+    {
+      "title": "Fall 2025 tuition and fees posted to students’ accounts.",
+      "start_date": "2025-07-31T00:00:00",
+      "end_date": "2025-07-31T23:59:59",
+      "days": "Thursday"
+    },
+    {
+      "title": "$50 registration fee assessed this date. Phase 2 registration.",
+      "start_date": "2025-08-01T00:00:00",
+      "end_date": "2025-08-01T23:59:59",
+      "days": "Friday"
+    },
+    {
+      "title": "Bursar’s Office begins to distribute excess financial aid distributed to students via direct deposit or mail.",
+      "start_date": "2025-08-20T00:00:00",
+      "end_date": "2025-08-20T23:59:59",
+      "days": "Wednesday"
+    },
+    {
+      "title": "Last day to officially cancel registration and avoid responsibility for payment of tuition and fees.",
+      "start_date": "2025-08-24T00:00:00",
+      "end_date": "2025-08-24T23:59:59",
+      "days": "Sunday"
+    },
+    {
+      "title": "Classes begin; registration fee ($100) assessed this date; 100% refund (less 5% of fees or $100, whichever is less) on withdrawals through September 8. Phase 3 registration.",
+      "start_date": "2025-08-25T00:00:00",
+      "end_date": "2025-08-25T23:59:59",
+      "days": "Monday"
+    },
+    {
+      "title": "Students may add courses on a space available basis through this date.",
+      "start_date": "2025-08-29T00:00:00",
+      "end_date": "2025-08-29T23:59:59",
+      "days": "Friday"
+    },
+    {
+      "title": "Deadline for course withdrawals – (between August 30 and September 8 may drop only with instructor’s approval.) Refund period ends. – Law classes only",
+      "start_date": "2025-08-29T00:00:00",
+      "end_date": "2025-08-29T23:59:59",
+      "days": "Friday"
+    },
+    {
+      "title": "LABOR DAY HOLIDAY (Administrative Offices closed.)",
+      "start_date": "2025-09-01T00:00:00",
+      "end_date": "2025-09-01T23:59:59",
+      "days": "Monday"
+    },
+    {
+      "title": "Last day to register or add classes (between August 30 and September 8 may add only with instructor’s approval.) Refund period ends.",
+      "start_date": "2025-09-08T00:00:00",
+      "end_date": "2025-09-08T23:59:59",
+      "days": "Monday"
+    },
+    {
+      "title": "Deadline for course withdrawals – Law Classes only",
+      "start_date": "2025-09-08T00:00:00",
+      "end_date": "2025-09-08T23:59:59",
+      "days": "Monday"
+    },
+    {
+      "title": "$10 fee assessed per drop or add.",
+      "start_date": "2025-09-09T00:00:00",
+      "end_date": "2025-09-09T23:59:59",
+      "days": "Tuesday"
+    },
+    {
+      "title": "Mandatory drop date for non-attendance.",
+      "start_date": "2025-09-15T00:00:00",
+      "end_date": "2025-09-15T23:59:59",
+      "days": "Monday"
+    },
+    {
+      "title": "Midterm Grading/Progress Reports due.",
+      "start_date": "2025-10-06T00:00:00",
+      "end_date": "2025-10-06T23:59:59",
+      "days": "Monday"
+    },
+    {
+      "title": "Last day to submit applications for December diplomas.",
+      "start_date": "2025-10-13T00:00:00",
+      "end_date": "2025-10-13T23:59:59",
+      "days": "Monday"
+    },
+    {
+      "title": "Deadline for course withdrawals (no refund; refund period ended September 8).",
+      "start_date": "2025-10-13T00:00:00",
+      "end_date": "2025-10-13T23:59:59",
+      "days": "Monday"
+    },
+    {
+      "title": "Academic Advising (for winter session and spring)",
+      "start_date": "2025-10-13T00:00:00",
+      "end_date": "2025-11-03T23:59:59",
+      "days": "Monday to Monday"
+    },
+    {
+      "title": "Priority Registration (for winter session and spring)",
+      "start_date": "2025-10-27T00:00:00",
+      "end_date": "2025-11-10T23:59:59",
+      "days": "Monday to Monday"
+    },
+    {
+      "title": "Phase 1 registration period (for winter session and spring)",
+      "start_date": "2025-10-27T00:00:00",
+      "end_date": "2025-11-30T23:59:59",
+      "days": "Monday to Sunday"
+    },
+    {
+      "title": "THANKSGIVING HOLIDAYS (Administrative Offices closed Thursday and Friday.)",
+      "start_date": "2025-11-22T00:00:00",
+      "end_date": "2025-11-30T23:59:59",
+      "days": "Sat-Sun"
+    },
+    {
+      "title": "Classes resume at 8:00 a.m.",
+      "start_date": "2025-12-01T00:00:00",
+      "end_date": "2025-12-01T23:59:59",
+      "days": "Monday"
+    },
+    {
+      "title": "Classes end.",
+      "start_date": "2025-12-05T00:00:00",
+      "end_date": "2025-12-05T23:59:59",
+      "days": "Friday"
+    },
+    {
+      "title": "Final Examinations",
+      "start_date": "2025-12-08T00:00:00",
+      "end_date": "2025-12-12T23:59:59",
+      "days": "Monday to Friday"
+    },
+    {
+        "title": "Academic Advising (Winter and Spring)",
+        "start_date": "2024-10-06",
+        "end_date": "2024-11-03",
+        "days": "Monday to Monday"
+    },
+    {
+        "title": "Priority Registration (Winter and Spring)",
+        "start_date": "2024-10-27",
+        "end_date": "2024-11-10",
+        "days": "Monday to Monday"
+    },
+    {
+        "title": "Phase 1 registration period (Winter and Spring)",
+        "start_date": "2024-10-27",
+        "end_date": "2024-11-30",
+        "days": "Monday to Sunday"
+    },
+    {
+        "title": "$50 registration fee assessed. Phase 2 registration.",
+        "start_date": "2024-12-01",
+        "end_date": "2024-12-01",
+        "days": "Monday"
+    },
+    {
+        "title": "MARTIN LUTHER KING, JR. HOLIDAY",
+        "start_date": "2025-01-19",
+        "end_date": "2025-01-19",
+        "days": "Monday"
+    },
+    {
+        "title": "Last day to cancel registration",
+        "start_date": "2025-01-19",
+        "end_date": "2025-01-19",
+        "days": "Monday"
+    },
+    {
+        "title": "Classes begin; Phase 3 registration",
+        "start_date": "2025-01-20",
+        "end_date": "2025-01-20",
+        "days": "Tuesday"
+    },
+    {
+        "title": "Add courses on space available basis",
+        "start_date": "2025-01-26",
+        "end_date": "2025-01-26",
+        "days": "Monday"
+    },
+    {
+        "title": "Deadline for course withdrawals – Law School only",
+        "start_date": "2025-01-26",
+        "end_date": "2025-01-26",
+        "days": "Monday"
+    },
+    {
+        "title": "Last day to register or add classes",
+        "start_date": "2025-02-02",
+        "end_date": "2025-02-02",
+        "days": "Monday"
+    },
+    {
+        "title": "Drop/Add fee assessed",
+        "start_date": "2025-02-03",
+        "end_date": "2025-02-03",
+        "days": "Tuesday"
+    },
+    {
+        "title": "Mandatory drop date for non-attendance",
+        "start_date": "2025-02-09",
+        "end_date": "2025-02-09",
+        "days": "Monday"
+    },
+    {
+        "title": "Midterm Grades/Progress Reports due",
+        "start_date": "2025-03-02",
+        "end_date": "2025-03-02",
+        "days": "Monday"
+    },
+    {
+        "title": "Deadline for course withdrawals",
+        "start_date": "2025-03-06",
+        "end_date": "2025-03-06",
+        "days": "Friday"
+    },
+    {
+        "title": "SPRING BREAK",
+        "start_date": "2025-03-07",
+        "end_date": "2025-03-15",
+        "days": "Saturday to Sunday"
+    },
+    {
+        "title": "GOOD FRIDAY HOLIDAY",
+        "start_date": "2025-04-03",
+        "end_date": "2025-04-03",
+        "days": "Friday"
+    },
+    {
+        "title": "Honors Convocation",
+        "start_date": "2025-04-09",
+        "end_date": "2025-04-09",
+        "days": "Thursday"
+    },
+    {
+        "title": "Final Examinations",
+        "start_date": "2025-05-04",
+        "end_date": "2025-05-08",
+        "days": "Monday to Friday"
+    },
+    {
+        "title": "Commencement Convocation",
+        "start_date": "2025-05-09",
+        "end_date": "2025-05-09",
+        "days": "Saturday"
+    },
+    {
+        "title": "Academic Advising (Summer and Fall)",
+        "start_date": "2025-03-09",
+        "end_date": "2025-04-06",
+        "days": "Monday to Monday"
+    },
+    {
+        "title": "Priority Registration (Summer and Fall)",
+        "start_date": "2025-03-30",
+        "end_date": "2025-04-13",
+        "days": "Monday to Monday"
+    },
+    {
+        "title": "Phase 1 registration period",
+        "start_date": "2025-03-30",
+        "end_date": "2025-04-30",
+        "days": "Monday to Thursday"
+    },
+    {
+        "title": "$50 registration fee assessed. Phase 2 registration.",
+        "start_date": "2025-05-01",
+        "end_date": "2025-05-01",
+        "days": "Friday"
+    },
+    {
+        "title": "MEMORIAL DAY HOLIDAY (Administrative offices closed)",
+        "start_date": "2025-05-25",
+        "end_date": "2025-05-25",
+        "days": "Monday"
+    },
+    {
+        "title": "Last day to officially cancel registration",
+        "start_date": "2025-05-25",
+        "end_date": "2025-05-25",
+        "days": "Monday"
+    },
+    {
+        "title": "Classes begin; Phase 3 registration",
+        "start_date": "2025-05-26",
+        "end_date": "2025-05-26",
+        "days": "Tuesday"
+    },
+    {
+        "title": "Last day to register or add classes. Refund period ends.",
+        "start_date": "2025-06-01",
+        "end_date": "2025-06-01",
+        "days": "Monday"
+    },
+    {
+        "title": "Deadline for course withdrawals – Law School only",
+        "start_date": "2025-06-01",
+        "end_date": "2025-06-01",
+        "days": "Monday"
+    },
+    {
+        "title": "$10 fee assessed per drop or add.",
+        "start_date": "2025-06-02",
+        "end_date": "2025-06-02",
+        "days": "Tuesday"
+    },
+    {
+        "title": "Mandatory drop date for non-attendance",
+        "start_date": "2025-06-04",
+        "end_date": "2025-06-04",
+        "days": "Thursday"
+    },
+    {
+        "title": "Deadline for course withdrawals (no refund)",
+        "start_date": "2025-06-16",
+        "end_date": "2025-06-16",
+        "days": "Tuesday"
+    },
+    {
+        "title": "Classes suspended",
+        "start_date": "2025-06-22",
+        "end_date": "2025-06-26",
+        "days": "Monday to Friday"
+    },
+    {
+        "title": "Classes reconvene",
+        "start_date": "2025-06-29",
+        "end_date": "2025-06-29",
+        "days": "Monday"
+    },
+    {
+        "title": "INDEPENDENCE DAY HOLIDAY observed",
+        "start_date": "2025-07-03",
+        "end_date": "2025-07-03",
+        "days": "Friday"
+    },
+    {
+        "title": "Classes end",
+        "start_date": "2025-07-22",
+        "end_date": "2025-07-22",
+        "days": "Wednesday"
+    },
+    {
+        "title": "Final Examinations",
+        "start_date": "2025-07-23",
+        "end_date": "2025-07-24",
+        "days": "Thursday to Friday"
+    }
+  ]
+  

@@ -1,10 +1,11 @@
-# Django-specific imports
+from django.contrib import messages
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from .forms import *
 from django.views.decorators.http import require_POST
 from django.db.models import Q
 from django.conf import settings
@@ -18,10 +19,12 @@ import json
 # Local application imports
 from .forms import *
 from .models import *
-from app.utils import *
+import os
+from django.db.models import Q
+import json
+from django.conf import settings
+from app.utils import is_group_admin, is_super_admin
 from .decorators import admin_required
-
-
 
 def signup_view(request):
     if request.method == "POST":
@@ -55,6 +58,7 @@ def login_view(request):
             return render(request, "login.html")
 
     return render(request, "login.html")
+
 
 @login_required
 def home(request):
@@ -90,6 +94,20 @@ def home(request):
     matches = find_study_partners(request.user)
     current_match = matches[:1] if matches else []
 
+    # Fetch chats and associated messages
+    chats = Chat.objects.filter(Q(user1=request.user) | Q(user2=request.user)).prefetch_related('messages')
+
+    chat_data = []
+    for chat in chats:
+        friend = chat.user2 if chat.user1 == request.user else chat.user1
+        messages = chat.messages.order_by('created_at')  # Messages related to the chat
+        chat_data.append({
+            'chat': chat,
+            'friend': friend,
+            'messages': messages,
+            'chat_id': chat.id, # Make sure to include the chat_id in the context
+        })
+
     return render(request, "home.html", {
         "profiles": profiles,
         "profile": user_profile,
@@ -98,6 +116,7 @@ def home(request):
         "friends": friends,
         "sent_requests": sent_requests,
         "matches": current_match
+        "chats": chat_data,  # Pass the chat data here
     })
 
 @login_required
@@ -281,26 +300,41 @@ def decline_friend_request(request, profile_id):
     except Exception as e:
         return JsonResponse({"success": False, "message": str(e)}, status=500)
 
+
+from django.contrib import messages  # Ensure you import messages
+
 @login_required
-def chat_view(request, chat_partner_username):
-    try:
-        chat_partner = User.objects.get(username=chat_partner_username)
-    except User.DoesNotExist:
-        messages.error(request, f"User {chat_partner_username} not found")
-        return redirect('home')  # fallback
+def chat_detail(request, chat_id):
+    chat = get_object_or_404(Chat, id=chat_id)
 
-    # Get or create a chat room between the user and the chat partner
-    chat_room, created = Chat.objects.get_or_create(
-        Q(user1=request.user, user2=chat_partner) | Q(user1=chat_partner, user2=request.user)
-    )
+    # Make sure the user is a participant
+    if request.user not in [chat.user1, chat.user2]:
+        return redirect('home')  # or show an error
 
-    context = {
-        'chat_partner': chat_partner,
-        'user': request.user,
-        'chat': chat_room,
-        'messages': chat_room.messages.order_by('created_at')  # pass messages to template
-    }
-    return render(request, 'chat.html', context)
+    other_user = chat.user1 if chat.user2 == request.user else chat.user2
+    messages = chat.messages.order_by('created_at')
+
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.chat = chat
+            message.sender = request.user
+            message.save()
+
+            # messages.success(request, "Your message has been sent!")  # Correct usage of messages
+
+            return redirect('chat', chat_id=chat.id)  # Redirect to the chat URL
+    else:
+        form = MessageForm()
+
+    return render(request, 'chat_detail.html', {
+        'chat': chat,
+        'messages': messages,
+        'form': form,
+        'other_user': other_user,
+    })
+
 
 
 @login_required
@@ -488,5 +522,4 @@ def group_post_list(request):
     # Fetch the group posts
     posts = GroupPost.objects.all().order_by('-created_at')
     return render(request, 'post_list.html', {'posts': posts})
-
 
