@@ -23,14 +23,23 @@
     <main>
         <div class="container">
             <h1>Welcome, {{ user.username }}</h1>
+            <div class="calendar-link">
+                <h3>Check Out the Event Calendar</h3>
+                <a href="{% url 'calendar' %}">
+                    <button class="calendar-btn">Go to Calendar</button>
+                </a>
+                <a href="{% url 'group_post_list' %}">
+                    <button class="calendar-btn">Go to Posts</button>
+                </a>
+            </div>
             <div>
                 {% if profile %}
-                <a href="{% url 'update_profile' profile.id %}">Update Profile</a>
-                <a href="{% url 'delete_profile' profile.id %}">Delete Profile</a>
-            {% else %}
-                <p>You haven't created a profile yet!</p>
-                <a href="{% url 'create_profile' %}" class="btn">Create Profile</a>
-            {% endif %}
+                    <a href="{% url 'update_profile' profile.id %}">Update Profile</a>
+                    <a href="{% url 'delete_profile' profile.id %}">Delete Profile</a>
+                {% else %}
+                    <p>You haven't created a profile yet!</p>
+                    <a href="{% url 'create_profile' %}" class="btn">Create Profile</a>
+                {% endif %}
             </div>
                 <!-- Sidebar for Friend Requests and Chats -->
                 <div class="sidebar">
@@ -48,8 +57,7 @@
                     {% else %}
                         <p>No friend requests</p>
                     {% endif %}
-                    
-                    
+
                     <h3>Friends</h3>
                     {% if friends %}
                         <ul class="friends-list">
@@ -63,19 +71,23 @@
                     {% else %}
                         <p>No friends yet</p>
                     {% endif %}
-                    
                     <h3>Chats</h3>
                     {% if chats %}
                         <ul>
-                            {% for chat in chats %}
+                            {% for chat_info in chats %}
                                 <li>
-                                    <a href="{% url 'chat' chat.friend.username %}">{{ chat.friend.username }}</a>
+                                    <!-- Link to the chat view with chat_id -->
+                                    <button onclick="window.location.href='{% url 'chat' chat_id=chat_info.chat.id %}'" class="chat-btn">
+                                        {{ chat_info.friend.username }}
+                                    </button>
+                                    
                                 </li>
                             {% endfor %}
                         </ul>
                     {% else %}
                         <p>No active chats</p>
                     {% endif %}
+                    
                 </div>
 
                 <!-- Main Content Area -->
@@ -142,40 +154,6 @@
             </div>
         </div>
     </main>
-
-    <!-- WebSocket for Chat -->
-    {% if chat_partner %}
-        <div class="chat-section">
-            <h3>Chat with {{ chat_partner.username }}</h3>
-            <div id="chat-log" style="border: 1px solid #ccc; height: 200px; overflow-y: scroll;"></div>
-            <input id="chat-message-input" type="text" placeholder="Type a message">
-            <button id="chat-message-submit">Send</button>
-        </div>
-
-        <script>
-            const user = "{{ user.username }}";  // Get logged-in user's username dynamically
-            const chatPartnerUsername = "{{ chat_partner.username }}";  // Get the chat partner's username dynamically
-            const roomName = `${user}-${chatPartnerUsername}`;  // Create dynamic room name
-
-            const chatSocket = new WebSocket(
-                'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
-            );
-
-            chatSocket.onmessage = function(e) {
-                const data = JSON.parse(e.data);
-                const message = `${data.username}: ${data.message}`;
-                document.getElementById('chat-log').innerHTML += message + '<br>';
-            };
-
-            document.getElementById('chat-message-submit').onclick = function() {
-                const messageInput = document.getElementById('chat-message-input');
-                const message = messageInput.value;
-                chatSocket.send(JSON.stringify({'message': message, 'username': user}));
-                messageInput.value = '';
-            };
-        </script>
-    {% endif %}
-
     <script>
         function loadNextMatch() {
             fetch('/next-match/')
@@ -268,7 +246,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken  // Use the CSRF token here
+                    'X-CSRFToken': csrfToken
                 }
             }).then(response => {
                 if (response.ok) {
@@ -279,11 +257,24 @@
                 }
             });
         }
-
+    
         function declineFriend(profileId) {
-            alert("Friend request declined!");
+            fetch(`/decline-friend-request/${profileId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
+            }).then(response => {
+                if (response.ok) {
+                    alert("Friend request declined!");
+                    location.reload();
+                } else {
+                    alert("Failed to decline friend request.");
+                }
+            });
         }
-
+        
         // Handle swiping effect using Hammer.js
         document.addEventListener("DOMContentLoaded", () => {
             const cards = document.querySelectorAll('.profile-card');

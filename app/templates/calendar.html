@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Event Calendar</title>
+    <link rel="stylesheet" href="{% static 'calendar.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+</head>
+<body>
+    <h2>Event Calendar</h2>
+
+    <!-- Button to open the event form modal -->
+    {% comment %} <button onclick="openEventForm()">Add Event</button> {% endcomment %}
+
+    <!-- Button to navigate back to the home page -->
+    <button onclick="window.location.href='{% url 'home' %}'">Back to Home</button>
+
+    <!-- Event Form Modal -->
+    {% comment %} <div id="eventFormModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEventForm()">&times;</span>
+            <h3>Add New Event</h3>
+            <form id="eventForm" method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Save Event</button>
+            </form>
+        </div>
+    </div> {% endcomment %}
+
+    <!-- Calendar Display -->
+    <div id="calendar"></div>
+
+    <script>
+        // Open the event form modal
+        function openEventForm() {
+            document.getElementById('eventFormModal').style.display = 'block';
+        }
+
+        // Close the event form modal
+        function closeEventForm() {
+            document.getElementById('eventFormModal').style.display = 'none';
+        }
+
+        // FullCalendar setup
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: [
+                    {% for event in events %}
+                    {
+                        title: '{{ event.title }}',
+                        start: '{{ event.start_date|date:"c" }}',
+                        end: '{{ event.end_date|date:"c" }}',
+                        extendedProps: {
+                            days: '{{ event.days }}'
+                        }
+                    },
+                    {% endfor %}
+                ],
+                eventRender: function(info) {
+                    var days = info.event.extendedProps.days;
+                    if (days) {
+                        info.el.setAttribute('title', info.event.title + " - Days: " + days);
+                    }
+                },
+                eventClick: function(info) {
+                    const startDate = new Date(info.event.start).toLocaleDateString('en-US', {
+                        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                    });
+                    const endDate = new Date(info.event.end).toLocaleDateString('en-US', {
+                        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                    });
+
+                    alert(
+                        'Event: ' + info.event.title +
+                        '\nDays: ' + info.event.extendedProps.days +
+                        '\nStart: ' + startDate +
+                        '\nEnd: ' + endDate
+                    );
+                }
+            });
+            calendar.render();
+        });
+
+        // Dynamically update the calendar after adding an event
+        document.getElementById('eventForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Submit the form via AJAX
+            var formData = new FormData(this);
+            fetch(window.location.href, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Add new event to the calendar
+                    calendar.addEvent({
+                        title: data.event.title,
+                        start: data.event.start_date,
+                        end: data.event.end_date,
+                        extendedProps: { days: data.event.days }
+                    });
+                    // Close modal and reset form
+                    closeEventForm();
+                    document.getElementById('eventForm').reset();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('There was an issue adding the event.');
+            });
+        });
+    </script>
+</body>
+</html>

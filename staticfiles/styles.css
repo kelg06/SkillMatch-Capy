@@ -1,0 +1,46 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f0f0f0;
+}
+
+.profile-container {
+    max-width: 500px;
+    margin: 20px auto;
+}
+
+.profile-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.reject {
+    background-color: red;
+    color: white;
+}
+
+.accept {
+    background-color: green;
+    color: white;
+}
+
+.btn {
+    display: block;
+    background: #007bff;
+    color: white;
+    padding: 10px;
+    margin-top: 20px;
+    text-decoration: none;
+    border-radius: 5px;
+}

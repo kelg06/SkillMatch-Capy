@@ -19,12 +19,14 @@ urlpatterns = [
     path('chat/<str:chat_partner_username>/', chat_view, name='chat'),
     path('chat/<int:chat_id>/send_message/', send_message, name='send_message'),
     path('update-profile/<int:profile_id>/', update_profile, name='update_profile'),
+    path('chat/<int:chat_id>/', chat_detail, name='chat'),
+    path('update-profile/<int:profile_id>/', update_profile, name='update_profile'),
     path('delete-profile/<int:profile_id>/', delete_profile, name='delete_profile'),
     path('delete-profile/<int:profile_id>/', delete_profile, name='delete_profile'),
     path('unfriend/<int:profile_id>/', unfriend, name='unfriend'),
     path('calendar/', calendar, name='calendar'),
     path('add-event/', add_event, name='add_event'),
-     path('group-posts/', group_post_list, name='group_post_list'),
+    path('group-posts/', group_post_list, name='group_post_list'),
     path('group-posts/create/', create_group_post, name='create_group_post'),
     path('group-posts/delete/<int:post_id>/', delete_group_post, name='delete_group_post')
 ]

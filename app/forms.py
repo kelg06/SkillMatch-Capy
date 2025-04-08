@@ -127,9 +127,24 @@ class ProfileForm(forms.ModelForm):
         ]
 
 
-class ChatForm(forms.ModelForm):
-    message = forms.CharField(widget=forms.Textarea(attrs={"placeholder": "Type a message..."}))
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Type your message here...'})
+        }
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ['title', 'start_date', 'end_date', 'days']
+        widgets = {
+            'start_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'end_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
 
+
+class GroupPostForm(forms.ModelForm):
     class Meta:
         model = Chat
         fields = ['message']
