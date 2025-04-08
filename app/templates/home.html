@@ -80,18 +80,18 @@
 
                 <!-- Main Content Area -->
                 <div class="main-content">
-                    <div class="match-card">
-                        {% if match %}
-                            <h3 id="match-username">{{ match.user.username }}</h3>
-                            <p id="match-subjects">Subjects: {{ match.subjects }}</p>
-                        {% else %}
-                            <p>No study partners found.</p>
-                        {% endif %}
-                        <button onclick="swipeLeft()">❌ Skip</button>
-                        <button onclick="swipeRight()">✅ Match</button>
-                    </div>
                     <h2>Swipe through profiles!</h2>
                     <div id="profile-container" class="tinder-cards">
+                        {% for match in matches %}
+                            <div class="match-card">
+                                <h3 id="match-username">{{ match.user.username }}</h3>
+                                <p id="match-subjects">Subjects: {{ match.subjects }}</p>
+                                <button onclick="swipeLeft()">❌ Skip</button>
+                                <button onclick="swipeRight()">✅ Match</button>
+                            </div>
+                        {% empty %}
+                            <p>No study partners found.</p>
+                        {% endfor %}
                         {% for profile in profiles %}
                             <div class="profile-card" id="profile-{{ profile.user.id }}" data-profile-id="{{ profile.user.id }}">
                                 <div class="profile-pic-container">

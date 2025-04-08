@@ -32,6 +32,6 @@ def find_study_partners(user):
     
     # Match users with highest similarity
     best_match_indices = np.argsort(similarity_scores)[::-1]  # Sort in descending order
-    best_matches = [all_profiles[i] for i in best_match_indices]
+    best_matches = [all_profiles[int(i)] for i in best_match_indices]  # Convert to int
 
     return best_matches

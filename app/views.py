@@ -68,10 +68,10 @@ def home(request):
     liked_profiles = user_profile.liked_profiles.values_list("id", flat=True)
     disliked_profiles = user_profile.disliked_profiles.values_list("id", flat=True)
 
-    # Sent requests: profiles you’ve sent friend requests to
+    # Sent requests
     sent_requests = FriendRequest.objects.filter(sender=request.user, accepted=False).values_list("receiver__profile__id", flat=True)
 
-    # Received requests: profiles that sent *you* a request
+    # Received requests
     received_requests = FriendRequest.objects.filter(receiver=request.user, accepted=False)
     pending_requests = [getattr(req.sender, 'profile', None) for req in received_requests if hasattr(req.sender, 'profile')]
     pending_request_ids = [profile.id for profile in pending_requests if profile]
@@ -88,18 +88,7 @@ def home(request):
         .exclude(id__in=pending_request_ids) \
         .exclude(id__in=friend_ids)
 
-    # Fetch chats and associated messages
-    chats = Chat.objects.filter(Q(user1=request.user) | Q(user2=request.user)).prefetch_related('messages')
-
-    chat_data = []
-    for chat in chats:
-        friend = chat.user2 if chat.user1 == request.user else chat.user1
-        messages = chat.messages.order_by('created_at')  # Messages related to the chat
-        chat_data.append({
-            'chat': chat,
-            'friend': friend,
-            'messages': messages,
-        })
+    matches = find_study_partners(request.user)
 
     return render(request, "home.html", {
         "profiles": profiles,
@@ -108,8 +97,9 @@ def home(request):
         "pending_request_ids": pending_request_ids,
         "friends": friends,
         "sent_requests": sent_requests,
-        "chats": chat_data,  # Pass the chat data here
+        "matches": matches, 
     })
+
 
 def logout_view(request):
     logout(request)
