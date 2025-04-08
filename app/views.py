@@ -7,6 +7,17 @@ from django.http import HttpResponseForbidden, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .forms import *
 from django.views.decorators.http import require_POST
+from django.db.models import Q
+from django.conf import settings
+from django.shortcuts import render
+from .models import Profile, FriendRequest, Chat, Message
+
+# Third-party imports
+import os
+import json
+
+# Local application imports
+from .forms import *
 from .models import *
 import os
 from django.db.models import Q
@@ -60,10 +71,10 @@ def home(request):
     liked_profiles = user_profile.liked_profiles.values_list("id", flat=True)
     disliked_profiles = user_profile.disliked_profiles.values_list("id", flat=True)
 
-    # Sent requests: profiles you’ve sent friend requests to
+    # Sent requests
     sent_requests = FriendRequest.objects.filter(sender=request.user, accepted=False).values_list("receiver__profile__id", flat=True)
 
-    # Received requests: profiles that sent *you* a request
+    # Received requests
     received_requests = FriendRequest.objects.filter(receiver=request.user, accepted=False)
     pending_requests = [getattr(req.sender, 'profile', None) for req in received_requests if hasattr(req.sender, 'profile')]
     pending_request_ids = [profile.id for profile in pending_requests if profile]
@@ -79,6 +90,9 @@ def home(request):
         .exclude(id__in=sent_requests) \
         .exclude(id__in=pending_request_ids) \
         .exclude(id__in=friend_ids)
+
+    matches = find_study_partners(request.user)
+    current_match = matches[:1] if matches else []
 
     # Fetch chats and associated messages
     chats = Chat.objects.filter(Q(user1=request.user) | Q(user2=request.user)).prefetch_related('messages')
@@ -101,8 +115,23 @@ def home(request):
         "pending_request_ids": pending_request_ids,
         "friends": friends,
         "sent_requests": sent_requests,
+        "matches": current_match
         "chats": chat_data,  # Pass the chat data here
     })
+
+@login_required
+def next_match(request):
+    user_profile = Profile.objects.get(user=request.user)
+    matches = find_study_partners(request.user)
+
+    if matches:
+        next_match = matches[1:2]  # Get the next match
+        if next_match:
+            return JsonResponse({
+                "username": next_match[0].user.username,
+                "subjects": next_match[0].subjects,
+            })
+    return JsonResponse({"error": "No more matches available."})
 
 
 def logout_view(request):
@@ -306,6 +335,41 @@ def chat_detail(request, chat_id):
         'other_user': other_user,
     })
 
+
+
+@login_required
+def send_message(request, chat_id):
+    try:
+        chat = Chat.objects.get(id=chat_id)
+
+        # Check if the user is a participant of the chat
+        if request.user != chat.user1 and request.user != chat.user2:
+            return JsonResponse({"success": False, "message": "You are not a participant in this chat."})
+
+        if request.method == "POST":
+            message_content = request.POST.get("message")
+
+            if message_content:
+                # Create a new message object
+                message = Message.objects.create(
+                    chat=chat,
+                    sender=request.user,
+                    content=message_content
+                )
+                return JsonResponse({
+                    "success": True,
+                    "message": "Message sent!",
+                    "message_content": message.content,
+                    "sender_username": message.sender.username,
+                    "created_at": message.created_at
+                })
+
+            return JsonResponse({"success": False, "message": "Message content is empty."})
+
+        return JsonResponse({"success": False, "message": "Invalid request method."})
+
+    except Chat.DoesNotExist:
+        return JsonResponse({"success": False, "message": "Chat not found."})
 
 @login_required
 def update_profile(request, profile_id):

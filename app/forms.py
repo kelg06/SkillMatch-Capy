@@ -146,5 +146,20 @@ class EventForm(forms.ModelForm):
 
 class GroupPostForm(forms.ModelForm):
     class Meta:
+        model = Chat
+        fields = ['message']
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ['title', 'start_date', 'end_date', 'days']
+        widgets = {
+            'start_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'end_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
+
+
+class GroupPostForm(forms.ModelForm):
+    class Meta:
         model = GroupPost
         fields = ['title', 'image']

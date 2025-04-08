@@ -41,8 +41,6 @@
                     <a href="{% url 'create_profile' %}" class="btn">Create Profile</a>
                 {% endif %}
             </div>
-
-            <div class="content">
                 <!-- Sidebar for Friend Requests and Chats -->
                 <div class="sidebar">
                     <h3>Friend Requests</h3>
@@ -96,6 +94,16 @@
                 <div class="main-content">
                     <h2>Swipe through profiles!</h2>
                     <div id="profile-container" class="tinder-cards">
+                        {% for match in matches %}
+                            <div class="match-card">
+                                <h3 id="match-username">{{ match.user.username }}</h3>
+                                <p id="match-subjects">Subjects: {{ match.subjects }}</p>
+                                <button onclick="swipeLeft()">❌ Skip</button>
+                                <button onclick="swipeRight('{{ match.user.id }}')">✅ Match</button>
+                            </div>
+                        {% empty %}
+                            <p>No study partners found.</p>
+                        {% endfor %}
                         {% for profile in profiles %}
                             <div class="profile-card" id="profile-{{ profile.user.id }}" data-profile-id="{{ profile.user.id }}">
                                 <div class="profile-pic-container">
@@ -105,7 +113,7 @@
                                         <img src="{% static 'default_profile_pic.jpg' %}" alt="Default Profile Picture" class="profile-pic">
                                     {% endif %}
                                 </div>
-
+            
                                 <h3>{{ profile.user.username }}</h3>
                                 <p><strong>First Name:</strong> {{ profile.first_name }}</p>
                                 <p><strong>Last Name:</strong> {{ profile.last_name }}</p>
@@ -118,14 +126,11 @@
                                 <p><strong>Hobbies:</strong> {{ profile.hobbies }}</p>
                                 <p><strong>Clubs & Extracurriculars:</strong> {{ profile.clubs_and_extracurriculars }}</p>
                                 <p><strong>Goals after college:</strong> {{ profile.goals_after }}</p>
-                                <p>
-                                    <strong>Classes:</strong> 
                                     {% for class in profile.classes.all %}
                                         {{ class.name }}{% if not forloop.last %}, {% endif %}
                                     {% endfor %}
                                 </p>
-                            
-
+            
                                 {% if profile.id in sent_requests %}
                                     <p>Friend request sent</p>
                                     <button onclick="removeCard('{{ profile.user.id }}')">❌</button>
@@ -150,6 +155,29 @@
         </div>
     </main>
     <script>
+        function loadNextMatch() {
+            fetch('/next-match/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById("current-match").innerHTML = "<p>No more study partners available.</p>";
+                } else {
+                    document.getElementById("match-username").innerText = data.username;
+                    document.getElementById("match-subjects").innerText = "Subjects: " + data.subjects;
+                }
+            });
+        }
+    
+
+        function swipeLeft() {
+            // Skip the current match
+            loadNextMatch();
+        }
+        
+        function swipeRight(profileId) {
+            sendFriendRequest(profileId);
+        }
+
         function unfriend(profileId) {
             fetch(`/unfriend/${profileId}/`, {
                 method: 'POST',
@@ -171,15 +199,27 @@
                 alert("Failed to unfriend.");
             });
         }
-    
+
+        function csrfSafeMethod(method) {
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                }
+            }
+        });
+
         function removeCard(profileId) {
             const card = document.getElementById(`profile-${profileId}`);
             if (card) {
-                card.style.transform = 'translateX(100%)';
-                setTimeout(() => card.remove(), 300);
+                card.style.transform = 'translateX(100%)'; // Animate the card out
+                setTimeout(() => card.remove(), 300); // Remove the card after animation
             }
         }
-    
+        
         function sendFriendRequest(profileId) {
             fetch(`/send-friend-request/${profileId}/`, {
                 method: 'POST',
@@ -189,14 +229,18 @@
                 }
             }).then(response => {
                 if (response.ok) {
-                    removeCard(profileId);
                     alert("Friend request sent!");
+                    loadNextMatch(); // Load the next match after sending the request
                 } else {
                     alert("Failed to send friend request.");
                 }
+            }).catch(error => {
+                console.error("Error sending friend request:", error);
+                alert("An error occurred while sending the friend request.");
             });
         }
-    
+
+
         function acceptFriend(profileId) {
             fetch(`/accept-friend-request/${profileId}/`, {
                 method: 'POST',
