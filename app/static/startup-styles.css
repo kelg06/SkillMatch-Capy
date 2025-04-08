@@ -105,7 +105,7 @@ body {
 ----------
 */
 .logo {
-    width: 100px;
+    width: 200px;
 }
 
 .logo-name {
@@ -130,6 +130,8 @@ body {
     position: relative;  /* Change from fixed to relative */
     z-index: 2;
 }
+
+
 
 /* Add transition for smooth navbar movement */
 .navbar.scrolled {
@@ -228,6 +230,19 @@ In between block
 --------
 */
 
+.footer-links {
+    display: flex;
+}
+
+.footer-first {
+    display: flex;
+    align-items: center;
+}
+
+.footer-second {
+    margin-top: 300px;
+}
+
 footer p {
     margin: 0;
 }
@@ -239,6 +254,9 @@ footer p:first-of-type {
 
 .about-statement {
     margin-top: 80px;
+    margin-left:40px;
+    text-align: left;
+    width: 450px;
 }
 
 /* 8.1: Horizontal Line (Footer) */
@@ -256,37 +274,47 @@ footer p:first-of-type {
 --------
 */
 
-@media only screen and (width: 768px) {
-    .hide-on-mobile {
-        display: none !important;
+@media (max-width: 768px) {
+    body {
+        height: auto; /* Allow body height to adjust based on content */
+        padding: 0 10px; /* Add padding for better spacing on mobile */
+    }
+
+    #first-block {
+        height: auto; /* Allow the first block to adjust its height */
+        position: relative; /* Change from fixed to relative for better flow */
+        margin-top: 0; /* Remove negative margin for mobile */
+    }
+
+    .first-block-text {
+        font-size: 1.5rem; /* Reduce font size for better readability */
+        margin: 10px 0; /* Adjust margin for mobile */
+    }
+
+    .navbar {
+        flex-direction: column; /* Stack navbar items vertically */
+        padding: 10px; /* Reduce padding for mobile */
     }
 
     .nav-links {
-        display: none;
-        flex-direction: column;
-        width: 100%;
-        background-color: #00233C;
-        position: absolute;
-        top: 60px;
-        left: 0;
-        text-align: center;
-    }
-
-    .nav-links.active {
-        display: flex;
+        flex-direction: column; /* Stack navigation links vertically */
+        margin-right: 0; /* Remove right margin */
     }
 
     .nav-links li {
-        padding: 15px 0;
+        margin: 10px 0; /* Adjust margin for vertical spacing */
     }
 
-    .menu-toggle {
-        display: block;
+    #second-block {
+        padding: 10px; /* Add padding for better spacing */
+        height: auto; /* Allow height to adjust based on content */
+    }
+
+    footer p {
+        font-size: 0.9rem; /* Reduce font size for better readability */
+    }
+
+    .footer-hr {
+        width: 80%; /* Increase width for better visibility */
     }
 }
-
-/* @media only screen and (min-width: 769px) {
-    .hide-on-desktop {
-        display: none !important;
-    }
-} */

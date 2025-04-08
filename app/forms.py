@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .models import Profile, Class, Chat
+from .models import *
 
 class CustomSignupForm(UserCreationForm):
     username = forms.CharField(
@@ -82,7 +82,7 @@ class ProfileForm(forms.ModelForm):
     grade = forms.CharField(
         max_length=20,
         required=True,
-        widget=forms.TextInput(attrs={"placeholder": "Enter your grade", "class": "form-control form-field"})
+        widget=forms.TextInput(attrs={"placeholder":"freshman,Junior ex.", "class": "form-control form-field"})
     )
     
     # Study Times (Dropdown with predefined choices)
@@ -133,3 +133,18 @@ class ChatForm(forms.ModelForm):
     class Meta:
         model = Chat
         fields = ['message']
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ['title', 'start_date', 'end_date', 'days']
+        widgets = {
+            'start_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'end_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
+
+
+class GroupPostForm(forms.ModelForm):
+    class Meta:
+        model = GroupPost
+        fields = ['title', 'image']

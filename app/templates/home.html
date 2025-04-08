@@ -32,8 +32,6 @@
                 <a href="{% url 'create_profile' %}" class="btn">Create Profile</a>
             {% endif %}
             </div>
-
-            <div class="content">
                 <!-- Sidebar for Friend Requests and Chats -->
                 <div class="sidebar">
                     <h3>Friend Requests</h3>
@@ -82,58 +80,65 @@
 
                 <!-- Main Content Area -->
                 <div class="main-content">
-                        <h2>Swipe through profiles!</h2>
-                        <div id="profile-container" class="tinder-cards">
-                            {% for profile in profiles %}
-                                <div class="profile-card" id="profile-{{ profile.user.id }}" data-profile-id="{{ profile.user.id }}">
-                                    <div class="profile-pic-container">
-                                        {% if profile.profile_picture %}
-                                            <img src="{{ profile.profile_picture.url }}" alt="{{ profile.user.username }}'s Profile Picture" class="profile-pic">
-                                        {% else %}
-                                            <img src="{% static 'default_profile_pic.jpg' %}" alt="Default Profile Picture" class="profile-pic">
-                                        {% endif %}
-                                    </div>
-                
-                                    <h3>{{ profile.user.username }}</h3>
-                                    <p><strong>First Name:</strong> {{ profile.first_name }}</p>
-                                    <p><strong>Last Name:</strong> {{ profile.last_name }}</p>
-                                    <p><strong>Age:</strong> {{ profile.age }}</p>
-                                    <p><strong>Hometown:</strong> {{ profile.hometown }}</p>
-                                    <p><strong>Major:</strong> {{ profile.major }}</p>
-                                    <p><strong>Minor:</strong> {{ profile.minor }}</p>
-                                    <p><strong>Grade:</strong> {{ profile.grade }}</p>
-                                    <p><strong>Study Times:</strong> {{ profile.study_times }}</p>
-                                    <p><strong>Hobbies:</strong> {{ profile.hobbies }}</p>
-                                    <p><strong>Clubs & Extracurriculars:</strong> {{ profile.clubs_and_extracurriculars }}</p>
-                                    <p><strong>Goals after college:</strong> {{ profile.goals_after }}</p>
-                                        {% for class in profile.classes.all %}
-                                            {{ class.name }}{% if not forloop.last %}, {% endif %}
-                                        {% endfor %}
-                                    </p>
-                
-                                    {% if profile.id in sent_requests %}
-                                        <p>Friend request sent</p>
-                                        <button onclick="removeCard('{{ profile.user.id }}')">❌</button>
-                                    {% elif profile.id in pending_request_ids %}
-                                        <p>Friend request received</p>
-                                        <button onclick="acceptFriend('{{ profile.id }}')">✔️</button>
-                                        <button onclick="declineFriend('{{ profile.id }}')">❌</button>
-                                    {% elif profile.user in friends %}
-                                        <p>Already Friends</p>
-                                        <button onclick="unfriend('{{ profile.id }}')">❌ Unfriend</button>
+                    <div class="match-card">
+                        {% if match %}
+                            <h3 id="match-username">{{ match.user.username }}</h3>
+                            <p id="match-subjects">Subjects: {{ match.subjects }}</p>
+                        {% else %}
+                            <p>No study partners found.</p>
+                        {% endif %}
+                        <button onclick="swipeLeft()">❌ Skip</button>
+                        <button onclick="swipeRight()">✅ Match</button>
+                    </div>
+                    <h2>Swipe through profiles!</h2>
+                    <div id="profile-container" class="tinder-cards">
+                        {% for profile in profiles %}
+                            <div class="profile-card" id="profile-{{ profile.user.id }}" data-profile-id="{{ profile.user.id }}">
+                                <div class="profile-pic-container">
+                                    {% if profile.profile_picture %}
+                                        <img src="{{ profile.profile_picture.url }}" alt="{{ profile.user.username }}'s Profile Picture" class="profile-pic">
                                     {% else %}
-                                        <button onclick="sendFriendRequest('{{ profile.user.id }}')">✔️ Add Friend</button>
-                                        <button onclick="removeCard('{{ profile.user.id }}')">❌</button>
+                                        <img src="{% static 'default_profile_pic.jpg' %}" alt="Default Profile Picture" class="profile-pic">
                                     {% endif %}
                                 </div>
-                            {% empty %}
-                                <p>No more profiles to show.</p>
-                            {% endfor %}
-                        </div>
             
+                                <h3>{{ profile.user.username }}</h3>
+                                <p><strong>First Name:</strong> {{ profile.first_name }}</p>
+                                <p><strong>Last Name:</strong> {{ profile.last_name }}</p>
+                                <p><strong>Age:</strong> {{ profile.age }}</p>
+                                <p><strong>Hometown:</strong> {{ profile.hometown }}</p>
+                                <p><strong>Major:</strong> {{ profile.major }}</p>
+                                <p><strong>Minor:</strong> {{ profile.minor }}</p>
+                                <p><strong>Grade:</strong> {{ profile.grade }}</p>
+                                <p><strong>Study Times:</strong> {{ profile.study_times }}</p>
+                                <p><strong>Hobbies:</strong> {{ profile.hobbies }}</p>
+                                <p><strong>Clubs & Extracurriculars:</strong> {{ profile.clubs_and_extracurriculars }}</p>
+                                <p><strong>Goals after college:</strong> {{ profile.goals_after }}</p>
+                                    {% for class in profile.classes.all %}
+                                        {{ class.name }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </p>
+            
+                                {% if profile.id in sent_requests %}
+                                    <p>Friend request sent</p>
+                                    <button onclick="removeCard('{{ profile.user.id }}')">❌</button>
+                                {% elif profile.id in pending_request_ids %}
+                                    <p>Friend request received</p>
+                                    <button onclick="acceptFriend('{{ profile.id }}')">✔️</button>
+                                    <button onclick="declineFriend('{{ profile.id }}')">❌</button>
+                                {% elif profile.user in friends %}
+                                    <p>Already Friends</p>
+                                    <button onclick="unfriend('{{ profile.id }}')">❌ Unfriend</button>
+                                {% else %}
+                                    <button onclick="sendFriendRequest('{{ profile.user.id }}')">✔️ Add Friend</button>
+                                    <button onclick="removeCard('{{ profile.user.id }}')">❌</button>
+                                {% endif %}
+                            </div>
+                        {% empty %}
+                            <p>No more profiles to show.</p>
+                        {% endfor %}
+                    </div>
                 </div>
-                
-                
             </div>
         </div>
     </main>
@@ -172,32 +177,55 @@
     {% endif %}
 
     <script>
-            function unfriend(profileId) {
-                fetch(`/unfriend/${profileId}/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken
+        function loadNextMatch() {
+            fetch('/next-match/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.querySelector('.match-card').innerHTML = "<p>No more study partners available.</p>";
+                } else {
+                    document.getElementById("match-username").innerText = data.username;
+                    document.getElementById("match-subjects").innerText = "Subjects: " + data.subjects;
+                }
+            });
+        }
+        
+        function swipeLeft() {
+            loadNextMatch();  // Skip and load the next match
+        }
+        
+        function swipeRight() {
+            alert("You liked this match! 🎉"); // Save this match in the future
+            loadNextMatch();
+        }
+        
+
+        function unfriend(profileId) {
+            fetch(`/unfriend/${profileId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
+            }).then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                if (data.success) {
+                    const friendElement = document.querySelector(`#friend-${profileId}`);
+                    if (friendElement) {
+                        friendElement.remove();
                     }
-                }).then(response => response.json())
-                .then(data => {
-                    alert(data.message);
-                    if (data.success) {
-                        const friendElement = document.querySelector(`#friend-${profileId}`);
-                        if (friendElement) {
-                            friendElement.remove();
-                        }
-                    }
-                }).catch(error => {
-                    console.error("Error unfriending:", error);
-                    alert("Failed to unfriend.");
-                });
-            }
-            
+                }
+            }).catch(error => {
+                console.error("Error unfriending:", error);
+                alert("Failed to unfriend.");
+            });
+        }
+
         function csrfSafeMethod(method) {
             return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
         }
-        
+
         $.ajaxSetup({
             beforeSend: function(xhr, settings) {
                 if (!csrfSafeMethod(settings.type) && !this.crossDomain) {

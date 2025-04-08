@@ -14,17 +14,16 @@
             <div id="first-block">
                 <nav class="navbar">
                     <div class="logo-container">
-                        <img src="../static/images/logo-transparent.png" alt="" class="logo">
-                        <p class="logo-text">Study Buddy</p>
+                        <img src="../static/images/new-logo.png" alt="" class="logo">
+                        <p class="logo-text">ClassMatch</p>
                     </div>
                     <ul class="nav-links">
                         <li><a href="#">Home</a></li>
-                        <li><a href="#">About</a></li>
-                        <li><a href="#">Contact</a></li>
+                        <li><a href="#second-block">Contact</a></li>
                     </ul>
                 </nav>
             </div>
-            
+
             <div class="in-between-block">
                 <div class="first-block-text">
                     <h1>Find Your</h1>
@@ -33,21 +32,47 @@
                     <a href="{% url 'login' %}" class="login-button">Sign in</a>
                 </div>
                 <div class="first-block-text">
-                    <h1>Study Buddy</h1>
+                    <h1>ClassMatch</h1>
                 </div>
             </div>
-                
+
             <div id="second-block">
-                <footer>
-                    <p class="about-statement"><strong>About our Site:</strong> <br>The purpose of this site is to provide users with an easier way to find study partners. <br>By utilizing technology, we match individuals based on similar study preferences and the classes they are taking.
-                        <br> Users can choose to input their syllabus or select the classes they wish to study for, facilitating a more efficient study partnership experience.</p>
-                    <hr class="footer-hr">
-                    <p>&copy; 2025 Study Buddy. All rights reserved.</p>
+                <footer class="footer">
+                    <div class="footer-first">
+                        <p class="about-statement"><strong>About our Site:</strong> <br>The purpose of this site is to provide users with an easier way to find study partners. By utilizing technology, we match individuals based on similar study preferences and the classes they are taking.
+                        Users can choose to input their syllabus or select the classes they wish to study for, facilitating a more efficient study partnership experience.</p>
+                        <div class="footer-links">
+                            <div> 
+                                Links
+                            </div>
+                            <div> 
+                                Legal
+                            </div>
+                            <div> 
+                                Social
+                            </div>
+                            <div> 
+                                Company
+                            </div>   
+                        </div>
+                    </div>
+                    <div class="footer-second">
+                        <hr class="footer-hr">
+                        <p>&copy; 2025 ClassMatch. All rights reserved.</p>
+                    </div>
                 </footer>
             </div>
         </div>
 
         <script>
+            document.querySelector('a[href="#second-block"]').addEventListener('click', function(event) {
+                event.preventDefault();
+                
+                document.querySelector('#second-block').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
 
             function smoothScroll() {
                 let inBetweenBlock = document.querySelector('.in-between-block');
@@ -67,7 +92,7 @@
                 const scrollPosition = window.scrollY;
                 const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
                 const opacity = 1.26 - (scrollPosition / maxScroll);
-                
+
                 fadeText.style.opacity = opacity;
             });
 
@@ -76,12 +101,11 @@
                 const fadeText = document.querySelector('.navbar');
                 const scrollPosition = window.scrollY;
                 const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-              
+
                 const opacity = 1.26 - (scrollPosition / maxScroll);
-                
+
                 fadeText.style.opacity = opacity;
             });
-
         </script>
     </body>
 </html>
