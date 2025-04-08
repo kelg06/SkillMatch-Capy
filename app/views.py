@@ -10,6 +10,7 @@ from django.views.decorators.http import require_POST
 from django.db.models import Q
 from django.conf import settings
 from django.shortcuts import render
+from .utils import *
 from .models import Profile, FriendRequest, Chat, Message
 
 # Third-party imports
@@ -115,8 +116,8 @@ def home(request):
         "pending_request_ids": pending_request_ids,
         "friends": friends,
         "sent_requests": sent_requests,
-        "matches": current_match
-        "chats": chat_data,  # Pass the chat data here
+        "matches": current_match,
+        "chats": chat_data  # Pass the chat data here
     })
 
 @login_required
