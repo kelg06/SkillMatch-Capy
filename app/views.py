@@ -8,6 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.db.models import Q
 from django.conf import settings
+from django.shortcuts import render
+from .models import Profile, FriendRequest, Chat, Message
 
 # Third-party imports
 import os
@@ -54,9 +56,6 @@ def login_view(request):
 
     return render(request, "login.html")
 
-from django.shortcuts import render
-from .models import Profile, FriendRequest, Chat, Message
-
 @login_required
 def home(request):
     try:
@@ -89,6 +88,7 @@ def home(request):
         .exclude(id__in=friend_ids)
 
     matches = find_study_partners(request.user)
+    current_match = matches[:1] if matches else []
 
     return render(request, "home.html", {
         "profiles": profiles,
@@ -97,8 +97,22 @@ def home(request):
         "pending_request_ids": pending_request_ids,
         "friends": friends,
         "sent_requests": sent_requests,
-        "matches": matches, 
+        "matches": current_match
     })
+
+@login_required
+def next_match(request):
+    user_profile = Profile.objects.get(user=request.user)
+    matches = find_study_partners(request.user)
+
+    if matches:
+        next_match = matches[1:2]  # Get the next match
+        if next_match:
+            return JsonResponse({
+                "username": next_match[0].user.username,
+                "subjects": next_match[0].subjects,
+            })
+    return JsonResponse({"error": "No more matches available."})
 
 
 def logout_view(request):
@@ -476,17 +490,3 @@ def group_post_list(request):
     return render(request, 'post_list.html', {'posts': posts})
 
 
-
-@login_required
-def get_next_match(request):
-    user = request.user
-    matches = find_study_partners(user)
-
-    if matches:
-        match = matches[0]  # Get the first match
-        return JsonResponse({
-            'username': match.user.username,
-            'subjects': match.subjects
-        })
-    
-    return JsonResponse({'error': 'No more matches available'})

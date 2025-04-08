@@ -87,7 +87,7 @@
                                 <h3 id="match-username">{{ match.user.username }}</h3>
                                 <p id="match-subjects">Subjects: {{ match.subjects }}</p>
                                 <button onclick="swipeLeft()">❌ Skip</button>
-                                <button onclick="swipeRight()">✅ Match</button>
+                                <button onclick="swipeRight('{{ match.user.id }}')">✅ Match</button>
                             </div>
                         {% empty %}
                             <p>No study partners found.</p>
@@ -182,23 +182,23 @@
             .then(response => response.json())
             .then(data => {
                 if (data.error) {
-                    document.querySelector('.match-card').innerHTML = "<p>No more study partners available.</p>";
+                    document.getElementById("current-match").innerHTML = "<p>No more study partners available.</p>";
                 } else {
                     document.getElementById("match-username").innerText = data.username;
                     document.getElementById("match-subjects").innerText = "Subjects: " + data.subjects;
                 }
             });
         }
-        
+    
+
         function swipeLeft() {
-            loadNextMatch();  // Skip and load the next match
-        }
-        
-        function swipeRight() {
-            alert("You liked this match! 🎉"); // Save this match in the future
+            // Skip the current match
             loadNextMatch();
         }
         
+        function swipeRight(profileId) {
+            sendFriendRequest(profileId);
+        }
 
         function unfriend(profileId) {
             fetch(`/unfriend/${profileId}/`, {
@@ -233,30 +233,35 @@
                 }
             }
         });
+
         function removeCard(profileId) {
             const card = document.getElementById(`profile-${profileId}`);
             if (card) {
-                card.style.transform = 'translateX(100%)';
-                setTimeout(() => card.remove(), 300);
+                card.style.transform = 'translateX(100%)'; // Animate the card out
+                setTimeout(() => card.remove(), 300); // Remove the card after animation
             }
         }
-
+        
         function sendFriendRequest(profileId) {
             fetch(`/send-friend-request/${profileId}/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken  // Use the CSRF token here
+                    'X-CSRFToken': csrfToken
                 }
             }).then(response => {
                 if (response.ok) {
-                    removeCard(profileId);
                     alert("Friend request sent!");
+                    loadNextMatch(); // Load the next match after sending the request
                 } else {
                     alert("Failed to send friend request.");
                 }
+            }).catch(error => {
+                console.error("Error sending friend request:", error);
+                alert("An error occurred while sending the friend request.");
             });
         }
+
 
         function acceptFriend(profileId) {
             fetch(`/accept-friend-request/${profileId}/`, {
