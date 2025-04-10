@@ -6,7 +6,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", startup, name="startup"),
+    path("", landing, name="landing"),
     path("signup/", signup_view, name="signup"),
     path("login/", login_view, name="login"),
     path("logout/", logout_view, name="logout"),
@@ -16,7 +16,7 @@ urlpatterns = [
     path('accept-friend-request/<int:profile_id>/', accept_friend_request, name='accept_friend_request'),
     path('decline-friend-request/<int:profile_id>/', decline_friend_request, name='decline_friend_request'),
     path('send-friend-request/<int:profile_id>/', send_friend_request, name='send_friend_request'),
-    path('chat/<str:chat_partner_username>/', chat_view, name='chat'),
+    path('chat/<str:chat_partner_username>/', chat_detail, name='chat'),
     path('chat/<int:chat_id>/send_message/', send_message, name='send_message'),
     path('update-profile/<int:profile_id>/', update_profile, name='update_profile'),
     path('chat/<int:chat_id>/', chat_detail, name='chat'),
