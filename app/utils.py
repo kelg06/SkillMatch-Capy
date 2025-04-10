@@ -13,13 +13,17 @@ def find_study_partners(user):
     user_profile = Profile.objects.get(user=user)
     all_profiles = Profile.objects.exclude(user=user)
 
+    # Filter profiles based on preferred gender
+    if user_profile.preferred_gender:
+        all_profiles = all_profiles.filter(gender=user_profile.preferred_gender)
+
     # Create a list of features for each profile that is not the user
     profiles_data = []
     for profile in all_profiles:
         features = f"{profile.hobbies}, {profile.study_times}, {profile.goals_after}"
         profiles_data.append(features)
 
-    # The current user's features, no need for a list because there's only one.
+    # The current user's features
     user_features = f"{user_profile.hobbies}, {user_profile.study_times}, {user_profile.goals_after}"
     profiles_data.insert(0, user_features)
 

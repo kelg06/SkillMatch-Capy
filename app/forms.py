@@ -56,7 +56,19 @@ class ProfileForm(forms.ModelForm):
         required=True,
         widget=forms.NumberInput(attrs={"placeholder": "Enter your age", "class": "form-control form-field"})
     )
+
+    gender = forms.ChoiceField(
+        choices=Profile.GENDER_CHOICES,
+        required=True,
+        widget=forms.Select(attrs={"class": "form-control form-field"})
+    )
     
+    preferred_gender = forms.ChoiceField(
+        choices=Profile.GENDER_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={"class": "form-control form-field"})
+    )
+
     # Hometown (Required)
     hometown = forms.CharField(
         max_length=100,
@@ -121,11 +133,12 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = [
-            "first_name", "last_name", "age", "hometown", "major", 
-            "minor", "grade", "study_times", "hobbies", 
-            "clubs_and_extracurriculars", "goals_after", "profile_picture"
+            'first_name', 'last_name', 'age', 'gender', 
+            'preferred_gender', 'hometown', 
+            'major', 'minor', 'grade', 'study_times', 
+            'hobbies', 'clubs_and_extracurriculars', 
+            'goals_after', 'profile_picture'
         ]
-
 
 class MessageForm(forms.ModelForm):
     class Meta:
