@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contact Us</title>
+    <link rel="stylesheet" href="{% static 'contact.css' %}">
+</head>
+<body>
+
+  <!-- Header Section -->
+  <header class="site-header">
+      <div class="logo">
+          <!-- Replace 'images/logo.png' with your logo path -->
+          <a href="{% url 'startup' %}">
+              <img src="{% static 'images/new-logo.png' %}" alt="Site Logo">
+          </a>
+      </div>
+      <nav class="navigation">
+          <a href="{% url 'startup' %}" class="home-link">Back to Home</a>
+      </nav>
+  </header>
+
+  <!-- Main Content -->
+  <div class="contact-container">
+      <div class="contact-image">
+          <img src="{% static 'images/new-logo.png' %}" alt="Mail Icon">
+      </div>
+
+      <div class="contact-form">
+          <h2>Contact Us</h2>
+          <form method="post">
+              {% csrf_token %}
+              <input type="text" name="name" placeholder="Name" required>
+              <input type="text" name="subject" placeholder="Subject" required>
+              <input type="email" name="email" placeholder="Email" required>
+              <textarea name="message" placeholder="Message" required></textarea>
+              <button type="submit">Send Email →</button>
+          </form>
+
+          {% if messages %}
+              {% for message in messages %}
+                  <p>{{ message }}</p>
+              {% endfor %}
+          {% endif %}
+      </div>
+  </div>
+
+</body>
+</html>
