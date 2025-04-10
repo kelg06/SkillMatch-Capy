@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .forms import *
+from .utils import *
 from django.views.decorators.http import require_POST
 from django.db.models import Q
 from django.conf import settings
@@ -115,8 +116,8 @@ def home(request):
         "pending_request_ids": pending_request_ids,
         "friends": friends,
         "sent_requests": sent_requests,
-        "matches": current_match
-        "chats": chat_data,  # Pass the chat data here
+        "matches": current_match,
+        "chats": chat_data
     })
 
 @login_required
@@ -136,10 +137,10 @@ def next_match(request):
 
 def logout_view(request):
     logout(request)
-    return redirect("startup")
+    return redirect("landing")
 
-def startup(request):
-    return render(request, "startup.html")
+def landing(request):
+    return render(request, "landing.html")
 
 @login_required
 def like_profile(request, profile_id):

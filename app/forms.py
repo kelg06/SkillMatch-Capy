@@ -134,20 +134,6 @@ class MessageForm(forms.ModelForm):
         widgets = {
             'content': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Type your message here...'})
         }
-class EventForm(forms.ModelForm):
-    class Meta:
-        model = Event
-        fields = ['title', 'start_date', 'end_date', 'days']
-        widgets = {
-            'start_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-            'end_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-        }
-
-
-class GroupPostForm(forms.ModelForm):
-    class Meta:
-        model = Chat
-        fields = ['message']
 
 class EventForm(forms.ModelForm):
     class Meta:
@@ -157,7 +143,6 @@ class EventForm(forms.ModelForm):
             'start_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
             'end_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
         }
-
 
 class GroupPostForm(forms.ModelForm):
     class Meta:
