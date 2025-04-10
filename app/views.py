@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .forms import *
+from .utils import *
 from django.views.decorators.http import require_POST
 from django.db.models import Q
 from django.conf import settings
@@ -138,9 +139,9 @@ def next_match(request):
 
 def logout_view(request):
     logout(request)
-    return redirect("startup")
+    return redirect("landing")
 
-def startup(request):
+def landing(request):
     return render(request, "landing.html")
 
 @login_required

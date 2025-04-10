@@ -25,32 +25,20 @@ class Profile(models.Model):
     # Grade (Required)
     grade = models.CharField(max_length=20, null=False, blank=False)
     
+    # Gender (Required)
+    GENDER_CHOICES = [
+        ('male', 'Male'),
+        ('female', 'Female'),
+    ]
+    
+    gender = models.CharField(max_length=6, choices=GENDER_CHOICES, null=False, blank=False)
+    
+    # Preferred Gender (Optional)
+    preferred_gender = models.CharField(max_length=6, choices=GENDER_CHOICES, null=True, blank=True)
+    
     # Study times (Dropdown of predefined times, required)
     STUDY_TIME_CHOICES = [
-        ('1 AM', '1 AM'),
-        ('2 AM', '2 AM'),
-        ('3 AM', '3 AM'),
-        ('4 AM', '4 AM'),
-        ('5 AM', '5 AM'),
-        ('6 AM', '6 AM'),
-        ('7 AM', '7 AM'),
-        ('8 AM', '8 AM'),
-        ('9 AM', '9 AM'),
-        ('10 AM', '10 AM'),
-        ('11 AM', '11 AM'),
-        ('12 PM', '12 PM'),
-        ('1 PM', '1 PM'),
-        ('2 PM', '2 PM'),
-        ('3 PM', '3 PM'),
-        ('4 PM', '4 PM'),
-        ('5 PM', '5 PM'),
-        ('6 PM', '6 PM'),
-        ('7 PM', '7 PM'),
-        ('8 PM', '8 PM'),
-        ('9 PM', '9 PM'),
-        ('10 PM', '10 PM'),
-        ('11 PM', '11 PM'),
-        ('12 AM', '12 AM')
+        # ... existing choices ...
     ]
     
     study_times = models.CharField(
@@ -70,17 +58,12 @@ class Profile(models.Model):
     
     # Many-to-many relationships
     friends = models.ManyToManyField("self", blank=True)  # For confirmed friends
-    
-    # Track pending requests (sent and received)
     pending_sent_requests = models.ManyToManyField("self", symmetrical=False, related_name="pending_received_requests", blank=True)
-    
-    # Liked and disliked profiles for swipe functionality
     liked_profiles = models.ManyToManyField("self", symmetrical=False, related_name="liked_by", blank=True)
     disliked_profiles = models.ManyToManyField("self", symmetrical=False, related_name="disliked_by", blank=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.user.username})"
-
 class FriendRequest(models.Model):
     sender = models.ForeignKey(User, related_name='sent_requests', on_delete=models.CASCADE)
     receiver = models.ForeignKey(User, related_name='received_requests', on_delete=models.CASCADE)
