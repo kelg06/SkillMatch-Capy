@@ -134,7 +134,6 @@ def next_match(request):
             })
     return JsonResponse({"error": "No more matches available."})
 
-
 def logout_view(request):
     logout(request)
     return redirect("landing")
