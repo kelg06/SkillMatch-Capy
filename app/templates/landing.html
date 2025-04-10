@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>StuddyBuddy startup</title>
         {% load static %}
-        <link rel="stylesheet" href="{% static '../static/startup-styles.css' %}">
+        <link rel="stylesheet" href="{% static '../static/landing-styles.css' %}">
         <link rel="stylesheet" href="{% static '../static/button.css' %}">
     </head>
     <body>
@@ -19,6 +19,7 @@
                     </div>
                     <ul class="nav-links">
                         <li><a href="#">Home</a></li>
+                        <li><a href="#second-block">Features</a></li>
                         <li><a href="contact">Contact</a></li>
                     </ul>
                 </nav>
@@ -26,34 +27,103 @@
 
             <div class="in-between-block">
                 <div class="first-block-text">
-                    <h1>Find Your</h1>
+                    <h1 class="intro-text-1">Find Your</h1>
                 </div>
                 <div class="login-btn-container">
                     <a href="{% url 'login' %}" class="login-button">Sign in</a>
                 </div>
                 <div class="first-block-text">
-                    <h1>ClassMatch</h1>
+                    <h1 class="intro-text-2">ClassMatch</h1>
                 </div>
             </div>
+            
+            <div id="last-block">
+                <div id="second-block">
+                    <div class="feature-step-1" id="syllabus-step">
+                        <div class="feature-text">
+                            <h2>Add Your Syllabus</h2>
+                            <hr style="margin-bottom: 15px; border-color:#81aac1;">
+                            <p class="">Upload your syllabus to easily track deadlines and study schedules. Keep all your study materials in one place.</p>
+                        </div>
+                        <img src="../static/images/grey.png" alt="Syllabus" class="feature-image">
+                    </div>
+    
+                    <div class="feature-step-2" id="match-step">
+                        <div class="feature-text-2">
+                            <h2>Match With Study Partners</h2>
+                            <hr style="margin-bottom: 15px; border-color: #81aac1">
+                            <p>Find other students who are studying the same subjects or have similar study preferences. Get matched based on your courses and study habits!</p>
+                        </div>
+                        <img src="../static/images/grey.png" alt="Match" class="feature-image">
+                    </div>
+                </div>
 
-            <div id="second-block">
                 <footer class="footer">
                     <div class="footer-first">
-                        <p class="about-statement"><strong>About our Site:</strong> <br>The purpose of this site is to provide users with an easier way to find study partners. By utilizing technology, we match individuals based on similar study preferences and the classes they are taking.
-                        Users can choose to input their syllabus or select the classes they wish to study for, facilitating a more efficient study partnership experience.</p>
-                        <div class="footer-links">
-                            <div> 
+                        <p class="about-statement"><strong>Our Purpose:</strong> <br>The purpose of this site is to provide users with an friendly, easier way to find study partners. By utilizing technology, we match individuals based on similar preferences and the classes they are taking.</p>
+                        <div class="footer-link-container">
+                            <div class="first-footer-link-section">
+                                <div class="footer-links"> 
+                                    Links
+                                    <ul class="footer-list"> 
+                                        <p class="footer-list-link"><a href="contact.html" class="contact-link">Contact Page</a></p>
+                                        <p class="footer-list-link">link 2</p>
+                                        <p class="footer-list-link">link 3</p>
+                                        <p class="footer-list-link">link 4</p>
+                                    </ul>
+                                </div>
+                                <div class="footer-links"> 
+                                    Legal
+                                    <ul class="footer-list"> 
+                                        <p class="footer-list-link">link 1</p>
+                                        <p class="footer-list-link">link 2</p>
+                                        <p class="footer-list-link">link 3</p>
+                                        <p class="footer-list-link">link 4</p>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="second-footer-link-section">
+                                <div class="footer-links"> 
+                                    Social
+                                    <ul class="footer-list"> 
+                                        <p class="footer-list-link">link 1</p>
+                                        <p class="footer-list-link">link 2</p>
+                                        <p class="footer-list-link">link 3</p>
+                                        <p class="footer-list-link">link 4</p>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer-links"> 
+                            <div class="link-list-container">
                                 Links
+                                <ul class="footer-list"> 
+                                    <p class="footer-list-link"><a href="contact.html" class="contact-link">Contact Page</a></p>
+                                    <p class="footer-list-link">link 2</p>
+                                    <p class="footer-list-link">link 3</p>
+                                    <p class="footer-list-link">link 4</p>
+                                </ul> 
                             </div>
-                            <div> 
+                            
+                            <div class="link-list-container"> 
                                 Legal
+                                <ul class="footer-list"> 
+                                    <p class="footer-list-link">link 1</p>
+                                    <p class="footer-list-link">link 2</p>
+                                    <p class="footer-list-link">link 3</p>
+                                    <p class="footer-list-link">link 4</p>
+                                </ul>
                             </div>
-                            <div> 
+
+                            <div class="link-list-container"> 
                                 Social
+                                <ul class="footer-list"> 
+                                    <p class="footer-list-link">link 1</p>
+                                    <p class="footer-list-link">link 2</p>
+                                    <p class="footer-list-link">link 3</p>
+                                    <p class="footer-list-link">link 4</p>
+                                </ul>
                             </div>
-                            <div> 
-                                Company
-                            </div>   
                         </div>
                     </div>
                     <div class="footer-second">
@@ -65,6 +135,15 @@
         </div>
 
         <script>
+            document.querySelector('a[href="#contact-navigation"]').addEventListener('click', function(event) {
+                event.preventDefault();
+                
+                document.querySelector('#contact-navigation').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+
             document.querySelector('a[href="#second-block"]').addEventListener('click', function(event) {
                 event.preventDefault();
                 
@@ -77,7 +156,7 @@
             function smoothScroll() {
                 let inBetweenBlock = document.querySelector('.in-between-block');
                 const scrollPosition = window.scrollY;
-                const speed = scrollPosition / 2;
+                const speed = scrollPosition / 2.7;
                 const maxMovement = 350;
                 const movement = Math.min(speed, maxMovement);
 
@@ -91,7 +170,7 @@
                 const fadeText = document.querySelector('.in-between-block');
                 const scrollPosition = window.scrollY;
                 const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-                const opacity = 1.26 - (scrollPosition / maxScroll);
+                const opacity = 1.1 - (scrollPosition / maxScroll);
 
                 fadeText.style.opacity = opacity;
             });
@@ -102,7 +181,7 @@
                 const scrollPosition = window.scrollY;
                 const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
 
-                const opacity = 1.26 - (scrollPosition / maxScroll);
+                const opacity = 1.1 - (scrollPosition / maxScroll);
 
                 fadeText.style.opacity = opacity;
             });
