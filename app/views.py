@@ -11,6 +11,7 @@ from django.db.models import Q
 from django.conf import settings
 from django.shortcuts import render
 from .utils import *
+from django.core.mail import send_mail
 from .models import Profile, FriendRequest, Chat, Message
 
 # Third-party imports
@@ -140,7 +141,7 @@ def logout_view(request):
     return redirect("startup")
 
 def startup(request):
-    return render(request, "startup.html")
+    return render(request, "landing.html")
 
 @login_required
 def like_profile(request, profile_id):
@@ -401,14 +402,36 @@ def update_profile(request, profile_id):
 
 @login_required
 def delete_profile(request, profile_id):
-    profile = get_object_or_404(Profile, id=profile_id, user=request.user)
+    if request.method == 'POST':
+        try:
+            # Get the profile object by the provided profile_id
+            profile = get_object_or_404(Profile, id=profile_id)
 
-    if request.method == "POST":
-        profile.delete()
-        messages.success(request, "Profile deleted successfully!")
-        return redirect("home")
+            # Delete all related friend relationships (both sides)
+            for friend in profile.friends.all():
+                friend.friends.remove(profile)
 
-    return render(request, "delete_profile.html", {"profile": profile})
+            # Delete all chats the user is part of
+            chats = profile.user.chat_user1.all() | profile.user.chat_user2.all()  # Get all chats involving the user
+            for chat in chats:
+                chat.delete()  # Delete the chat and all related messages
+
+            # Delete the user's profile
+            profile.delete()
+
+            # Delete the user account
+            profile.user.delete()
+
+            # Redirect to the homepage after deletion
+            return redirect('startup')
+
+        except Profile.DoesNotExist:
+            return JsonResponse({"success": False, "message": "Profile not found."}, status=404)
+        except Exception as e:
+            return JsonResponse({"success": False, "message": str(e)}, status=500)
+
+    # If it's a GET request, render the delete confirmation page
+    return render(request, 'delete_profile.html')
 
 @login_required
 def unfriend(request, profile_id):
@@ -421,8 +444,21 @@ def unfriend(request, profile_id):
             user_profile.friends.remove(friend_profile)
             friend_profile.friends.remove(user_profile)
 
-        print(f"Unfriended {friend_profile.user.username}")
-        return JsonResponse({"success": True, "message": "Unfriended successfully!"})
+            # Find and delete the chat between the users
+            chat = Chat.objects.filter(
+                (Q(user1=request.user) & Q(user2=friend_profile.user)) | 
+                (Q(user1=friend_profile.user) & Q(user2=request.user))
+            ).first()
+
+            if chat:
+                chat.delete()
+                print(f"Deleted chat between {request.user.username} and {friend_profile.user.username}")
+
+            print(f"Unfriended {friend_profile.user.username}")
+            return JsonResponse({"success": True, "message": "Unfriended and chat deleted successfully!"})
+
+        else:
+            return JsonResponse({"success": False, "message": "They are not friends."})
 
     except Profile.DoesNotExist:
         return JsonResponse({"success": False, "message": "Friend not found."}, status=404)
@@ -524,3 +560,27 @@ def group_post_list(request):
     posts = GroupPost.objects.all().order_by('-created_at')
     return render(request, 'post_list.html', {'posts': posts})
 
+def contact_view(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            subject = form.cleaned_data['subject']
+            email = form.cleaned_data['email']
+            message = form.cleaned_data['message']
+
+            # Include user's name in the email message
+            send_mail(
+                subject=subject,
+                message=f"Hi {name},\n\nThanks for contacting us!\n\nHere's a copy of your message:\n\n{message}\n\nWe'll get back to you soon!",
+                from_email='mgladney25@basecampcodingacademy.org', 
+                recipient_list=[email],  # Sends to the email user entered
+                fail_silently=False,
+            )
+
+            messages.success(request, 'We sent a copy of your message to your email!')
+            return redirect('contact')
+    else:
+        form = ContactForm()
+
+    return render(request, 'contact.html', {'form': form})
