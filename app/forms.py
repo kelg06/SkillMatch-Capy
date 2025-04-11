@@ -161,3 +161,24 @@ class GroupPostForm(forms.ModelForm):
     class Meta:
         model = GroupPost
         fields = ['title', 'image']
+
+
+class ContactForm(forms.Form):
+    name = forms.CharField(
+        label='Name',
+        max_length=150,
+        widget=forms.TextInput(attrs={'placeholder': 'First and Last Name'})
+    )
+    subject = forms.CharField(
+        label='Subject',
+        max_length=150,
+        widget=forms.TextInput(attrs={'placeholder': 'Subject of your message'})
+    )
+    email = forms.EmailField(
+        label='Your Email',
+        widget=forms.EmailInput(attrs={'placeholder': 'your@email.com'})
+    )
+    message = forms.CharField(
+        label='Message',
+        widget=forms.Textarea(attrs={'placeholder': 'Type your message here...'})
+    )

@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{% static '../static/login-signup.css' %}">
 </head>
 <body>
+    {% csrf_token %}
     <div class="auth-container">
         <div class="auth-box">
             <h2>Login</h2>

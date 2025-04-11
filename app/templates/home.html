@@ -57,7 +57,6 @@
                     {% else %}
                         <p>No friend requests</p>
                     {% endif %}
-
                     <h3>Friends</h3>
                     {% if friends %}
                         <ul class="friends-list">
@@ -75,18 +74,18 @@
                     {% if chats %}
                         <ul>
                             {% for chat_info in chats %}
-                                <li>
+                                <li id="chat-{{ chat_info.chat.id }}">
                                     <!-- Link to the chat view with chat_id -->
                                     <button onclick="window.location.href='{% url 'chat' chat_id=chat_info.chat.id %}'" class="chat-btn">
                                         {{ chat_info.friend.username }}
                                     </button>
-                                    
                                 </li>
                             {% endfor %}
                         </ul>
                     {% else %}
                         <p>No active chats</p>
                     {% endif %}
+                    
                     
                 </div>
 
@@ -188,9 +187,16 @@
             .then(data => {
                 alert(data.message);
                 if (data.success) {
+                    // Remove friend from the friends list
                     const friendElement = document.querySelector(`#friend-${profileId}`);
                     if (friendElement) {
-                        friendElement.remove();
+                        friendElement.remove();  // Remove the friend from the list
+                    }
+        
+                    // Remove the corresponding chat from the sidebar
+                    const chatElement = document.querySelector(`#chat-${profileId}`);
+                    if (chatElement) {
+                        chatElement.remove();  // Remove the chat from the sidebar
                     }
                 }
             }).catch(error => {
@@ -198,6 +204,7 @@
                 alert("Failed to unfriend.");
             });
         }
+        
 
         function csrfSafeMethod(method) {
             return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));

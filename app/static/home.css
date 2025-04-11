@@ -260,22 +260,33 @@ main {
 .sidebar a:hover {
     color: #0056b3;
 }
-.chat-btn {
+/* Specific style for chat button */
+.sidebar .chat-btn {
     display: block;
     width: 100%;
     padding: 10px;
-    background-color: #f0f2f5;
+    background-color: #007bff; /* Blue color */
     border-radius: 5px;
     font-size: 16px;
     font-weight: bold;
-    color: #007bff;
+    color: white; /* Text color */
     border: none;
     text-align: left;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-.chat-btn:hover {
-    background-color: #007bff;
+.sidebar .chat-btn:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* General sidebar button styles, but won't affect .chat-btn */
+.sidebar button {
+    background: #4caf50; /* Green */
     color: white;
+    border: none;
+    padding: 5px;
+    margin-left: 5px;
+    border-radius: 5px;
+    cursor: pointer;
 }
