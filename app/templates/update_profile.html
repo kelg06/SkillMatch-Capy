@@ -1,61 +1,70 @@
-<h2>Update Profile</h2>
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    
-    <!-- First Name -->
-    <label>First Name:</label>
-    <input type="text" name="first_name" value="{{ profile.first_name }}"><br>
+{% load static %}
 
-    <!-- Last Name -->
-    <label>Last Name:</label>
-    <input type="text" name="last_name" value="{{ profile.last_name }}"><br>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Profile</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'update_profile.css' %}">
+</head>
+<body>
 
-    <!-- Age -->
-    <label>Age:</label>
-    <input type="number" name="age" value="{{ profile.age }}"><br>
+    <h2>Update Profile</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <label>First Name:</label>
+        <input type="text" name="first_name" value="{{ profile.first_name }}">
 
-    <!-- Hometown -->
-    <label>Hometown:</label>
-    <input type="text" name="hometown" value="{{ profile.hometown }}"><br>
+        <label>Last Name:</label>
+        <input type="text" name="last_name" value="{{ profile.last_name }}">
 
-    <!-- Major -->
-    <label>Major:</label>
-    <input type="text" name="major" value="{{ profile.major }}"><br>
+        <label>Age:</label>
+        <input type="number" name="age" value="{{ profile.age }}">
 
-    <!-- Minor -->
-    <label>Minor:</label>
-    <input type="text" name="minor" value="{{ profile.minor }}"><br>
+        <label>Hometown:</label>
+        <input type="text" name="hometown" value="{{ profile.hometown }}">
 
-    <!-- Grade -->
-    <label>Grade:</label>
-    <input type="text" name="grade" value="{{ profile.grade }}"><br>
+        <label>Major:</label>
+        <input type="text" name="major" value="{{ profile.major }}">
 
-    <!-- Study Times -->
-    <label>Study Times:</label>
-    <select name="study_times">
-        {% for choice in profile.STUDY_TIME_CHOICES %}
-            <option value="{{ choice.0 }}" {% if profile.study_times == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
-        {% endfor %}
-    </select><br>
+        <label>Minor:</label>
+        <input type="text" name="minor" value="{{ profile.minor }}">
 
-    <!-- Hobbies -->
-    <label>Hobbies:</label>
-    <textarea name="hobbies">{{ profile.hobbies }}</textarea><br>
+        <label>Grade:</label>
+        <input type="text" name="grade" value="{{ profile.grade }}">
 
-    <!-- Clubs and Extracurriculars -->
-    <label>Clubs and Extracurriculars:</label>
-    <textarea name="clubs_and_extracurriculars">{{ profile.clubs_and_extracurriculars }}</textarea><br>
+        <label>Study Times:</label>
+        <select name="study_times">
+            {% for choice in profile.STUDY_TIME_CHOICES %}
+                <option value="{{ choice.0 }}" {% if profile.study_times == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+            {% endfor %}
+        </select>
 
-    <!-- Goals After Graduation -->
-    <label>Goals After Graduation:</label>
-    <textarea name="goals_after">{{ profile.goals_after }}</textarea><br>
+        <label>Hobbies:</label>
+        <textarea name="hobbies">{{ profile.hobbies }}</textarea>
 
-    <!-- Profile Picture -->
-    <label>Profile Picture:</label>
-    <input type="file" name="profile_picture"><br>
-    {% if profile.profile_picture %}
-        <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" width="100"><br>
-    {% endif %}
+        <label>Clubs and Extracurriculars:</label>
+        <textarea name="clubs_and_extracurriculars">{{ profile.clubs_and_extracurriculars }}</textarea>
 
-    <button type="submit">Update</button>
-</form>
+        <label>Goals After Graduation:</label>
+        <textarea name="goals_after">{{ profile.goals_after }}</textarea>
+
+        <label>Preferred Gender:</label>
+        <select name="preferred_gender">
+            {% for choice in profile.GENDER_CHOICES %}
+                <option value="{{ choice.0 }}" {% if profile.preferred_gender == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Profile Picture:</label>
+        <input type="file" name="profile_picture">
+        {% if profile.profile_picture %}
+            <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" width="100">
+        {% endif %}
+
+        <button type="submit">Update</button>
+    </form>
+
+</body>
+</html>
