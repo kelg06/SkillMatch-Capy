@@ -11,10 +11,11 @@ from django.views.decorators.http import require_POST
 from django.db.models import Q
 from django.conf import settings
 from django.shortcuts import render
+from django.utils import timezone
 from .utils import *
 from django.core.mail import send_mail
 from .models import Profile, FriendRequest, Chat, Message
-
+from datetime import datetime
 # Third-party imports
 import os
 import json
@@ -94,8 +95,8 @@ def home(request):
         .exclude(id__in=pending_request_ids) \
         .exclude(id__in=friend_ids)
 
-    matches = find_study_partners(request.user)
-    current_match = matches[:1] if matches else []
+    # matches = find_study_partners(request.user)
+    # current_match = matches[:1] if matches else []
 
     # Fetch chats and associated messages
     chats = Chat.objects.filter(Q(user1=request.user) | Q(user2=request.user)).prefetch_related('messages')
@@ -118,7 +119,7 @@ def home(request):
         "pending_request_ids": pending_request_ids,
         "friends": friends,
         "sent_requests": sent_requests,
-        "matches": current_match,
+        # "matches": current_match,
         "chats": chat_data  # Pass the chat data here
     })
 
@@ -390,6 +391,8 @@ def update_profile(request, profile_id):
         profile.hobbies = request.POST.get("hobbies", profile.hobbies)
         profile.clubs_and_extracurriculars = request.POST.get("clubs_and_extracurriculars", profile.clubs_and_extracurriculars)
         profile.goals_after = request.POST.get("goals_after", profile.goals_after)
+        profile.preferred_gender = request.POST.get("preferred_gender", profile.preferred_gender)
+
 
         if 'profile_picture' in request.FILES:
             profile.profile_picture = request.FILES['profile_picture']
@@ -463,7 +466,7 @@ def unfriend(request, profile_id):
 
     except Profile.DoesNotExist:
         return JsonResponse({"success": False, "message": "Friend not found."}, status=404)
-    
+
 def calendar(request):
     if not Event.objects.exists():
         json_file_path = os.path.join(settings.BASE_DIR, 'data', 'events.json')
@@ -502,17 +505,6 @@ def calendar(request):
         form = EventForm()
 
     return render(request, 'calendar.html', {'events': events, 'form': form})
-
-
-def add_event(request):
-    if request.method == 'POST':
-        form = EventForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('calendar')
-    else:
-        form = EventForm()
-    return render(request, 'add_event.html', {'form': form})
 
 
 # Custom decorator to check if the user is either a super admin or group admin
