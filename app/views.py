@@ -14,19 +14,14 @@ from django.shortcuts import render
 from django.utils import timezone
 from .utils import *
 from django.core.mail import send_mail
-from .models import Profile, FriendRequest, Chat, Message
+from .models import *
 from datetime import datetime
+
 # Third-party imports
 import os
 import json
 
 # Local application imports
-from .forms import *
-from .models import *
-import os
-from django.db.models import Q
-import json
-from django.conf import settings
 from app.utils import is_group_admin, is_super_admin
 from .decorators import admin_required
 
@@ -63,40 +58,34 @@ def login_view(request):
 
     return render(request, "login.html")
 
-
 @login_required
-def home(request):
+def home_view(request):
     try:
         user_profile = Profile.objects.get(user=request.user)
     except Profile.DoesNotExist:
         return render(request, "home.html", {"profile": None})
 
-    # Get liked and disliked profiles
-    liked_profiles = user_profile.liked_profiles.values_list("id", flat=True)
-    disliked_profiles = user_profile.disliked_profiles.values_list("id", flat=True)
+    # IDs to exclude from matching
+    liked_ids = user_profile.liked_profiles.values_list("id", flat=True)
+    disliked_ids = user_profile.disliked_profiles.values_list("id", flat=True)
+    sent_ids = FriendRequest.objects.filter(sender=request.user, accepted=False).values_list("receiver__profile__id", flat=True)
+    received_ids = FriendRequest.objects.filter(receiver=request.user, accepted=False).values_list("sender__profile__id", flat=True)
+    friend_ids = user_profile.friends.values_list("id", flat=True)
 
-    # Sent requests
-    sent_requests = FriendRequest.objects.filter(sender=request.user, accepted=False).values_list("receiver__profile__id", flat=True)
-
-    # Received requests
-    received_requests = FriendRequest.objects.filter(receiver=request.user, accepted=False)
-    pending_requests = [getattr(req.sender, 'profile', None) for req in received_requests if hasattr(req.sender, 'profile')]
-    pending_request_ids = [profile.id for profile in pending_requests if profile]
-
-    # Friends
-    friends = user_profile.friends.all()
-    friend_ids = friends.values_list('id', flat=True)
-
-    # Filter profiles
+    # Profiles the user hasn't interacted with
     profiles = Profile.objects.exclude(user=request.user) \
-        .exclude(id__in=liked_profiles) \
-        .exclude(id__in=disliked_profiles) \
-        .exclude(id__in=sent_requests) \
-        .exclude(id__in=pending_request_ids) \
+        .exclude(id__in=liked_ids) \
+        .exclude(id__in=disliked_ids) \
+        .exclude(id__in=sent_ids) \
         .exclude(id__in=friend_ids)
+        # .exclude(id__in=received_ids) \
 
+    # Get pending friend requests
+    received_requests = FriendRequest.objects.filter(receiver=request.user, accepted=False)
+    pending_requests = [req.sender.profile for req in received_requests if hasattr(req.sender, 'profile')]
+
+    # Get matching profiles
     matches = find_study_partners(request.user)
-    
     if matches == "No matches yet!":
         current_match = None  
         message = matches
@@ -104,46 +93,57 @@ def home(request):
         current_match = matches[:1]
         message = None  
 
-    # Fetch chats and associated messages
+    # Get chats and messages
     chats = Chat.objects.filter(Q(user1=request.user) | Q(user2=request.user)).prefetch_related('messages')
-
     chat_data = []
     for chat in chats:
         friend = chat.user2 if chat.user1 == request.user else chat.user1
-        messages = chat.messages.order_by('created_at')  # Messages related to the chat
+        messages = chat.messages.order_by('created_at')
         chat_data.append({
             'chat': chat,
             'friend': friend,
             'messages': messages,
-            'chat_id': chat.id,  # Make sure to include the chat_id in the context
+            'chat_id': chat.id,
         })
 
     return render(request, "home.html", {
         "profiles": profiles,
         "profile": user_profile,
         "pending_requests": pending_requests,
-        "pending_request_ids": pending_request_ids,
-        "friends": friends,
-        "sent_requests": sent_requests,
+        "pending_request_ids": [p.id for p in pending_requests],
+        "friends": user_profile.friends.all(),
+        "sent_requests": sent_ids,
         "matches": current_match,
-        "message": message,  # Pass the message to show in the template if no matches
-        "chats": chat_data  # Pass the chat data here
+        "message": message,
+        "chats": chat_data,
     })
 
 @login_required
 def next_match(request):
-    user_profile = Profile.objects.get(user=request.user)
-    matches = find_study_partners(request.user)
+    user = request.user
+    user_profile = Profile.objects.get(user=user)
+    matches = find_study_partners(user)  # This now refers to the smart one from utils
 
-    if matches:
-        next_match = matches[1:2]  # Get the next match
-        if next_match:
-            return JsonResponse({
-                "username": next_match[0].user.username,
-                "subjects": next_match[0].subjects,
-            })
-    return JsonResponse({"error": "No more matches available."})
+    if matches == "No matches yet!":
+        return JsonResponse({"error": "No matches available."})
 
+    if "match_index" not in request.session:
+        request.session["match_index"] = 0
+    else:
+        request.session["match_index"] += 1
+
+    match_index = request.session["match_index"]
+
+    if match_index < len(matches):
+        match = matches[match_index]
+        return JsonResponse({
+            "username": match.user.username
+        })
+    else:
+        return JsonResponse({"error": "No more matches available."})
+
+
+    
 def logout_view(request):
     logout(request)
     return redirect("landing")
@@ -230,29 +230,41 @@ def create_profile(request):
 @csrf_exempt
 @login_required
 def send_friend_request(request, profile_id):
-    receiver = User.objects.get(id=profile_id)
-    sender = request.user
+    try:
+        receiver = User.objects.get(id=profile_id)
+        sender = request.user
 
-    if sender == receiver:
-        return JsonResponse({'success': False, 'message': "You can't send a friend request to yourself."})
+        if sender == receiver:
+            return JsonResponse({'success': False, 'message': "You can't send a friend request to yourself."})
 
-    # Check if sender already sent a request
-    if FriendRequest.objects.filter(sender=sender, receiver=receiver).exists():
-        return JsonResponse({'success': False, 'message': "Friend request already sent."})
+        sender_profile = Profile.objects.get(user=sender)
+        receiver_profile = Profile.objects.get(user=receiver)
 
-    # Check if receiver already sent a request to sender
-    if FriendRequest.objects.filter(sender=receiver, receiver=sender).exists():
-        return JsonResponse({'success': False, 'message': "This user already sent you a friend request."})
+        # Check if already friends
+        if receiver_profile in sender_profile.friends.all():
+            return JsonResponse({'success': False, 'message': "You are already friends."})
 
-    # Check if already friends
-    sender_profile = Profile.objects.get(user=sender)
-    if receiver.profile in sender_profile.friends.all():
-        return JsonResponse({'success': False, 'message': "You are already friends."})
+        # Check if sender already sent a request
+        if FriendRequest.objects.filter(sender=sender, receiver=receiver, accepted=False).exists():
+            return JsonResponse({'success': False, 'message': "Friend request already sent."})
 
-    # Create friend request
-    FriendRequest.objects.create(sender=sender, receiver=receiver)
-    return JsonResponse({'success': True, 'message': "Friend request sent."})
+        # Check if receiver already sent a request to sender (mutual match)
+        existing_request = FriendRequest.objects.filter(sender=receiver, receiver=sender, accepted=False).first()
+        if existing_request:
+            # Accept the friend request
+            existing_request.accepted = True
+            existing_request.save()
+            sender_profile.friends.add(receiver_profile)
+            receiver_profile.friends.add(sender_profile)
+            return JsonResponse({'success': True, 'message': "Friend request accepted — you're now friends!"})
 
+        # Create new friend request
+        FriendRequest.objects.create(sender=sender, receiver=receiver)
+        return JsonResponse({'success': True, 'message': "Friend request sent."})
+
+    except User.DoesNotExist:
+        return JsonResponse({'success': False, 'message': "User not found."})
+    
 @login_required
 def accept_friend_request(request, profile_id):
     try:
@@ -409,7 +421,6 @@ def update_profile(request, profile_id):
         profile.major = request.POST.get("major", profile.major)
         profile.minor = request.POST.get("minor", profile.minor)
         profile.grade = request.POST.get("grade", profile.grade)
-        profile.study_times = request.POST.get("study_times", profile.study_times)
         profile.hobbies = request.POST.get("hobbies", profile.hobbies)
         profile.clubs_and_extracurriculars = request.POST.get("clubs_and_extracurriculars", profile.clubs_and_extracurriculars)
         profile.goals_after = request.POST.get("goals_after", profile.goals_after)
@@ -449,7 +460,7 @@ def delete_profile(request, profile_id):
             profile.user.delete()
 
             # Redirect to the homepage after deletion
-            return redirect('startup')
+            return redirect('landing')
 
         except Profile.DoesNotExist:
             return JsonResponse({"success": False, "message": "Profile not found."}, status=404)

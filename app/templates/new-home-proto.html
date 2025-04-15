@@ -12,6 +12,18 @@
     </script>
 </head>
 <body>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mySocial - Responsive Social Media Website Using HTML, CSS, & JavaScript</title>
+    <!-- IconScout CDN -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.6/css/unicons.css">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="../static/main-styles.css">
+</head>
+<body>
+
     <div class="largest-container">
         <div>
             <nav>
@@ -123,7 +135,7 @@
                         {% endfor %}
                     {% endif %}
 
-                    {% comment %} {% for profile in profiles %}
+                    {% for profile in profiles %}
                         <div class="profile-card" id="profile-{{ profile.user.id }}" data-profile-id="{{ profile.user.id }}">
                             <div class="profile-pic-container">
                                 {% if profile.profile_picture %}
@@ -167,7 +179,7 @@
                         </div>
                     {% empty %}
                         <p>No more profiles to show.</p>
-                    {% endfor %} {% endcomment %}
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -273,5 +285,6 @@
             });
         });
     </script>
+
 </body>
 </html>

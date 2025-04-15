@@ -18,7 +18,7 @@ class QuestionnaireForm(forms.ModelForm):
             'hot_take', 'secret_campus_hack', 'todays_vibe', 
             'planner_fullness', 'social_energy', 'ghost_likelihood', 
             'major_approach', 'post_grad_plan', 'college_motivation', 
-            'campus_groups', 'match_involvement_importance', 
+            'campus_groups', 'match_involvement_importance',
             'social_energy_on_campus'
         ]
         widgets = {
