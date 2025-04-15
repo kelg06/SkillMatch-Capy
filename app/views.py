@@ -95,8 +95,14 @@ def home(request):
         .exclude(id__in=pending_request_ids) \
         .exclude(id__in=friend_ids)
 
-    # matches = find_study_partners(request.user)
-    # current_match = matches[:1] if matches else []
+    matches = find_study_partners(request.user)
+    
+    if matches == "No matches yet!":
+        current_match = None  
+        message = matches
+    else:
+        current_match = matches[:1]
+        message = None  
 
     # Fetch chats and associated messages
     chats = Chat.objects.filter(Q(user1=request.user) | Q(user2=request.user)).prefetch_related('messages')
@@ -109,7 +115,7 @@ def home(request):
             'chat': chat,
             'friend': friend,
             'messages': messages,
-            'chat_id': chat.id, # Make sure to include the chat_id in the context
+            'chat_id': chat.id,  # Make sure to include the chat_id in the context
         })
 
     return render(request, "home.html", {
@@ -119,7 +125,8 @@ def home(request):
         "pending_request_ids": pending_request_ids,
         "friends": friends,
         "sent_requests": sent_requests,
-        # "matches": current_match,
+        "matches": current_match,
+        "message": message,  # Pass the message to show in the template if no matches
         "chats": chat_data  # Pass the chat data here
     })
 
@@ -136,7 +143,6 @@ def next_match(request):
                 "subjects": next_match[0].subjects,
             })
     return JsonResponse({"error": "No more matches available."})
-
 
 def logout_view(request):
     logout(request)
@@ -166,42 +172,60 @@ def dislike_profile(request, profile_id):
 
 @login_required
 def create_profile(request):
-    # Check if the user already has a profile
     try:
         profile = request.user.profile
-        
-        # If the user has a profile, check if the first name is missing
+
         if not profile.first_name:
             if request.method == "POST":
-                form = ProfileForm(request.POST, request.FILES, instance=profile)
-                if form.is_valid():
-                    form.save()  # Save the updated profile
+                profile_form = ProfileForm(request.POST, request.FILES, instance=profile)
+                questionnaire_form = QuestionnaireForm(request.POST, instance=profile)
+
+                if profile_form.is_valid() and questionnaire_form.is_valid():
+                    profile = profile_form.save(commit=False)
+                    profile.user = request.user  # Assign the current user to the profile
+                    profile.save()
+                    questionnaire_form.save()  # Save the questionnaire data
                     return redirect("home")  # Redirect to the home page after saving
                 else:
-                    # If form is invalid, re-render the form with errors
-                    return render(request, "create_profile.html", {"form": form})
+                    return render(request, "create_profile.html", {
+                        "profile_form": profile_form,
+                        "questionnaire_form": questionnaire_form
+                    })
             else:
-                # If it's a GET request, display the existing profile form with data
-                form = ProfileForm(instance=profile)
-                return render(request, "create_profile.html", {"form": form})
+                profile_form = ProfileForm(instance=profile)
+                questionnaire_form = QuestionnaireForm(instance=profile)
+                return render(request, "create_profile.html", {
+                    "profile_form": profile_form,
+                    "questionnaire_form": questionnaire_form
+                })
         
-        # If the user already has a complete profile, redirect to the home page
         return redirect("home")
+    
     except Profile.DoesNotExist:
-        # If the profile doesn't exist, continue with profile creation
         if request.method == "POST":
-            form = ProfileForm(request.POST, request.FILES)
-            if form.is_valid():
-                profile = form.save(commit=False)
+            profile_form = ProfileForm(request.POST, request.FILES)
+            questionnaire_form = QuestionnaireForm(request.POST)
+
+            if profile_form.is_valid() and questionnaire_form.is_valid():
+                profile = profile_form.save(commit=False)
                 profile.user = request.user  # Assign the current user to the profile
                 profile.save()
-                form.save_m2m()  # Save many-to-many relationships
-                return redirect("home")  # Redirect to home page after profile creation
+                questionnaire_form.save(commit=False)  # Save the questionnaire data
+                questionnaire_form.instance = profile  # Link questionnaire to the profile
+                questionnaire_form.save()
+                return redirect("home")
             else:
-                return render(request, "create_profile.html", {"form": form})
+                return render(request, "create_profile.html", {
+                    "profile_form": profile_form,
+                    "questionnaire_form": questionnaire_form
+                })
         else:
-            form = ProfileForm()
-            return render(request, "create_profile.html", {"form": form})
+            profile_form = ProfileForm()
+            questionnaire_form = QuestionnaireForm()
+            return render(request, "create_profile.html", {
+                "profile_form": profile_form,
+                "questionnaire_form": questionnaire_form
+            })
 
 @csrf_exempt
 @login_required
@@ -338,8 +362,6 @@ def chat_detail(request, chat_id):
         'form': form,
         'other_user': other_user,
     })
-
-
 
 @login_required
 def send_message(request, chat_id):

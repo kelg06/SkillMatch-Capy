@@ -118,7 +118,7 @@ Index:
     margin-left: 30px;
     width: 100%;
     position: relative;  /* Change from fixed to relative */
-    z-index: 2;
+    z-index: 1;
 }
 
 
@@ -400,7 +400,7 @@ In between block
         margin-left: 30px;
         width: 100%;
         position: relative;
-        z-index: 2;
+        z-index: 1;
     }
     .footer-links {
         padding-left: 75px;

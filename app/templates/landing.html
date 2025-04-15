@@ -30,7 +30,7 @@
                     <h1 class="intro-text-1">Find Your</h1>
                 </div>
                 <div class="login-btn-container">
-                    <a href="{% url 'login' %}" class="login-button">Sign in</a>
+                    <a href="{% url 'signup' %}" class="login-button">Sign in</a>
                 </div>
                 <div class="first-block-text">
                     <h1 class="intro-text-2">ClassMatch</h1>
@@ -62,42 +62,39 @@
                     <div class="footer-first">
                         <p class="about-statement"><strong>Our Purpose:</strong> <br>The purpose of this site is to provide users with an friendly, easier way to find study partners. By utilizing technology, we match individuals based on similar preferences and the classes they are taking.</p>
                         <div class="footer-link-container">
-                            <div class="first-footer-link-section">
-                                <div class="footer-links"> 
-                                    Links
-                                    <ul class="footer-list"> 
-                                        <p class="footer-list-link"><a href="contact" class="contact-link">Contact Page</a></p>
-                                        <p class="footer-list-link">link 2</p>
-                                        <p class="footer-list-link">link 3</p>
-                                        <p class="footer-list-link">link 4</p>
-                                    </ul>
-                                </div>
-                                <div class="footer-links"> 
-                                    Legal
-                                    <ul class="footer-list"> 
-                                        <p class="footer-list-link">link 1</p>
-                                        <p class="footer-list-link">link 2</p>
-                                        <p class="footer-list-link">link 3</p>
-                                        <p class="footer-list-link">link 4</p>
-                                    </ul>
-                                </div>
+                            <div class="footer-links"> 
+                                Links
+                                <ul class="footer-list"> 
+                                    <p class="footer-list-link"><a href="contact" class="contact-link">Contact Page</a></p>
+                                    <p class="footer-list-link">link 2</p>
+                                    <p class="footer-list-link">link 3</p>
+                                    <p class="footer-list-link">link 4</p>
+                                </ul>
                             </div>
-                            <div class="second-footer-link-section">
-                                <div class="footer-links"> 
-                                    Social
-                                    <ul class="footer-list"> 
-                                        <p class="footer-list-link">link 1</p>
-                                        <p class="footer-list-link">link 2</p>
-                                        <p class="footer-list-link">link 3</p>
-                                        <p class="footer-list-link">link 4</p>
-                                    </ul>
-                                </div>
+                            <div class="footer-links"> 
+                                Legal
+                                <ul class="footer-list"> 
+                                    <p class="footer-list-link">link 1</p>
+                                    <p class="footer-list-link">link 2</p>
+                                    <p class="footer-list-link">link 3</p>
+                                    <p class="footer-list-link">link 4</p>
+                                </ul>
+                            </div>
+                            <div class="footer-links"> 
+                                Social
+                                <ul class="footer-list"> 
+                                    <p class="footer-list-link">link 1</p>
+                                    <p class="footer-list-link">link 2</p>
+                                    <p class="footer-list-link">link 3</p>
+                                    <p class="footer-list-link">link 4</p>
+                                </ul>
                             </div>
                         </div>
                         <div class="footer-links"> 
                             <div class="link-list-container">
                                 Links
                                 <ul class="footer-list"> 
+                                    <p class="footer-list-link"><a href="contact" class="contact-link">Contact Page</a></p>
                                     <p class="footer-list-link"><a href="contact" class="contact-link">Contact Page</a></p>
                                     <p class="footer-list-link">link 2</p>
                                     <p class="footer-list-link">link 3</p>
@@ -135,55 +132,103 @@
         </div>
 
         <script>
+            window.addEventListener('scroll', function() {
+                const scrollPosition = window.scrollY; // Get the current scroll position
+                const maxScrollPosition = 860; // Define the maximum scroll limit
+                const parallaxElement = document.querySelector('.in-between-block');
+            
+                // Ensure the block does not scroll above the top of the viewport
+                if (scrollPosition < maxScrollPosition) {
+                    parallaxElement.style.transform = 'translateY(' + (scrollPosition * 0.42) + 'px)';
+                } else {
+                    parallaxElement.style.transform = 'translateY(' + (maxScrollPosition * 0.42) + 'px)';
+                }
+            
+                // Adjust the opacity of the navbar and in-between-block
+                const maxScroll = document.documentElement.scrollHeight - window.innerHeight; // Maximum scrollable height
+                const opacity = 1 - (scrollPosition / maxScroll);
+                const newOpacity = Math.max(opacity, 0);
+            
+                const navbar = document.querySelector('.navbar');
+                navbar.style.opacity = newOpacity;
+                parallaxElement.style.opacity = newOpacity;
+            });
+
+            window.addEventListener('scroll', function() {
+                const scrollPosition = window.scrollY; // Get the current scroll position
+                const maxScroll = document.documentElement.scrollHeight - window.innerHeight; // Maximum scrollable height
+            
+                // Calculate the opacity based on the scroll position
+                const opacity = 1 - (scrollPosition / maxScroll);
+                
+                // Ensure opacity does not go below 0
+                const newOpacity = Math.max(opacity, 0);
+            
+                // Select the elements to fade
+                const navbar = document.querySelector('.navbar');
+                const inBetweenBlock = document.querySelector('.in-between-block');
+            
+                // Apply the new opacity to the elements
+                navbar.style.opacity = newOpacity;
+                inBetweenBlock.style.opacity = newOpacity;
+            });
+            
+            window.addEventListener('scroll', function() {
+                let scrollPosition = window.scrollY; // Get the scroll position
+                let parallaxElement = document.querySelector('.in-between-block');
+                
+                // Set a max scroll limit for when you want the element to stop
+                let maxScrollPosition = 900; 
+            
+                // Check if the scroll position has not passed the max scroll limit
+                if (scrollPosition < maxScrollPosition) {
+                    parallaxElement.style.transform = 'translateY(' + scrollPosition * 0.42 + 'px)';
+                } else {
+                    parallaxElement.style.transform = 'translateY(' + maxScrollPosition * 0.42 + 'px)';
+                }
+            });
+            
             document.querySelector('a[href="#contact-navigation"]').addEventListener('click', function(event) {
                 event.preventDefault();
-                
                 document.querySelector('#contact-navigation').scrollIntoView({
                     behavior: 'smooth',
                     block: 'start'
                 });
             });
-
+            
             document.querySelector('a[href="#second-block"]').addEventListener('click', function(event) {
                 event.preventDefault();
-                
                 document.querySelector('#second-block').scrollIntoView({
                     behavior: 'smooth',
                     block: 'start'
                 });
             });
-
+            
             function smoothScroll() {
-                let inBetweenBlock = document.querySelector('.in-between-block');
+                const inBetweenBlock = document.querySelector('.in-between-block');
                 const scrollPosition = window.scrollY;
                 const speed = scrollPosition / 2.7;
                 const maxMovement = 350;
                 const movement = Math.min(speed, maxMovement);
-
+            
                 inBetweenBlock.style.transform = `translateY(${movement}px)`;
-
                 requestAnimationFrame(smoothScroll);
             }
-
+            
+            function adjustOpacity(element) {
+                const scrollPosition = window.scrollY;
+                const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                const opacity = 1.1 - (scrollPosition / maxScroll);
+                element.style.opacity = opacity;
+            }
+            
             smoothScroll();
             window.addEventListener('scroll', () => {
                 const fadeText = document.querySelector('.in-between-block');
-                const scrollPosition = window.scrollY;
-                const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-                const opacity = 1.1 - (scrollPosition / maxScroll);
-
-                fadeText.style.opacity = opacity;
-            });
-
-            smoothScroll();
-            window.addEventListener('scroll', () => {
-                const fadeText = document.querySelector('.navbar');
-                const scrollPosition = window.scrollY;
-                const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-
-                const opacity = 1.1 - (scrollPosition / maxScroll);
-
-                fadeText.style.opacity = opacity;
+                adjustOpacity(fadeText);
+                
+                const navbar = document.querySelector('.navbar');
+                adjustOpacity(navbar);
             });
         </script>
     </body>
