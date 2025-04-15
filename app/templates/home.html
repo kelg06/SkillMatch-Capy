@@ -93,16 +93,20 @@
                 <div class="main-content">
                     <h2>Swipe through profiles!</h2>
                     <div id="profile-container" class="tinder-cards">
-                        {% for match in matches %}
-                            <div class="match-card">
-                                <h3 id="match-username">{{ match.user.username }}</h3>
-                                <p id="match-subjects">Subjects: {{ match.subjects }}</p>
-                                <button onclick="swipeLeft()">❌ Skip</button>
-                                <button onclick="swipeRight('{{ match.user.id }}')">✅ Match</button>
-                            </div>
-                        {% empty %}
-                            <p>No study partners found.</p>
-                        {% endfor %}
+                        {% if message %}
+                            <p>{{ message }}</p>
+                        {% else %}
+                            {% for match in matches %}
+                                <div class="match-card">
+                                    <h3 id="match-username">{{ match.user.username }}</h3>
+                                    <p id="match-subjects">Subjects: {{ match.subjects }}</p>
+                                    <button onclick="swipeLeft()">❌ Skip</button>
+                                    <button onclick="swipeRight('{{ match.user.id }}')">✅ Match</button>
+                                </div>
+                            {% empty %}
+                                <p>No study partners found.</p>  <!-- In case no matches are passed to template -->
+                            {% endfor %}
+                        {% endif %}
                         {% for profile in profiles %}
                             <div class="profile-card" id="profile-{{ profile.user.id }}" data-profile-id="{{ profile.user.id }}">
                                 <div class="profile-pic-container">

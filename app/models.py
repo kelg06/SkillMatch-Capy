@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -24,29 +25,58 @@ class Profile(models.Model):
     
     # Grade (Required)
     grade = models.CharField(max_length=20, null=False, blank=False)
-    
-    # Gender (Required)
-    GENDER_CHOICES = [
+
+    GENDER_CHOICES_1 = [
         ('male', 'Male'),
-        ('female', 'Female'),
+        ('female', 'Female')
     ]
-    
-    gender = models.CharField(max_length=6, choices=GENDER_CHOICES, null=False, blank=False)
-    
-    # Preferred Gender (Optional)
-    preferred_gender = models.CharField(max_length=6, choices=GENDER_CHOICES, null=True, blank=True)
-    
-    # Study times (Dropdown of predefined times, required)
-    STUDY_TIME_CHOICES = [
-        # ... existing choices ...
+
+    GENDER_CHOICES_2 = [
+        ('', 'Either'),
+        ('male', 'Male'),
+        ('female', 'Female')
     ]
-    
-    study_times = models.CharField(
-        max_length=20,
-        choices=STUDY_TIME_CHOICES,
-        null=False, 
-        blank=False
-    )
+
+    GHOST_LIKELIHOOD_CHOICES = [(str(i), str(i)) for i in range(1, 11)]
+
+    # Questionnaire beginning
+    # -----------------------
+    # Questionnaire beginning
+    grove_or_game_day = models.CharField(max_length=50, choices=[('grove', '📚 The Grove on a quiet day'), ('game_day', '🐅 Game day in the student section')])
+    ideal_study_spot = models.CharField(max_length=50, choices=[('ajax', '🍳 Ajax Diner booth'), ('library', '📖 J.D. Williams Library'), ('uptown', '☕ Uptown Coffee'), ('couch', '🏡 My couch')])
+    study_time = models.CharField(max_length=50, choices=[('morning', '🌅 Morning'), ('afternoon', '🌞 Afternoon'), ('late_night', '🌙 Late night')])
+    energy_source = models.CharField(max_length=50, choices=[('music', '🎧 Music'), ('walks', '🚶 Walks around campus'), ('caffeine', '☕ Caffeine'), ('friends', '👯 Friends')])
+    personality_label = models.CharField(max_length=50, choices=[('idea', '💡 Idea person'), ('planner', '📅 Planner'), ('jokester', '🎭 Jokester'), ('deep_thinker', '🧠 Deep thinker')])
+    group_project_role = models.CharField(max_length=50, choices=[('lead', '✅ Take the lead'), ('quiet', '✍️ Do the work quietly'), ('organizer', '👥 Organize the group'), ('panic', '😅 Panic last minute (but pull through)')])
+    personal_motto = models.CharField(max_length=50, choices=[('work_hard', 'Work hard, play harder'), ('flow', 'Go with the flow'), ('step_by_step', 'One step at a time'), ('done', 'Done is better than perfect')])
+    exam_prep_style = models.CharField(max_length=50, choices=[('solo', 'Solo cram session'), ('flashcards', 'Flashcards and repetition'), ('group', 'Group review'), ('teach', 'Teaching someone else')])
+    productivity_time = models.CharField(max_length=50, choices=[('morning', '🌅 Morning'), ('afternoon', '🌞 Afternoon'), ('night', '🌙 Night owl'), ('depends', '🌀 Depends on the day')])
+    academic_strength = models.CharField(max_length=50, choices=[('detail', '🔍 Focused & detail-oriented'), ('creative', '💭 Creative problem-solver'), ('fast', '🧠 Fast learner'), ('communicator', '💬 Good communicator')])
+    accountability_style = models.CharField(max_length=50, choices=[('daily', 'Daily check-ins'), ('deadlines', 'Deadlines & reminders'), ('casual', 'Casual “you good?” texts'), ('self', 'None—I’m self-driven (usually)')])
+    weekend_vibe = models.CharField(max_length=50, choices=[('food', '🍽 Trying new food'), ('sports', '🏈 Tailgate or sports'), ('chill', '🧘 Chill & recharge'), ('out', '🎶 Out with friends')])
+    meet_people = models.CharField(max_length=50, choices=[('class', 'In class or clubs'), ('greek', 'Greek life events'), ('dm', 'Instagram or DM'), ('random', 'Random convos around campus')])
+    wish_more_of = models.CharField(max_length=50, choices=[('time', '⏳ Time'), ('money', '💰 Money'), ('focus', '🧠 Focus'), ('study_buddies', '🙌 Chill people to study with')])
+    favorite_tradition = models.CharField(max_length=50, choices=[('grove', '🐅 The Grove'), ('walk', '🔔 Walk of Champions'), ('swayze', '🎉 Swayze student section'), ('fountain', '🎓 Senior fountain jump')])
+    hot_take = models.CharField(max_length=100, choices=[('chicken', 'Chicken on a stick > Raising Cane’s'), ('hammocks', 'The Circle should have hammocks'), ('vibes', 'You don’t need a planner — just vibes')])
+    secret_campus_hack = models.CharField(max_length=255)
+    todays_vibe = models.CharField(max_length=50, choices=[('chill', '😎'), ('sleepy', '😴'), ('overwhelmed', '🤯')])
+    planner_fullness = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)], null=True)  # Range 0-100%
+    social_energy = models.CharField(max_length=50, choices=[('high', '📈'), ('low', '📉'), ('medium', '📊')])
+    ghost_likelihood = models.CharField(max_length=2, choices=GHOST_LIKELIHOOD_CHOICES, default='1')
+    major_approach = models.CharField(max_length=50, choices=[('love', 'I chose it because I love it'), ('career', 'It aligns with my career goals'), ('realistic', 'It was the most realistic option'), ('figuring_out', 'Still figuring it out 🤷')])
+    post_grad_plan = models.CharField(max_length=50, choices=[('grad_school', 'Grad school'), ('job', '💼 Job right away'), ('travel', '✈️ Take time off/travel'), ('unsure', '🤔 Still figuring it out')])
+    college_motivation = models.CharField(max_length=50, choices=[('career', '🚀 Career success'), ('learning', '🧠 Learning new stuff'), ('prove', '🧍 Proving it to myself'), ('people', '👫 Meeting the right people')])
+    campus_groups = models.CharField(max_length=50, choices=[('fraternity_sorority', '🏛 Fraternity/Sorority'), ('academic_clubs', '🧠 Academic clubs (e.g., Honors College, debate, CME)'), ('creative_orgs', '🎨 Creative orgs (e.g., theatre, film, writing)'), ('sports_intramurals', '🎽 Sports or intramurals'), ('music_arts_groups', '🎸 Music or arts-related groups'), ('class_match_5', 'Class Match 5'), ('religious_orgs', '🙏 Religious orgs (e.g., Cru, Young Life, RUF)'), ('service_groups', '🌍 Service & volunteer groups'), ('niche_clubs', '🧩 Niche interest clubs (e.g., gaming, outdoors, crypto, chess)'), ('not_involved', '🚫 Not involved (yet!)')])
+    match_involvement_importance = models.CharField(max_length=50, choices=[('super', 'Super important'), ('little', 'A little'), ('doesnt_matter', 'Doesn’t matter'), ('prefer_not', 'I’d rather they weren’t 🤣')])
+    social_energy_on_campus = models.CharField(max_length=50, choices=[('everywhere', 'I’m everywhere — love meeting people'), ('crew', 'I’ve got my crew, but I’m open'), ('low_key', 'Mostly low-key or solo'), ('searching', 'Still trying to find my people')])
+    # Questionnaire end
+    # -----------------
+    # Questionnaire end
+
+
+    gender = models.CharField(max_length=6, choices=GENDER_CHOICES_1, null=False, blank=False)
+
+    preferred_gender = models.CharField(max_length=6, choices=GENDER_CHOICES_2, null=True, blank=True)
 
     # Additional fields
     hobbies = models.TextField(blank=True, null=True)
