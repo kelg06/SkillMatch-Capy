@@ -7,12 +7,12 @@ from django.http import HttpResponseForbidden, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .forms import *
 from .utils import *
+import logging
 from django.views.decorators.http import require_POST
 from django.db.models import Q
 from django.conf import settings
 from django.shortcuts import render
 from django.utils import timezone
-from .utils import *
 from django.core.mail import send_mail
 from .models import *
 from datetime import datetime
@@ -121,29 +121,51 @@ def home_view(request):
 @login_required
 def next_match(request):
     user = request.user
-    user_profile = Profile.objects.get(user=user)
-    matches = find_study_partners(user)  # This now refers to the smart one from utils
 
-    if matches == "No matches yet!":
-        return JsonResponse({"error": "No matches available."})
+    matches = find_study_partners(user)
 
-    if "match_index" not in request.session:
-        request.session["match_index"] = 0
-    else:
-        request.session["match_index"] += 1
+    if isinstance(matches, str):
+        return JsonResponse({"no_matches": matches})
 
-    match_index = request.session["match_index"]
+    if not matches:
+        return JsonResponse({"no_matches": "No matches available."})
 
-    if match_index < len(matches):
-        match = matches[match_index]
-        return JsonResponse({
-            "username": match.user.username
-        })
-    else:
-        return JsonResponse({"error": "No more matches available."})
+    # Send back the top match
+    top_match = matches[0]
+
+    # Log the values to confirm they're being passed correctly
+    print({
+        "username": top_match.user.username,
+        "first_name": top_match.user.first_name,
+        "last_name": top_match.user.last_name,
+        "age": top_match.age,
+        "hometown": top_match.hometown,
+        "major": top_match.major,
+        "minor": top_match.minor,
+        "grade": top_match.grade,
+        "hobbies": top_match.hobbies,
+        "clubs_and_extracurriculars": top_match.clubs_and_extracurriculars,
+        "goals_after": top_match.goals_after,
+        "profile_picture_url": top_match.profile_picture.url if top_match.profile_picture else None,
+    })
+
+    return JsonResponse({
+        "username": top_match.user.username,
+        "profile_id": top_match.id,
+        "first_name": top_match.user.first_name,
+        "last_name": top_match.user.last_name,
+        "age": top_match.age,
+        "hometown": top_match.hometown,
+        "major": top_match.major,
+        "minor": top_match.minor,
+        "grade": top_match.grade,
+        "hobbies": top_match.hobbies,
+        "clubs_and_extracurriculars": top_match.clubs_and_extracurriculars,
+        "goals_after": top_match.goals_after,
+        "profile_picture_url": top_match.profile_picture.url if top_match.profile_picture else None,
+    })
 
 
-    
 def logout_view(request):
     logout(request)
     return redirect("landing")
@@ -152,22 +174,101 @@ def landing(request):
     return render(request, "landing.html")
 
 @login_required
-def like_profile(request, profile_id):
-    """Handles liking a profile"""
+def swipe_profile(request, profile_id):
+    direction = request.POST.get("direction")
     user_profile = Profile.objects.get(user=request.user)
-    liked_profile = get_object_or_404(Profile, id=profile_id)
+    swiped_profile = get_object_or_404(Profile, id=profile_id)
 
-    user_profile.liked_profiles.add(liked_profile)
-    return JsonResponse({"status": "liked"})
+    # Ensure you are correctly accessing first_name and last_name
+    user_first_name = user_profile.user.first_name
+    user_last_name = user_profile.user.last_name
+    swiped_first_name = swiped_profile.user.first_name
+    swiped_last_name = swiped_profile.user.last_name
 
-@login_required
-def dislike_profile(request, profile_id):
-    """Handles disliking a profile"""
-    user_profile = Profile.objects.get(user=request.user)
-    disliked_profile = get_object_or_404(Profile, id=profile_id)
+    if direction == "like":
+        user_profile.liked_profiles.add(swiped_profile)
 
-    user_profile.disliked_profiles.add(disliked_profile)
-    return JsonResponse({"status": "disliked"})
+        if user_profile in swiped_profile.liked_profiles.all():
+            user_profile.friends.add(swiped_profile)
+            swiped_profile.friends.add(user_profile)
+
+            FriendRequest.objects.filter(
+                Q(sender=request.user, receiver=swiped_profile.user) |
+                Q(sender=swiped_profile.user, receiver=request.user)
+            ).delete()
+
+            chat_exists = Chat.objects.filter(
+                Q(user1=request.user, user2=swiped_profile.user) |
+                Q(user1=swiped_profile.user, user2=request.user)
+            ).exists()
+
+            if not chat_exists:
+                Chat.objects.create(user1=request.user, user2=swiped_profile.user)
+
+            return JsonResponse({
+                "status": "matched",
+                "message": f"It's a match! You’re now friends 🎉 with {swiped_first_name} {swiped_last_name}",
+                "next_match": get_next_match_data(request.user)
+            })
+
+        if not FriendRequest.objects.filter(sender=request.user, receiver=swiped_profile.user, accepted=False).exists():
+            FriendRequest.objects.create(sender=request.user, receiver=swiped_profile.user)
+
+        return JsonResponse({
+            "status": "liked", 
+            "message": "Profile liked and friend request sent.",
+            "next_match": get_next_match_data(request.user)
+        })
+
+    elif direction == "dislike":
+        user_profile.disliked_profiles.add(swiped_profile)
+        swiped_profile.disliked_profiles.add(user_profile)
+        return JsonResponse({
+            "status": "disliked", 
+            "message": "Profile disliked.",
+            "next_match": get_next_match_data(request.user)
+        })
+
+    return JsonResponse({"status": "error", "message": "Invalid swipe direction."}, status=400)
+
+def get_next_match_data(user):
+    matches = find_study_partners(user)
+    if isinstance(matches, str) and matches == "No matches yet!":
+        return {"no_matches": True}
+
+    # Fetch the current match index from the user's profile, defaulting to 0 if it's not set
+    current_match_index = user.profile.current_match_index if hasattr(user.profile, 'current_match_index') else 0
+
+    if current_match_index < len(matches):
+        next_match = matches[current_match_index]
+        
+        # Debugging: check if the match data is correct
+        print(f"Next match: {next_match.user.first_name} {next_match.user.last_name}")
+
+        # Update the index for the next match and save the profile
+        user.profile.current_match_index = current_match_index + 1
+        user.profile.save()
+
+        return {
+            "username": next_match.user.username,
+            "profile_id": next_match.id,
+            "first_name": next_match.user.first_name,
+            "last_name": next_match.user.last_name,
+            "age": next_match.age,
+            "hometown": next_match.hometown,
+            "major": next_match.major,
+            "minor": next_match.minor,
+            "grade": next_match.grade,
+            "hobbies": next_match.hobbies,
+            "clubs_and_extracurriculars": next_match.clubs_and_extracurriculars,
+            "goals_after": next_match.goals_after,
+            "profile_picture_url": next_match.profile_picture.url if next_match.profile_picture else None
+        }
+    else:
+        # If no more matches, reset the index
+        user.profile.current_match_index = 0
+        user.profile.save()
+        return {"no_matches": True}
 
 
 @login_required
@@ -175,17 +276,17 @@ def create_profile(request):
     try:
         profile = request.user.profile
 
-        if not profile.first_name:
+        if not profile.first_name:  # Check if the profile's first name is empty
             if request.method == "POST":
                 profile_form = ProfileForm(request.POST, request.FILES, instance=profile)
                 questionnaire_form = QuestionnaireForm(request.POST, instance=profile)
 
                 if profile_form.is_valid() and questionnaire_form.is_valid():
                     profile = profile_form.save(commit=False)
-                    profile.user = request.user  # Assign the current user to the profile
-                    profile.save()
+                    profile.user = request.user  # Ensure the current user is assigned to the profile
+                    profile.save()  # Save the profile data
                     questionnaire_form.save()  # Save the questionnaire data
-                    return redirect("home")  # Redirect to the home page after saving
+                    return redirect("home")  # Redirect to home page after saving
                 else:
                     return render(request, "create_profile.html", {
                         "profile_form": profile_form,
@@ -210,7 +311,7 @@ def create_profile(request):
                 profile = profile_form.save(commit=False)
                 profile.user = request.user  # Assign the current user to the profile
                 profile.save()
-                questionnaire_form.save(commit=False)  # Save the questionnaire data
+                questionnaire_form.save(commit=False)  # Save questionnaire data
                 questionnaire_form.instance = profile  # Link questionnaire to the profile
                 questionnaire_form.save()
                 return redirect("home")
@@ -226,6 +327,7 @@ def create_profile(request):
                 "profile_form": profile_form,
                 "questionnaire_form": questionnaire_form
             })
+       
 
 @csrf_exempt
 @login_required

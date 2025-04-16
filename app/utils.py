@@ -1,7 +1,7 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
-from .models import Profile
+from .models import FriendRequest, Profile
 
 def is_super_admin(user):
     return hasattr(user, 'profile') and user.profile.is_super_admin
@@ -10,67 +10,63 @@ def is_group_admin(user):
     return hasattr(user, 'profile') and user.profile.is_group_admin
 
 def find_study_partners(user):
-    user_profile = Profile.objects.get(user=user)
-    all_profiles = Profile.objects.exclude(user=user)
+    try:
+        user_profile = Profile.objects.get(user=user)
+    except Profile.DoesNotExist:
+        return "No matches yet!"
 
-    # Filter profiles based on preferred gender
-    if user_profile.preferred_gender and user_profile.preferred_gender != '':
+    # Exclude liked, disliked, friends, sent/received friend requests
+    liked = user_profile.liked_profiles.all()
+    disliked = user_profile.disliked_profiles.all()
+    friends = user_profile.friends.all()
+
+    sent_requests = FriendRequest.objects.filter(sender=user, accepted=False).values_list("receiver__profile__id", flat=True)
+    received_requests = FriendRequest.objects.filter(receiver=user, accepted=False).values_list("sender__profile__id", flat=True)
+
+    excluded_ids = list(liked.values_list("id", flat=True)) + \
+                   list(disliked.values_list("id", flat=True)) + \
+                   list(friends.values_list("id", flat=True)) + \
+                   list(sent_requests) + \
+                   list(received_requests)
+
+    # Filter eligible profiles
+    all_profiles = Profile.objects.exclude(user=user).exclude(id__in=excluded_ids)
+
+    # Match preferred gender
+    if user_profile.preferred_gender:
         all_profiles = all_profiles.filter(gender=user_profile.preferred_gender)
 
-    # Create a list of features for each profile that is not the user
-    profiles_data = []
-    for profile in all_profiles:
-        features = (
-            f"""{profile.major}, {profile.grade}, 
-            {profile.grove_or_game_day}, {profile.ideal_study_spot}, 
-            {profile.study_time}, {profile.energy_source}, 
-            {profile.personality_label}, {profile.group_project_role}, 
-            {profile.personal_motto}, {profile.exam_prep_style}, 
-            {profile.productivity_time}, {profile.academic_strength}, 
-            {profile.accountability_style}, {profile.weekend_vibe}, 
-            {profile.meet_people}, {profile.wish_more_of}, 
-            {profile.favorite_tradition}, {profile.hot_take}, 
-            {profile.secret_campus_hack}, {profile.todays_vibe}, 
-            {profile.planner_fullness}, {profile.social_energy}, 
-            {profile.ghost_likelihood}, {profile.major_approach}, 
-            {profile.post_grad_plan}, {profile.college_motivation}, 
-            {profile.campus_groups}, {profile.match_involvement_importance}, 
-            {profile.social_energy_on_campus}"""
-        )
-        profiles_data.append(features)
+    if not all_profiles.exists():
+        return "No matches yet!"
 
-    # The current user's features
-    user_features = (
-        f"""{user_profile.major}, {user_profile.grade}, 
-            {user_profile.grove_or_game_day}, {user_profile.ideal_study_spot}, 
-            {user_profile.study_time}, {user_profile.energy_source}, 
-            {user_profile.personality_label}, {user_profile.group_project_role}, 
-            {user_profile.personal_motto}, {user_profile.exam_prep_style}, 
-            {user_profile.productivity_time}, {user_profile.academic_strength}, 
-            {user_profile.accountability_style}, {user_profile.weekend_vibe}, 
-            {user_profile.meet_people}, {user_profile.wish_more_of}, 
-            {user_profile.favorite_tradition}, {user_profile.hot_take}, 
-            {user_profile.secret_campus_hack}, {user_profile.todays_vibe}, 
-            {user_profile.planner_fullness}, {user_profile.social_energy}, 
-            {user_profile.ghost_likelihood}, {user_profile.major_approach}, 
-            {user_profile.post_grad_plan}, {user_profile.college_motivation}, 
-            {user_profile.campus_groups}, {user_profile.match_involvement_importance}, 
-            {user_profile.social_energy_on_campus}"""
-        )
+    # Turn profiles into string features
+    def stringify_profile(profile):
+        return f"""{profile.major}, {profile.grade}, 
+        {profile.grove_or_game_day}, {profile.ideal_study_spot}, 
+        {profile.study_time}, {profile.energy_source}, 
+        {profile.personality_label}, {profile.group_project_role}, 
+        {profile.personal_motto}, {profile.exam_prep_style}, 
+        {profile.productivity_time}, {profile.academic_strength}, 
+        {profile.accountability_style}, {profile.weekend_vibe}, 
+        {profile.meet_people}, {profile.wish_more_of}, 
+        {profile.favorite_tradition}, {profile.hot_take}, 
+        {profile.secret_campus_hack}, {profile.todays_vibe}, 
+        {profile.planner_fullness}, {profile.social_energy}, 
+        {profile.ghost_likelihood}, {profile.major_approach}, 
+        {profile.post_grad_plan}, {profile.college_motivation}, 
+        {profile.campus_groups}, {profile.match_involvement_importance}, 
+        {profile.social_energy_on_campus}"""
+
+    profiles_data = [stringify_profile(p) for p in all_profiles]
+    user_features = stringify_profile(user_profile)
     profiles_data.insert(0, user_features)
 
-    if len(profiles_data) <= 1:  # Only the user's profile, so no matches
-        return "No matches yet!" 
-
-    # Convert text data into vectors
+    # Vectorize and rank
     vectorizer = TfidfVectorizer(stop_words='english')
     matrix = vectorizer.fit_transform(profiles_data)
-
-    # Compute cosine similarity
     similarity_scores = cosine_similarity(matrix[0:1], matrix[1:]).flatten()
 
-    # Match users with highest similarity
-    best_match_indices = np.argsort(similarity_scores)[::-1] 
-    best_matches = [all_profiles[int(i)] for i in best_match_indices] 
+    best_match_indices = np.argsort(similarity_scores)[::-1]
+    best_matches = [all_profiles[int(i)] for i in best_match_indices]
 
     return best_matches

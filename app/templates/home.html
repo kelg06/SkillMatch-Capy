@@ -46,7 +46,7 @@
                 {% if pending_requests %}
                     <ul>
                         {% for profile in pending_requests %}
-                            <li data-profile-id="{{ profile.id }}">
+                            <li data-profile-id="{{ match.user.id }}">
                                 {{ profile.user.username }}
                                 <button onclick="acceptFriend('{{ profile.id }}')">✔️</button>
                                 <button onclick="declineFriend('{{ profile.id }}')">❌</button>
@@ -103,7 +103,6 @@
                                     {% endif %}
                                 </div>
                                 <h3 id="match-username">{{ match.user.username }}</h3>
-                                <p id="match-subjects">Subjects:</p>
                                 <p><strong>First Name:</strong> {{ match.first_name }}</p>
                                 <p><strong>Last Name:</strong> {{ match.last_name }}</p>
                                 <p><strong>Age:</strong> {{ match.age }}</p>
@@ -116,7 +115,8 @@
                                 <p><strong>Clubs & Extracurriculars:</strong> {{ match.clubs_and_extracurriculars }}</p>
                                 <p><strong>Goals after college:</strong> {{ match.goals_after }}</p>
                                 <button onclick="swipeLeft()">❌ Skip</button>
-                                <button onclick="swipeRight('{{ match.user.id }}')">✅ Match</button>
+                                <button onclick="swipeRight('{{ match.id }}')">✅ Match</button>
+
                             </div>
                         {% empty %}
                             <p>No study partners found.</p>
@@ -178,48 +178,97 @@
             fetch("{% url 'next_match' %}")
                 .then(response => response.json())
                 .then(data => {
-                    if (data.error) {
-                        document.getElementById("match-area").innerHTML = "<p>No more matches available.</p>";
+                    console.log("Match Data:", data);  // Ensure data is correct
+                    const container = document.getElementById("profile-container");
+                    if (data.no_matches) {
+                        container.innerHTML = "<p>No more matches available.</p>";
                     } else {
-                        document.getElementById("match-username").textContent = data.username;
-                        document.getElementById("match-subjects").textContent = data.subjects;
+                        container.innerHTML = `
+                            <div class="match-card" id="match-card">
+                                <div class="profile-pic-container">
+                                    <img src="${data.profile_picture_url || '{% static "default_profile_pic.jpg" %}'}" class="profile-pic" alt="Profile Picture">
+                                </div>
+                                <h3 id="match-username">${data.username}</h3>
+                                <p><strong>First Name:</strong> ${data.first_name || 'N/A'}</p>
+                                <p><strong>Last Name:</strong> ${data.last_name || 'N/A'}</p>
+                                <p><strong>Age:</strong> ${data.age || 'N/A'}</p>
+                                <p><strong>Hometown:</strong> ${data.hometown || 'N/A'}</p>
+                                <p><strong>Major:</strong> ${data.major || 'N/A'}</p>
+                                <p><strong>Minor:</strong> ${data.minor || 'N/A'}</p>
+                                <p><strong>Grade:</strong> ${data.grade || 'N/A'}</p>
+                                <p><strong>Hobbies:</strong> ${data.hobbies || 'N/A'}</p>
+                                <p><strong>Clubs & Extracurriculars:</strong> ${data.clubs_and_extracurriculars || 'N/A'}</p>
+                                <p><strong>Goals after college:</strong> ${data.goals_after || 'N/A'}</p>
+                                <button onclick="swipeLeft()">❌ Skip</button>
+                                <button onclick="swipeRight('${data.profile_id}')">✅ Match</button>
+                            </div>
+                        `;
                     }
                 });
         }
-
-        function swipeLeft() {
-            loadNextMatch();
-        }
-
-        function swipeRight(profileId) {
-            console.log("Sending friend request for profile: ", profileId);  // Debugging output
-            sendFriendRequest(profileId);
-            loadNextMatch();
-        }
         
-
-        function sendFriendRequest(profileId) {
-            fetch(`/send-friend-request/${profileId}/`, {
-                method: 'POST',
+        
+        
+        
+        
+        
+        console.log(data);
+        console.log("First Name: ", data.first_name);  // Check the name value
+        console.log("Last Name: ", data.last_name);
+             
+        
+        function swipe(direction) {
+            const profileId = document.getElementById("match-card").dataset.profileId;
+            fetch(`/swipe-profile/${profileId}/`, {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": csrfToken,
+                },
+                body: `direction=${direction}`,
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data.message);
+                if (data.status === "matched" || data.status === "liked" || data.status === "disliked") {
+                    loadNextMatch();  // Load next profile after swipe
                 }
             })
-            .then(response => {
-                if (response.ok) {
-                    loadNextMatch(); // Show the next profile instead of alerting
-                } else {
-                    alert("Failed to send friend request.");
-                }
-            })
-            .catch(error => {
-                console.error("Error sending friend request:", error);
-                alert("An error occurred while sending the friend request.");
+            .catch((err) => {
+                console.error("Swipe failed:", err);
             });
         }
         
-
+        
+        function swipeLeft() {
+            swipe("dislike");  // Send "dislike" direction
+        }
+        
+        function swipeRight(profileId) {
+            const direction = "like";
+            fetch(`/swipe-profile/${profileId}/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": csrfToken,
+                },
+                body: `direction=${direction}`,  // Send direction "like" and profileId
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data.message);
+                // Immediately refresh the page to load the next profile after match
+                window.location.reload();  // Refresh the page to load the next match
+            })
+            .catch((err) => {
+                console.error("Swipe failed:", err);
+            });
+        }
+        
+        
+        
+        
+        
         function unfriend(profileId) {
             fetch(`/unfriend/${profileId}/`, {
                 method: 'POST',
@@ -236,7 +285,7 @@
                 }
             });
         }
-
+        
         function removeCard(profileId) {
             const card = document.getElementById(`profile-${profileId}`);
             if (card) {
@@ -244,7 +293,7 @@
                 setTimeout(() => card.remove(), 300);
             }
         }
-
+        
         function acceptFriend(profileId) {
             fetch(`/accept-friend-request/${profileId}/`, {
                 method: 'POST',
@@ -254,7 +303,7 @@
                 }
             }).then(() => location.reload());
         }
-
+        
         function declineFriend(profileId) {
             fetch(`/decline-friend-request/${profileId}/`, {
                 method: 'POST',
@@ -264,14 +313,20 @@
                 }
             }).then(() => location.reload());
         }
-
+        
         document.addEventListener("DOMContentLoaded", () => {
-            document.querySelectorAll('.profile-card').forEach(card => {
-                const hammer = new Hammer(card);
-                hammer.on('swipeleft', () => removeCard(card.dataset.profileId));
-                hammer.on('swiperight', () => sendFriendRequest(card.dataset.profileId));
-            });
-        });
+            loadNextMatch();
+        
+            const matchCard = document.getElementById("match-card");
+            if (matchCard) {
+                const hammer = new Hammer(matchCard);
+                hammer.on("swipeleft", swipeLeft);
+                hammer.on("swiperight", swipeRight);
+            }
+        
+            document.getElementById("like-btn")?.addEventListener("click", swipeRight);
+            document.getElementById("dislike-btn")?.addEventListener("click", swipeLeft);
+        });        
     </script>
 </body>
 </html>

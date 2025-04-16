@@ -17,6 +17,7 @@ urlpatterns = [
     path('accept-friend-request/<int:profile_id>/', accept_friend_request, name='accept_friend_request'),
     path('decline-friend-request/<int:profile_id>/', decline_friend_request, name='decline_friend_request'),
     path('send-friend-request/<int:profile_id>/', send_friend_request, name='send_friend_request'),
+    path("swipe-profile/<int:profile_id>/", swipe_profile, name="swipe_profile"),
     path('chat/<int:chat_id>/send_message/', send_message, name='send_message'),
     path('update-profile/<int:profile_id>/', update_profile, name='update_profile'),
     path('chat/<int:chat_id>/', chat_detail, name='chat'),
