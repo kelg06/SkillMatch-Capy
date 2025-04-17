@@ -413,7 +413,7 @@ def accept_friend_request(request, profile_id):
 
     except Profile.DoesNotExist:
         return JsonResponse({"success": False, "message": "Profile not found."}, status=404)
-
+# -------------------------------------------------------------------------------------------------------------------------
 @login_required
 def decline_friend_request(request, profile_id):
     try:
