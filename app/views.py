@@ -7,26 +7,21 @@ from django.http import HttpResponseForbidden, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .forms import *
 from .utils import *
+import logging
 from django.views.decorators.http import require_POST
 from django.db.models import Q
 from django.conf import settings
 from django.shortcuts import render
 from django.utils import timezone
-from .utils import *
 from django.core.mail import send_mail
-from .models import Profile, FriendRequest, Chat, Message
+from .models import *
 from datetime import datetime
+
 # Third-party imports
 import os
 import json
 
 # Local application imports
-from .forms import *
-from .models import *
-import os
-from django.db.models import Q
-import json
-from django.conf import settings
 from app.utils import is_group_admin, is_super_admin
 from .decorators import admin_required
 
@@ -63,40 +58,34 @@ def login_view(request):
 
     return render(request, "login.html")
 
-
 @login_required
-def home(request):
+def home_view(request):
     try:
         user_profile = Profile.objects.get(user=request.user)
     except Profile.DoesNotExist:
         return render(request, "home.html", {"profile": None})
 
-    # Get liked and disliked profiles
-    liked_profiles = user_profile.liked_profiles.values_list("id", flat=True)
-    disliked_profiles = user_profile.disliked_profiles.values_list("id", flat=True)
+    # IDs to exclude from matching
+    liked_ids = user_profile.liked_profiles.values_list("id", flat=True)
+    disliked_ids = user_profile.disliked_profiles.values_list("id", flat=True)
+    sent_ids = FriendRequest.objects.filter(sender=request.user, accepted=False).values_list("receiver__profile__id", flat=True)
+    received_ids = FriendRequest.objects.filter(receiver=request.user, accepted=False).values_list("sender__profile__id", flat=True)
+    friend_ids = user_profile.friends.values_list("id", flat=True)
 
-    # Sent requests
-    sent_requests = FriendRequest.objects.filter(sender=request.user, accepted=False).values_list("receiver__profile__id", flat=True)
-
-    # Received requests
-    received_requests = FriendRequest.objects.filter(receiver=request.user, accepted=False)
-    pending_requests = [getattr(req.sender, 'profile', None) for req in received_requests if hasattr(req.sender, 'profile')]
-    pending_request_ids = [profile.id for profile in pending_requests if profile]
-
-    # Friends
-    friends = user_profile.friends.all()
-    friend_ids = friends.values_list('id', flat=True)
-
-    # Filter profiles
+    # Profiles the user hasn't interacted with
     profiles = Profile.objects.exclude(user=request.user) \
-        .exclude(id__in=liked_profiles) \
-        .exclude(id__in=disliked_profiles) \
-        .exclude(id__in=sent_requests) \
-        .exclude(id__in=pending_request_ids) \
+        .exclude(id__in=liked_ids) \
+        .exclude(id__in=disliked_ids) \
+        .exclude(id__in=sent_ids) \
         .exclude(id__in=friend_ids)
+        # .exclude(id__in=received_ids) \
 
+    # Get pending friend requests
+    received_requests = FriendRequest.objects.filter(receiver=request.user, accepted=False)
+    pending_requests = [req.sender.profile for req in received_requests if hasattr(req.sender, 'profile')]
+
+    # Get matching profiles
     matches = find_study_partners(request.user)
-    
     if matches == "No matches yet!":
         current_match = None  
         message = matches
@@ -104,70 +93,185 @@ def home(request):
         current_match = matches[:1]
         message = None  
 
-    # Fetch chats and associated messages
+    # Get chats and messages
     chats = Chat.objects.filter(Q(user1=request.user) | Q(user2=request.user)).prefetch_related('messages')
-
     chat_data = []
     for chat in chats:
         friend = chat.user2 if chat.user1 == request.user else chat.user1
-        messages = chat.messages.order_by('created_at')  # Messages related to the chat
+        messages = chat.messages.order_by('created_at')
         chat_data.append({
             'chat': chat,
             'friend': friend,
             'messages': messages,
-            'chat_id': chat.id,  # Make sure to include the chat_id in the context
+            'chat_id': chat.id,
         })
 
     return render(request, "home.html", {
         "profiles": profiles,
         "profile": user_profile,
         "pending_requests": pending_requests,
-        "pending_request_ids": pending_request_ids,
-        "friends": friends,
-        "sent_requests": sent_requests,
+        "pending_request_ids": [p.id for p in pending_requests],
+        "friends": user_profile.friends.all(),
+        "sent_requests": sent_ids,
         "matches": current_match,
-        "message": message,  # Pass the message to show in the template if no matches
-        "chats": chat_data  # Pass the chat data here
+        "message": message,
+        "chats": chat_data,
     })
 
 @login_required
 def next_match(request):
-    user_profile = Profile.objects.get(user=request.user)
-    matches = find_study_partners(request.user)
+    user = request.user
 
-    if matches:
-        next_match = matches[1:2]  # Get the next match
-        if next_match:
-            return JsonResponse({
-                "username": next_match[0].user.username,
-                "subjects": next_match[0].subjects,
-            })
-    return JsonResponse({"error": "No more matches available."})
+    matches = find_study_partners(user)
+
+    if isinstance(matches, str):
+        return JsonResponse({"no_matches": matches})
+
+    if not matches:
+        return JsonResponse({"no_matches": "No matches available."})
+
+    # Send back the top match
+    top_match = matches[0]
+
+    # Log the values to confirm they're being passed correctly
+    print({
+        "username": top_match.user.username,
+        "first_name": top_match.user.first_name,
+        "last_name": top_match.user.last_name,
+        "age": top_match.age,
+        "hometown": top_match.hometown,
+        "major": top_match.major,
+        "minor": top_match.minor,
+        "grade": top_match.grade,
+        "hobbies": top_match.hobbies,
+        "clubs_and_extracurriculars": top_match.clubs_and_extracurriculars,
+        "goals_after": top_match.goals_after,
+        "profile_picture_url": top_match.profile_picture.url if top_match.profile_picture else None,
+    })
+
+    return JsonResponse({
+        "username": top_match.user.username,
+        "profile_id": top_match.id,
+        "first_name": top_match.user.first_name,
+        "last_name": top_match.user.last_name,
+        "age": top_match.age,
+        "hometown": top_match.hometown,
+        "major": top_match.major,
+        "minor": top_match.minor,
+        "grade": top_match.grade,
+        "hobbies": top_match.hobbies,
+        "clubs_and_extracurriculars": top_match.clubs_and_extracurriculars,
+        "goals_after": top_match.goals_after,
+        "profile_picture_url": top_match.profile_picture.url if top_match.profile_picture else None,
+    })
+
 
 def logout_view(request):
     logout(request)
     return redirect("landing")
 
+def profile_view(request):
+    return render(request, "profile.html")
+
 def landing(request):
     return render(request, "landing.html")
 
 @login_required
-def like_profile(request, profile_id):
-    """Handles liking a profile"""
+def swipe_profile(request, profile_id):
+    direction = request.POST.get("direction")
     user_profile = Profile.objects.get(user=request.user)
-    liked_profile = get_object_or_404(Profile, id=profile_id)
+    swiped_profile = get_object_or_404(Profile, id=profile_id)
 
-    user_profile.liked_profiles.add(liked_profile)
-    return JsonResponse({"status": "liked"})
+    # Ensure you are correctly accessing first_name and last_name
+    user_first_name = user_profile.user.first_name
+    user_last_name = user_profile.user.last_name
+    swiped_first_name = swiped_profile.user.first_name
+    swiped_last_name = swiped_profile.user.last_name
 
-@login_required
-def dislike_profile(request, profile_id):
-    """Handles disliking a profile"""
-    user_profile = Profile.objects.get(user=request.user)
-    disliked_profile = get_object_or_404(Profile, id=profile_id)
+    if direction == "like":
+        user_profile.liked_profiles.add(swiped_profile)
 
-    user_profile.disliked_profiles.add(disliked_profile)
-    return JsonResponse({"status": "disliked"})
+        if user_profile in swiped_profile.liked_profiles.all():
+            user_profile.friends.add(swiped_profile)
+            swiped_profile.friends.add(user_profile)
+
+            FriendRequest.objects.filter(
+                Q(sender=request.user, receiver=swiped_profile.user) |
+                Q(sender=swiped_profile.user, receiver=request.user)
+            ).delete()
+
+            chat_exists = Chat.objects.filter(
+                Q(user1=request.user, user2=swiped_profile.user) |
+                Q(user1=swiped_profile.user, user2=request.user)
+            ).exists()
+
+            if not chat_exists:
+                Chat.objects.create(user1=request.user, user2=swiped_profile.user)
+
+            return JsonResponse({
+                "status": "matched",
+                "message": f"It's a match! You’re now friends 🎉 with {swiped_first_name} {swiped_last_name}",
+                "next_match": get_next_match_data(request.user)
+            })
+
+        if not FriendRequest.objects.filter(sender=request.user, receiver=swiped_profile.user, accepted=False).exists():
+            FriendRequest.objects.create(sender=request.user, receiver=swiped_profile.user)
+
+        return JsonResponse({
+            "status": "liked", 
+            "message": "Profile liked and friend request sent.",
+            "next_match": get_next_match_data(request.user)
+        })
+
+    elif direction == "dislike":
+        user_profile.disliked_profiles.add(swiped_profile)
+        swiped_profile.disliked_profiles.add(user_profile)
+        return JsonResponse({
+            "status": "disliked", 
+            "message": "Profile disliked.",
+            "next_match": get_next_match_data(request.user)
+        })
+
+    return JsonResponse({"status": "error", "message": "Invalid swipe direction."}, status=400)
+
+def get_next_match_data(user):
+    matches = find_study_partners(user)
+    if isinstance(matches, str) and matches == "No matches yet!":
+        return {"no_matches": True}
+
+    # Fetch the current match index from the user's profile, defaulting to 0 if it's not set
+    current_match_index = user.profile.current_match_index if hasattr(user.profile, 'current_match_index') else 0
+
+    if current_match_index < len(matches):
+        next_match = matches[current_match_index]
+        
+        # Debugging: check if the match data is correct
+        print(f"Next match: {next_match.user.first_name} {next_match.user.last_name}")
+
+        # Update the index for the next match and save the profile
+        user.profile.current_match_index = current_match_index + 1
+        user.profile.save()
+
+        return {
+            "username": next_match.user.username,
+            "profile_id": next_match.id,
+            "first_name": next_match.user.first_name,
+            "last_name": next_match.user.last_name,
+            "age": next_match.age,
+            "hometown": next_match.hometown,
+            "major": next_match.major,
+            "minor": next_match.minor,
+            "grade": next_match.grade,
+            "hobbies": next_match.hobbies,
+            "clubs_and_extracurriculars": next_match.clubs_and_extracurriculars,
+            "goals_after": next_match.goals_after,
+            "profile_picture_url": next_match.profile_picture.url if next_match.profile_picture else None
+        }
+    else:
+        # If no more matches, reset the index
+        user.profile.current_match_index = 0
+        user.profile.save()
+        return {"no_matches": True}
 
 
 @login_required
@@ -175,17 +279,17 @@ def create_profile(request):
     try:
         profile = request.user.profile
 
-        if not profile.first_name:
+        if not profile.first_name:  # Check if the profile's first name is empty
             if request.method == "POST":
                 profile_form = ProfileForm(request.POST, request.FILES, instance=profile)
                 questionnaire_form = QuestionnaireForm(request.POST, instance=profile)
 
                 if profile_form.is_valid() and questionnaire_form.is_valid():
                     profile = profile_form.save(commit=False)
-                    profile.user = request.user  # Assign the current user to the profile
-                    profile.save()
+                    profile.user = request.user  # Ensure the current user is assigned to the profile
+                    profile.save()  # Save the profile data
                     questionnaire_form.save()  # Save the questionnaire data
-                    return redirect("home")  # Redirect to the home page after saving
+                    return redirect("home")  # Redirect to home page after saving
                 else:
                     return render(request, "create_profile.html", {
                         "profile_form": profile_form,
@@ -210,7 +314,7 @@ def create_profile(request):
                 profile = profile_form.save(commit=False)
                 profile.user = request.user  # Assign the current user to the profile
                 profile.save()
-                questionnaire_form.save(commit=False)  # Save the questionnaire data
+                questionnaire_form.save(commit=False)  # Save questionnaire data
                 questionnaire_form.instance = profile  # Link questionnaire to the profile
                 questionnaire_form.save()
                 return redirect("home")
@@ -226,33 +330,46 @@ def create_profile(request):
                 "profile_form": profile_form,
                 "questionnaire_form": questionnaire_form
             })
+       
 
 @csrf_exempt
 @login_required
 def send_friend_request(request, profile_id):
-    receiver = User.objects.get(id=profile_id)
-    sender = request.user
+    try:
+        receiver = User.objects.get(id=profile_id)
+        sender = request.user
 
-    if sender == receiver:
-        return JsonResponse({'success': False, 'message': "You can't send a friend request to yourself."})
+        if sender == receiver:
+            return JsonResponse({'success': False, 'message': "You can't send a friend request to yourself."})
 
-    # Check if sender already sent a request
-    if FriendRequest.objects.filter(sender=sender, receiver=receiver).exists():
-        return JsonResponse({'success': False, 'message': "Friend request already sent."})
+        sender_profile = Profile.objects.get(user=sender)
+        receiver_profile = Profile.objects.get(user=receiver)
 
-    # Check if receiver already sent a request to sender
-    if FriendRequest.objects.filter(sender=receiver, receiver=sender).exists():
-        return JsonResponse({'success': False, 'message': "This user already sent you a friend request."})
+        # Check if already friends
+        if receiver_profile in sender_profile.friends.all():
+            return JsonResponse({'success': False, 'message': "You are already friends."})
 
-    # Check if already friends
-    sender_profile = Profile.objects.get(user=sender)
-    if receiver.profile in sender_profile.friends.all():
-        return JsonResponse({'success': False, 'message': "You are already friends."})
+        # Check if sender already sent a request
+        if FriendRequest.objects.filter(sender=sender, receiver=receiver, accepted=False).exists():
+            return JsonResponse({'success': False, 'message': "Friend request already sent."})
 
-    # Create friend request
-    FriendRequest.objects.create(sender=sender, receiver=receiver)
-    return JsonResponse({'success': True, 'message': "Friend request sent."})
+        # Check if receiver already sent a request to sender (mutual match)
+        existing_request = FriendRequest.objects.filter(sender=receiver, receiver=sender, accepted=False).first()
+        if existing_request:
+            # Accept the friend request
+            existing_request.accepted = True
+            existing_request.save()
+            sender_profile.friends.add(receiver_profile)
+            receiver_profile.friends.add(sender_profile)
+            return JsonResponse({'success': True, 'message': "Friend request accepted — you're now friends!"})
 
+        # Create new friend request
+        FriendRequest.objects.create(sender=sender, receiver=receiver)
+        return JsonResponse({'success': True, 'message': "Friend request sent."})
+
+    except User.DoesNotExist:
+        return JsonResponse({'success': False, 'message': "User not found."})
+    
 @login_required
 def accept_friend_request(request, profile_id):
     try:
@@ -409,7 +526,6 @@ def update_profile(request, profile_id):
         profile.major = request.POST.get("major", profile.major)
         profile.minor = request.POST.get("minor", profile.minor)
         profile.grade = request.POST.get("grade", profile.grade)
-        profile.study_times = request.POST.get("study_times", profile.study_times)
         profile.hobbies = request.POST.get("hobbies", profile.hobbies)
         profile.clubs_and_extracurriculars = request.POST.get("clubs_and_extracurriculars", profile.clubs_and_extracurriculars)
         profile.goals_after = request.POST.get("goals_after", profile.goals_after)
@@ -449,7 +565,7 @@ def delete_profile(request, profile_id):
             profile.user.delete()
 
             # Redirect to the homepage after deletion
-            return redirect('startup')
+            return redirect('landing')
 
         except Profile.DoesNotExist:
             return JsonResponse({"success": False, "message": "Profile not found."}, status=404)

@@ -4,6 +4,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    current_match_index = models.IntegerField(default=0)
+
 
     # Admin roles
     is_super_admin = models.BooleanField(default=False)

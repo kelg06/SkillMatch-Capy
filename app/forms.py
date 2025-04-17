@@ -18,7 +18,7 @@ class QuestionnaireForm(forms.ModelForm):
             'hot_take', 'secret_campus_hack', 'todays_vibe', 
             'planner_fullness', 'social_energy', 'ghost_likelihood', 
             'major_approach', 'post_grad_plan', 'college_motivation', 
-            'campus_groups', 'match_involvement_importance', 
+            'campus_groups', 'match_involvement_importance',
             'social_energy_on_campus'
         ]
         widgets = {
@@ -109,7 +109,7 @@ class ProfileForm(forms.ModelForm):
     grade = forms.CharField(
         max_length=20,
         required=True,
-        widget=forms.TextInput(attrs={"placeholder":"freshman,Junior ex.", "class": "form-control form-field"})
+        widget=forms.TextInput(attrs={"placeholder":"Freshman, Junior, etc.", "class": "form-control form-field"})
     )
     
     # Hobbies (Optional)
@@ -147,7 +147,7 @@ class ProfileForm(forms.ModelForm):
             'hobbies', 'clubs_and_extracurriculars', 
             'goals_after', 'profile_picture'
         ]
-
+        
 class CustomSignupForm(UserCreationForm):
     username = forms.CharField(
         max_length=100, required=True, 

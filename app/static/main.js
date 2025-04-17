@@ -1,15 +1,10 @@
 console.log("JS is working!");
 
+
 // Sidebar
 const menuItems = document.querySelectorAll('.menu-item');
 
-// Messages 
-const messageNotification = document.querySelector('#messages-notifications');
-const messages = document.querySelector('.messages');
-const message = messages.querySelectorAll('.message');
-const messageSearch = document.querySelector('#message-search');
-
-//Theme
+// Theme
 const theme = document.querySelector('#theme');
 const themeModal = document.querySelector('.customize-theme');
 const fontSize = document.querySelectorAll('.choose-size span');
@@ -19,8 +14,7 @@ const Bg1 = document.querySelector('.bg-1');
 const Bg2 = document.querySelector('.bg-2');
 const Bg3 = document.querySelector('.bg-3');
 
-
-//Popup
+// Popup
 document.addEventListener("DOMContentLoaded", function() {
     const dialog = document.getElementById("profile");
 
@@ -57,43 +51,7 @@ menuItems.forEach(item => {
     item.addEventListener('click', () => {
         changeActiveItem();
         item.classList.add('active');
-        if(item.id != 'notifications') {
-            document.querySelector('.notifications-popup').
-            style.display = 'none';
-        } else {
-            document.querySelector('.notifications-popup').
-            style.display = 'block';
-            document.querySelector('#notifications .notification-count').
-            style.display = 'none';
-        }
     })
-})
-
-// ============== MESSAGES ============== 
-
-//Searches messages
-const searchMessage = () => {
-    const val = messageSearch.value.toLowerCase();
-    message.forEach(user => {
-        let name = user.querySelector('h5').textContent.toLowerCase();
-        if(name.indexOf(val) != -1) {
-            user.style.display = 'flex'; 
-        } else {
-            user.style.display = 'none';
-        }
-    })
-}
-
-//Search for messages
-messageSearch.addEventListener('keyup', searchMessage);
-
-//Highlight messages card when messages menu item is clicked
-messageNotification.addEventListener('click', () => {
-    messages.style.boxShadow = '0 0 1rem var(--color-primary)';
-    messageNotification.querySelector('.notification-count').style.display = 'none';
-    setTimeout(() => {
-        messages.style.boxShadow = 'none';
-    }, 2000);
 })
 
 // ============== THEME / DISPLAY CUSTOMIZATION ============== 
@@ -113,7 +71,6 @@ const closeThemeModal = (e) => {
 themeModal.addEventListener('click', closeThemeModal);
 theme.addEventListener('click', openThemeModal);
 
-
 // ============== FONT SIZE ============== 
 
 // remove active class from spans or font size selectors
@@ -131,24 +88,14 @@ fontSize.forEach(size => {
 
         if(size.classList.contains('font-size-1')) { 
             fontSize = '10px';
-            root.style.setProperty('----sticky-top-left', '5.4rem');
-            root.style.setProperty('----sticky-top-right', '5.4rem');
         } else if(size.classList.contains('font-size-2')) { 
             fontSize = '13px';
-            root.style.setProperty('----sticky-top-left', '5.4rem');
-            root.style.setProperty('----sticky-top-right', '-7rem');
         } else if(size.classList.contains('font-size-3')) {
             fontSize = '16px';
-            root.style.setProperty('----sticky-top-left', '-2rem');
-            root.style.setProperty('----sticky-top-right', '-17rem');
         } else if(size.classList.contains('font-size-4')) {
             fontSize = '19px';
-            root.style.setProperty('----sticky-top-left', '-5rem');
-            root.style.setProperty('----sticky-top-right', '-25rem');
         } else if(size.classList.contains('font-size-5')) {
             fontSize = '22px';
-            root.style.setProperty('----sticky-top-left', '-12rem');
-            root.style.setProperty('----sticky-top-right', '-35rem');
         }
 
         // change font size of the root html element
@@ -166,7 +113,7 @@ const changeActiveColorClass = () => {
 // Change color primary
 colorPalette.forEach(color => {
     color.addEventListener('click', () => {
-        let primary;
+        let primaryHue;
         changeActiveColorClass(); 
 
         if(color.classList.contains('color-1')) {
@@ -186,7 +133,7 @@ colorPalette.forEach(color => {
     })
 })
 
-//Theme Background Values
+// Theme Background Values
 let lightColorLightness;
 let whiteColorLightness;
 let darkColorLightness;
