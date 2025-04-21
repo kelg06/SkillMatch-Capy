@@ -13,6 +13,7 @@ urlpatterns = [
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
     path('home/', home_view, name='home'),
+    path('profile/', profile_view, name='profile'),
     path('contact/', contact_view,name='contact'),
     path('next-match/', next_match, name='next_match'),
     path('create-profile/', create_profile, name='create_profile'),

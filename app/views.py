@@ -87,11 +87,11 @@ def home_view(request):
     # Get matching profiles
     matches = find_study_partners(request.user)
     if matches == "No matches yet!":
-        current_match = None  
+        current_match = []
         message = matches
     else:
-        current_match = matches[:1]
-        message = None  
+        current_match = matches[:1]  # This will still be a list
+        message = None
 
     # Get chats and messages
     chats = Chat.objects.filter(Q(user1=request.user) | Q(user2=request.user)).prefetch_related('messages')
@@ -110,6 +110,9 @@ def home_view(request):
         "profiles": profiles,
         "profile": user_profile,
         "pending_requests": pending_requests,
+        "pending_request_ids": [p.id for p in pending_requests],
+        "friends": user_profile.friends.all(),
+        "sent_requests": sent_ids,
         "pending_request_ids": [p.id for p in pending_requests],
         "friends": user_profile.friends.all(),
         "sent_requests": sent_ids,
@@ -170,13 +173,19 @@ def logout_view(request):
     logout(request)
     return redirect("landing")
 
+def profile_view(request):
+    return render(request, "profile.html")
+
 def landing(request):
     return render(request, "landing.html")
 
 @login_required
 def swipe_profile(request, profile_id):
     direction = request.POST.get("direction")
+def swipe_profile(request, profile_id):
+    direction = request.POST.get("direction")
     user_profile = Profile.objects.get(user=request.user)
+    swiped_profile = get_object_or_404(Profile, id=profile_id)
     swiped_profile = get_object_or_404(Profile, id=profile_id)
 
     # Ensure you are correctly accessing first_name and last_name
