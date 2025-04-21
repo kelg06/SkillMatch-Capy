@@ -87,11 +87,12 @@ def home_view(request):
     # Get matching profiles
     matches = find_study_partners(request.user)
     if matches == "No matches yet!":
-        current_match = None  
+        current_match = []
         message = matches
     else:
-        current_match = matches[:1]
-        message = None  
+        current_match = matches[:1]  # This will still be a list
+        message = None
+
 
     # Get chats and messages
     chats = Chat.objects.filter(Q(user1=request.user) | Q(user2=request.user)).prefetch_related('messages')
@@ -103,7 +104,7 @@ def home_view(request):
             'chat': chat,
             'friend': friend,
             'messages': messages,
-            'chat_id': chat.id,
+            'chat_id': chat.id
         })
 
     return render(request, "home.html", {
@@ -115,7 +116,7 @@ def home_view(request):
         "sent_requests": sent_ids,
         "matches": current_match,
         "message": message,
-        "chats": chat_data,
+        "chats": chat_data
     })
 
 @login_required
@@ -233,6 +234,7 @@ def swipe_profile(request, profile_id):
         })
 
     return JsonResponse({"status": "error", "message": "Invalid swipe direction."}, status=400)
+
 
 def get_next_match_data(user):
     matches = find_study_partners(user)
