@@ -93,7 +93,6 @@ def home_view(request):
         current_match = matches[:1]  # This will still be a list
         message = None
 
-
     # Get chats and messages
     chats = Chat.objects.filter(Q(user1=request.user) | Q(user2=request.user)).prefetch_related('messages')
     chat_data = []
@@ -104,7 +103,7 @@ def home_view(request):
             'chat': chat,
             'friend': friend,
             'messages': messages,
-            'chat_id': chat.id
+            'chat_id': chat.id,
         })
 
     return render(request, "home.html", {
@@ -114,9 +113,12 @@ def home_view(request):
         "pending_request_ids": [p.id for p in pending_requests],
         "friends": user_profile.friends.all(),
         "sent_requests": sent_ids,
+        "pending_request_ids": [p.id for p in pending_requests],
+        "friends": user_profile.friends.all(),
+        "sent_requests": sent_ids,
         "matches": current_match,
         "message": message,
-        "chats": chat_data
+        "chats": chat_data,
     })
 
 @login_required
@@ -180,7 +182,10 @@ def landing(request):
 @login_required
 def swipe_profile(request, profile_id):
     direction = request.POST.get("direction")
+def swipe_profile(request, profile_id):
+    direction = request.POST.get("direction")
     user_profile = Profile.objects.get(user=request.user)
+    swiped_profile = get_object_or_404(Profile, id=profile_id)
     swiped_profile = get_object_or_404(Profile, id=profile_id)
 
     # Ensure you are correctly accessing first_name and last_name
@@ -234,7 +239,6 @@ def swipe_profile(request, profile_id):
         })
 
     return JsonResponse({"status": "error", "message": "Invalid swipe direction."}, status=400)
-
 
 def get_next_match_data(user):
     matches = find_study_partners(user)
@@ -418,7 +422,7 @@ def accept_friend_request(request, profile_id):
 
     except Profile.DoesNotExist:
         return JsonResponse({"success": False, "message": "Profile not found."}, status=404)
-
+# -------------------------------------------------------------------------------------------------------------------------
 @login_required
 def decline_friend_request(request, profile_id):
     try:
