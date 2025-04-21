@@ -18,47 +18,69 @@ class QuestionnaireForm(forms.ModelForm):
             'hot_take', 'secret_campus_hack', 'todays_vibe', 
             'planner_fullness', 'social_energy', 'ghost_likelihood', 
             'major_approach', 'post_grad_plan', 'college_motivation', 
-            'campus_groups', 'match_involvement_importance', 
+            'campus_groups', 'match_involvement_importance',
             'social_energy_on_campus'
         ]
         widgets = {
-            'grove_or_game_day': forms.Select(attrs={'class': 'form-control'}),
-            'ideal_study_spot': forms.Select(attrs={'class': 'form-control'}),
-            'study_time': forms.Select(attrs={'class': 'form-control'}),
-            'energy_source': forms.Select(attrs={'class': 'form-control'}),
-            'personality_label': forms.Select(attrs={'class': 'form-control'}),
-            'group_project_role': forms.Select(attrs={'class': 'form-control'}),
-            'personal_motto': forms.Select(attrs={'class': 'form-control'}),
-            'exam_prep_style': forms.Select(attrs={'class': 'form-control'}),
-            'productivity_time': forms.Select(attrs={'class': 'form-control'}),
-            'academic_strength': forms.Select(attrs={'class': 'form-control'}),
-            'accountability_style': forms.Select(attrs={'class': 'form-control'}),
-            'weekend_vibe': forms.Select(attrs={'class': 'form-control'}),
-            'meet_people': forms.Select(attrs={'class': 'form-control'}),
-            'wish_more_of': forms.Select(attrs={'class': 'form-control'}),
-            'favorite_tradition': forms.Select(attrs={'class': 'form-control'}),
-            'hot_take': forms.Select(attrs={'class': 'form-control'}),
+            'grove_or_game_day': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'ideal_study_spot': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'study_time': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'energy_source': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'personality_label': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'group_project_role': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'personal_motto': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'exam_prep_style': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'productivity_time': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'academic_strength': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'accountability_style': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'weekend_vibe': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'meet_people': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'wish_more_of': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'favorite_tradition': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'hot_take': forms.RadioSelect(attrs={'class': 'form-control'}),
             'secret_campus_hack': forms.Textarea(attrs={'class': 'form-control'}),
-            'todays_vibe': forms.Select(attrs={'class': 'form-control'}),
+            'todays_vibe': forms.RadioSelect(attrs={'class': 'form-control'}),
             'planner_fullness': forms.NumberInput(attrs={'class': 'form-control'}),
-            'social_energy': forms.Select(attrs={'class': 'form-control'}),
+            'social_energy': forms.RadioSelect(attrs={'class': 'form-control'}),
             'ghost_likelihood': forms.Select(attrs={'class': 'form-control'}),
-            'major_approach': forms.Select(attrs={'class': 'form-control'}),
-            'post_grad_plan': forms.Select(attrs={'class': 'form-control'}),
-            'college_motivation': forms.Select(attrs={'class': 'form-control'}),
-            'campus_groups': forms.Select(attrs={'class': 'form-control'}),
-            'match_involvement_importance': forms.Select(attrs={'class': 'form-control'}),
-            'social_energy_on_campus': forms.Select(attrs={'class': 'form-control'}),
+            'major_approach': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'post_grad_plan': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'college_motivation': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'campus_groups': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'match_involvement_importance': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'social_energy_on_campus': forms.RadioSelect(attrs={'class': 'form-control'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super(QuestionnaireForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            if isinstance(self.fields[field], forms.ChoiceField):
+                self.fields[field].choices = [choice for choice in self.fields[field].choices if choice[0] != '']
+
+
+
 class ProfileForm(forms.ModelForm):
+    # Profile Picture (Required) - Moved to the top
+    profile_picture = forms.ImageField(
+        required=True,
+        error_messages={'required': 'Please upload a profile picture.'},
+        widget=forms.ClearableFileInput(attrs={"class": "form-control form-field"})
+    )
+    
+    # Cover Photo (Required)
+    cover_photo = forms.ImageField(
+        required=True,
+        error_messages={'required': 'Please upload a cover photo.'},
+        widget=forms.ClearableFileInput(attrs={"class": "form-control form-field"})
+    )
+
     # First Name (Required)
     first_name = forms.CharField(
         max_length=50,
         required=True,
         widget=forms.TextInput(attrs={"placeholder": "Enter your first name", "class": "form-control form-field"})
     )
-    
+
     # Last Name (Required)
     last_name = forms.CharField(
         max_length=50,
@@ -109,9 +131,9 @@ class ProfileForm(forms.ModelForm):
     grade = forms.CharField(
         max_length=20,
         required=True,
-        widget=forms.TextInput(attrs={"placeholder":"freshman,Junior ex.", "class": "form-control form-field"})
+        widget=forms.TextInput(attrs={"placeholder":"Freshman, Junior, etc.", "class": "form-control form-field"})
     )
-    
+
     # Hobbies (Optional)
     hobbies = forms.CharField(
         required=False,
@@ -130,22 +152,14 @@ class ProfileForm(forms.ModelForm):
         required=True,
         widget=forms.Textarea(attrs={"placeholder": "What are your goals after graduation?", "class": "form-control form-field"})
     )
-    
-    # Profile Picture (Required)
-    profile_picture = forms.ImageField(
-        required=True,
-        error_messages={'required': 'Please upload a profile picture.'},
-        widget=forms.ClearableFileInput(attrs={"class": "form-control form-field"})
-    )
-    
+
     class Meta:
         model = Profile
         fields = [
-            'first_name', 'last_name', 'age', 'gender', 
-            'preferred_gender', 'hometown', 
-            'major', 'minor', 'grade', 
-            'hobbies', 'clubs_and_extracurriculars', 
-            'goals_after', 'profile_picture'
+            'profile_picture', 'cover_photo', 'first_name', 'last_name', 
+            'age', 'gender', 'preferred_gender', 'hometown', 
+            'major', 'minor', 'grade', 'hobbies', 
+            'clubs_and_extracurriculars', 'goals_after'
         ]
 
 class CustomSignupForm(UserCreationForm):

@@ -8,9 +8,13 @@ form {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.questionnaire-field {
-    width: 500px;
-    height: 40px;
+.question-label {
+    margin-top: 40px;
+}
+
+.form-column {
+    display: flex;
+    flex-direction: column;
 }
 
 form h2 {
@@ -19,23 +23,18 @@ form h2 {
     color: #333;
     margin-bottom: 30px;
 }
-
 /* Styling for the form groups */
-.form-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    flex-direction: column;
-}
 
 /* Styling for the input fields (increased width for text fields) */
 input[type="text"], input[type="password"], input[type="number"], input[type="file"], select, textarea {
+    width: 300px;
     padding: 12px;
     margin: 8px 0;
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 1.1em;
 }
+
 
 /* For the larger input fields like 'textarea' */
 textarea {

@@ -7,10 +7,10 @@
     --light-color-lightness: 95%;
     --white-color-lightness: 100%;
 
-    --color-white: #F0F0F0;
-    --color-light: #B1DDF6;
+    --color-white: hsl(252, 30%, var(--white-color-lightness));
+    --color-light: hsl(252, 30%, var(--light-color-lightness));
     --color-grey: hsl(252, 15%, 65%);
-    --color-primary: #CE1126;
+    --color-primary: hsl(var(--primary-color-hue), 75%, 60%);
     --color-secondary: hsl(252, 100%, 90%);
     --color-success: hsl(120, 95%, 65%);
     --color-danger: hsl(0, 95%, 65%);
@@ -53,10 +53,9 @@ body {
 
 .profile-photo {
     width: 2.7rem;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 1/1;
     border-radius: 50%;
     overflow: hidden;
-    display: flex;
 }
 
 img {
@@ -109,7 +108,7 @@ nav .container {
 }
 
 .search-bar {
-    background: #dadada;
+    background: var(--color-light);
     border-radius: var(--border-radius);
     padding: var(--search-padding);
 }
@@ -157,10 +156,9 @@ main .container .left .profile {
     background: var(--color-white);
     border-radius: var(--card-border-radius);
     display: flex;
+    align-items: center;
     column-gap: 1rem;
     width: 100%;
-    align-items: flex-start;
-    font: black;
 }
 
 /* =============== Sidebar ============== */
@@ -177,11 +175,10 @@ main .container .left .profile {
     cursor: pointer;
     transition: all 300ms ease;
     position: relative;
-    color: rgb(86, 86, 86);
 }
 
 .left .sidebar .menu-item:hover {
-    background: #dadada;
+    background: var(--color-light);
 }
 
 .left .sidebar i {
@@ -202,7 +199,6 @@ main .container .left .profile {
     top: -0.2rem;
     right: -0.3rem;
 }
-
 
 .left .sidebar h3 {
     margin-left: 1.5rem;
@@ -290,131 +286,6 @@ main .container .left .profile {
     gap: 0.5rem;
 }
 
-
-
-
-
-
-
-
-
-.no-matches-message {
-    display: flex;
-    font-size: 2em;
-    align-items: center;
-}
-
-.match-text {
-    color: white;
-    -webkit-text-stroke: .5px black;
-    font-size: 1.3em;
-    text-shadow:
-    -.5px -.5px 0 #000,
-     .5px -.5px 0 #000,
-    -.5px  .5px 0 #000,
-     .5px  .5px 0 #000;
-}
-
-
-.middle {
-    display: flex;
-    justify-content: center;
-}
-
-.match {
-    border-radius: var(--card-border-radius);
-    padding: var(--card-padding);
-    display: flex;
-    height: 85vh;
-    width: 60vh;
-    align-items: flex-start;
-    flex-direction: column;
-    justify-content: space-between;
-    border: 1.5px solid #f0f0f0;
-}
-
-dialog#profile {
-    border: none;
-    padding: 0;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    width: 300px;
-    max-width: 90%;
-    background: white;
-    font-family: 'Segoe UI', sans-serif;
-    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
-}
-
-dialog::backdrop {
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(2px);
-}
-
-.button-group {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 5%;
-    width: 100%;
-    opacity: 90%;
-    justify-content: space-evenly;
-}
-
-
-
-.button-group button {
-    padding: 0.5rem 1.2rem;
-    font-size: 1rem;
-    cursor: pointer;
-    width: 110px;
-    border-radius: var(--card-border-radius);
-}
-
-
-
-
-dialog#profile > div {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    text-align: center;
-}
-
-dialog#profile a.btn {
-    background-color: #007bff;
-    color: white;
-    padding: 10px;
-    border-radius: 8px;
-    text-decoration: none;
-    transition: background-color 0.2s;
-}
-
-dialog#profile a.btn:hover {
-    background-color: #0056b3;
-}
-
-dialog#profile p {
-    margin-bottom: 10px;
-    color: #444;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 .middle .stories .story {
     padding: var(--card-padding);
     border-radius: var(--card-border-radius);
@@ -473,7 +344,7 @@ dialog#profile p {
     no-repeat center center/cover;
 }
 
-.middle .story {
+.middle .story .profile-photo {
     width: 2rem;
     height: 2rem;
     align-self: start;
@@ -602,32 +473,12 @@ main .container .right {
     font-size: 0.75rem;
 }
 
-
-
-
-
-.right .messages .category h6 {
-    cursor: pointer;  /* Make the text clickable */
-    padding: 10px;     /* Add padding to increase clickable area */
-    transition: border-color 0.3s ease;  /* Smooth transition for border color */
+.active {
+    border-color: var(--color-dark);
 }
 
-.right .messages .category .active {
-    border-color: var(--color-dark);  /* Active state border for Messages */
-}
-
-.right .messages .category .active2 {
-    border-color: var(--color-light);  /* Active state border for China */
-}
-
-
-
-
-
-
-
-.right .messages .message-requests {
-    color: var(--color-primary);
+.active2 {
+    border-color: white;
 }
 
 .right .messages .message {
@@ -637,12 +488,12 @@ main .container .right {
     align-items: start;
 }
 
-.right .message {
+.right .message .profile-photo {
     position: relative;
     overflow: visible;
 }
 
-.right img {
+.right .profile-photo img {
     border-radius: 50%;
 }
 
@@ -654,7 +505,7 @@ main .container .right {
     font-size:0.8rem;
 }
 
-.right .messages .message .active {
+.right .messages .message .profile-photo .active {
     width: 0.8rem;
     height: 0.8rem;
     border-radius: 50%;
@@ -846,6 +697,9 @@ main .container .right {
     margin-right: 1rem;
 }
 
+/* ================= 
+MEDIA QUERIES FOR SMALL LAPTOP AND BIG TABLETS 
+==================== */
 
 @media screen and (max-width: 1200px) {
     .container {
@@ -879,6 +733,10 @@ main .container .right {
     }
 }
 
+/* ================= 
+MEDIA QUERIES FOR SMALL TABLETS AND MOBILE PHONES
+==================== */
+
 @media screen and (max-width: 992px) {
     nav .search-bar {
         display: none;
@@ -896,6 +754,7 @@ main .container .right {
         right: 0;
     }
 
+    /* Notification Popup */
     .left .notifications-popup { 
         position: absolute;
         left: -20rem;
@@ -920,4 +779,4 @@ main .container .right {
     .customize-theme .card {
         width: 80vw; 
     }
-} 
+}
