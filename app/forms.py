@@ -161,7 +161,7 @@ class ProfileForm(forms.ModelForm):
             'major', 'minor', 'grade', 'hobbies', 
             'clubs_and_extracurriculars', 'goals_after'
         ]
-
+        
 class CustomSignupForm(UserCreationForm):
     username = forms.CharField(
         max_length=100, required=True, 
