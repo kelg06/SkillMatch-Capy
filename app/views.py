@@ -30,6 +30,21 @@ from django.conf import settings
 from app.utils import is_group_admin, is_super_admin
 from .decorators import admin_required
 
+def sign(request):
+    if request.method == "POST":
+        form = CustomSignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            messages.success(request, "Account created successfully! Please log in.")
+            return redirect("login")
+    else:
+        form = CustomSignupForm()
+
+    context = {
+        "form": form
+    }
+    return render(request, 'sign.html', context)
+
 def signup_view(request):
     if request.method == "POST":
         form = CustomSignupForm(request.POST)

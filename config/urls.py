@@ -27,7 +27,8 @@ urlpatterns = [
     # path('add-event/', add_event, name='add_event'),
     path('group-posts/', group_post_list, name='group_post_list'),
     path('group-posts/create/', create_group_post, name='create_group_post'),
-    path('group-posts/delete/<int:post_id>/', delete_group_post, name='delete_group_post')
+    path('group-posts/delete/<int:post_id>/', delete_group_post, name='delete_group_post'),
+    path('sign/', sign, name='sign'),
 ]
 
 if settings.DEBUG:
