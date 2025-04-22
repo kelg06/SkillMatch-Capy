@@ -67,9 +67,6 @@
                 <div class="form-group">
                     {{ profile_form.clubs_and_extracurriculars }}
                 </div>
-                <div class="form-group">
-                    {{ profile_form.goals_after }}
-                </div>
 
                 <h3 class="mt-4">Questionnaire</h3>
                 <div class="form-group">
@@ -89,24 +86,12 @@
                     {{ questionnaire_form.energy_source }}
                 </div>
                 <div class="form-group">
-                    <label class="question-label">My friends usually say I’m the...</label>
-                    {{ questionnaire_form.personality_label }}
-                </div>
-                <div class="form-group">
                     <label class="question-label">On a group project, I’m most likely to...</label>
                     {{ questionnaire_form.group_project_role }}
                 </div>
                 <div class="form-group">
-                    <label class="question-label">If I had to pick a motto, it’d be...</label>
-                    {{ questionnaire_form.personal_motto }}
-                </div>
-                <div class="form-group">
                     <label class="question-label">How do you usually prep for an exam?</label>
                     {{ questionnaire_form.exam_prep_style }}
-                </div>
-                <div class="form-group">
-                    <label class="question-label">Most productive time of day?</label>
-                    {{ questionnaire_form.productivity_time }}
                 </div>
                 <div class="form-group">
                     <label class="question-label">Biggest academic strength?</label>
@@ -117,44 +102,20 @@
                     {{ questionnaire_form.accountability_style }}
                 </div>
                 <div class="form-group">
-                    <label class="question-label">Oxford weekend vibe?</label>
-                    {{ questionnaire_form.weekend_vibe }}
-                </div>
-                <div class="form-group">
-                    <label class="question-label">Preferred way to meet people?</label>
-                    {{ questionnaire_form.meet_people }}
-                </div>
-                <div class="form-group">
                     <label class="question-label">What do you wish you had more of?</label>
                     {{ questionnaire_form.wish_more_of }}
-                </div>
-                <div class="form-group">
-                    <label class="question-label">Favorite Ole Miss tradition?</label>
-                    {{ questionnaire_form.favorite_tradition }}
                 </div>
                 <div class="form-group">
                     <label class="question-label">Hot take:</label>
                     {{ questionnaire_form.hot_take }}
                 </div>
                 <div class="form-column">
-                    <label class="question-label">Secret campus life hack:</label>
-                    {{ questionnaire_form.secret_campus_hack }}
-                </div>
-                <div class="form-group">
-                    <label class="question-label">Today's vibe:</label>
-                    {{ questionnaire_form.todays_vibe }}
-                </div>
-                <div class="form-column">
-                    <label class="question-label">How full is your planner? 1-100</label>
+                    <label class="question-label">How busy is your schedule? 1-100</label>
                     {{ questionnaire_form.planner_fullness }}
                 </div>
                 <div class="form-group">
                     <label class="question-label">Social energy right now:</label>
                     {{ questionnaire_form.social_energy }}
-                </div>
-                <div class="form-column">
-                    <label class="question-label">How likely are you to ghost a study partner?</label>
-                    {{ questionnaire_form.ghost_likelihood }}
                 </div>
                 <div class="form-group">
                     <label class="question-label">What best describes your approach to your major?</label>
@@ -226,26 +187,6 @@
     
         const csrftoken = getCookie('csrftoken');
     
-        function acceptFriend(profileId) {
-            fetch(`/accept-friend-request/${profileId}/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken
-                },
-            }).then(response => {
-                if (response.ok) {
-                    alert("Friend request accepted!");
-                    location.reload();
-                } else {
-                    alert("Failed to accept friend request.");
-                }
-            });
-        }
-    
-        function declineFriend(profileId) {
-            alert("Friend request declined!");
-        }
     
 </script>
 </body>

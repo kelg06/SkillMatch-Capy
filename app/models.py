@@ -56,26 +56,17 @@ class Profile(models.Model):
     # -----------------------
     # Questionnaire beginning
     grove_or_game_day = models.CharField(max_length=50, choices=[('grove', '📚 The Grove on a quiet day'), ('game_day', '🐅 Game day in the student section')])
-    ideal_study_spot = models.CharField(max_length=50, choices=[('ajax', '🍳 Ajax Diner booth'), ('library', '📖 J.D. Williams Library'), ('uptown', '☕ Uptown Coffee'), ('couch', '🏡 My couch')])
+    ideal_study_spot = models.CharField(max_length=50, choices=[('ajax', '🍳 Diner booth'), ('library', '📖 Library'), ('uptown', '☕ Coffee Shop'), ('couch', '🏡 At Home')])
     study_time = models.CharField(max_length=50, choices=[('morning', '🌅 Morning'), ('afternoon', '🌞 Afternoon'), ('late_night', '🌙 Late night')])
     energy_source = models.CharField(max_length=50, choices=[('music', '🎧 Music'), ('walks', '🚶 Walks around campus'), ('caffeine', '☕ Caffeine'), ('friends', '👯 Friends')])
-    personality_label = models.CharField(max_length=50, choices=[('idea', '💡 Idea person'), ('planner', '📅 Planner'), ('jokester', '🎭 Jokester'), ('deep_thinker', '🧠 Deep thinker')])
     group_project_role = models.CharField(max_length=50, choices=[('lead', '✅ Take the lead'), ('quiet', '✍️ Do the work quietly'), ('organizer', '👥 Organize the group'), ('panic', '😅 Panic last minute (but pull through)')])
-    personal_motto = models.CharField(max_length=50, choices=[('work_hard', 'Work hard, play harder'), ('flow', 'Go with the flow'), ('step_by_step', 'One step at a time'), ('done', 'Done is better than perfect')])
     exam_prep_style = models.CharField(max_length=50, choices=[('solo', 'Solo cram session'), ('flashcards', 'Flashcards and repetition'), ('group', 'Group review'), ('teach', 'Teaching someone else')])
-    productivity_time = models.CharField(max_length=50, choices=[('morning', '🌅 Morning'), ('afternoon', '🌞 Afternoon'), ('night', '🌙 Night owl'), ('depends', '🌀 Depends on the day')])
     academic_strength = models.CharField(max_length=50, choices=[('detail', '🔍 Focused & detail-oriented'), ('creative', '💭 Creative problem-solver'), ('fast', '🧠 Fast learner'), ('communicator', '💬 Good communicator')])
     accountability_style = models.CharField(max_length=50, choices=[('daily', 'Daily check-ins'), ('deadlines', 'Deadlines & reminders'), ('casual', 'Casual “you good?” texts'), ('self', 'None—I’m self-driven (usually)')])
-    weekend_vibe = models.CharField(max_length=50, choices=[('food', '🍽 Trying new food'), ('sports', '🏈 Tailgate or sports'), ('chill', '🧘 Chill & recharge'), ('out', '🎶 Out with friends')])
-    meet_people = models.CharField(max_length=50, choices=[('class', 'In class or clubs'), ('greek', 'Greek life events'), ('dm', 'Instagram or DM'), ('random', 'Random convos around campus')])
     wish_more_of = models.CharField(max_length=50, choices=[('time', '⏳ Time'), ('money', '💰 Money'), ('focus', '🧠 Focus'), ('study_buddies', '🙌 Chill people to study with')])
-    favorite_tradition = models.CharField(max_length=50, choices=[('grove', '🐅 The Grove'), ('walk', '🔔 Walk of Champions'), ('swayze', '🎉 Swayze student section'), ('fountain', '🎓 Senior fountain jump')])
     hot_take = models.CharField(max_length=100, choices=[('chicken', 'Chicken on a stick > Raising Cane’s'), ('hammocks', 'The Circle should have hammocks'), ('vibes', 'You don’t need a planner — just vibes')])
-    secret_campus_hack = models.CharField(max_length=255, null=True)
-    todays_vibe = models.CharField(max_length=50, choices=[('chill', '🧘‍♀️ Chill'), ('confident', '😎 Confident'), ('tiring', '😴 Tiring'), ('overwhelmed', '🤯 Overwhelming')])
     planner_fullness = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)], null=True)  # Range 0-100%
     social_energy = models.CharField(max_length=50, choices=[('high', '📈 high'), ('low', '📉 low'), ('medium', '📊 mid')])
-    ghost_likelihood = models.CharField(max_length=2, choices=GHOST_LIKELIHOOD_CHOICES, default='1')
     major_approach = models.CharField(max_length=50, choices=[('love', 'I chose it because I love it'), ('career', 'It aligns with my career goals'), ('realistic', 'It was the most realistic option'), ('figuring_out', 'Still figuring it out 🤷')])
     post_grad_plan = models.CharField(max_length=50, choices=[('grad_school', '🎓 Grad school'), ('job', '💼 Job right away'), ('travel', '✈️ Take time off/travel'), ('unsure', '🤔 Still figuring it out')])
     college_motivation = models.CharField(max_length=50, choices=[('career', '🚀 Career success'), ('learning', '🧠 Learning new stuff'), ('prove', '🧍 Proving it to myself'), ('people', '👫 Meeting the right people')])
@@ -94,8 +85,6 @@ class Profile(models.Model):
     # Additional fields
     hobbies = models.TextField(blank=True, null=True)
     clubs_and_extracurriculars = models.TextField(blank=True, null=True)
-    goals_after = models.CharField(max_length=255, null=False, blank=False)
-
     # Profile Picture (Required)
     profile_picture = models.ImageField(upload_to='profile_pics/', default='default_profile_pic.jpg', blank=False, null=False)
     cover_photo = models.ImageField(upload_to='cover_photos/', default='default_profile_pic.jpg', blank=False, null=False)

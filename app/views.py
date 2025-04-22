@@ -25,13 +25,55 @@ import json
 from app.utils import is_group_admin, is_super_admin
 from .decorators import admin_required
 
+def sign(request):
+    # if request.method == "POST":
+    #     form = CustomSignupForm(request.POST)
+    #     if form.is_valid():
+    #         user = form.save()
+    #         messages.success(request, "Account created successfully! Please log in.")
+    #         return redirect("login")
+    # else:
+    #     form = CustomSignupForm()
+
+    # context = {
+    #     "form": form
+    # }
+    # return render(request, 'sign.html', context)
+    if request.method == "POST":
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = authenticate(request, username=username, password=password)
+        
+        if user:
+            login(request, user)
+            
+            # Check if the user has a profile and if the first name is filled
+            if hasattr(user, 'profile'):
+                if not user.profile.first_name:  # Check if first_name is empty
+                    return redirect('create_profile')
+            
+            # Redirect to home if the user has a profile with a first name
+            return redirect("home")
+        else:
+            messages.error(request, "Invalid credentials! Please try again.")
+            return render(request, "sign.html")
+    return render(request, 'sign.html')
+
+
 def signup_view(request):
     if request.method == "POST":
         form = CustomSignupForm(request.POST)
         if form.is_valid():
             user = form.save()
-            messages.success(request, "Account created successfully! Please log in.")
-            return redirect("login")
+            login(request, user)
+            
+            # Check if the user has a profile and if the first name is filled
+            if hasattr(user, 'profile'):
+                if not user.profile.first_name:  # Check if first_name is empty
+                    return redirect('create_profile')
+            
+            # Redirect to home if the user has a profile with a first name
+            return redirect("home")
     else:
         form = CustomSignupForm()
     return render(request, "signup.html", {"form": form})
@@ -147,7 +189,6 @@ def next_match(request):
         "grade": top_match.grade,
         "hobbies": top_match.hobbies,
         "clubs_and_extracurriculars": top_match.clubs_and_extracurriculars,
-        "goals_after": top_match.goals_after,
         "profile_picture_url": top_match.profile_picture.url if top_match.profile_picture else None,
     })
 
@@ -164,7 +205,6 @@ def next_match(request):
         "grade": top_match.grade,
         "hobbies": top_match.hobbies,
         "clubs_and_extracurriculars": top_match.clubs_and_extracurriculars,
-        "goals_after": top_match.goals_after,
         "profile_picture_url": top_match.profile_picture.url if top_match.profile_picture else None,
     })
 
@@ -267,7 +307,6 @@ def get_next_match_data(user):
             "grade": next_match.grade,
             "hobbies": next_match.hobbies,
             "clubs_and_extracurriculars": next_match.clubs_and_extracurriculars,
-            "goals_after": next_match.goals_after,
             "profile_picture_url": next_match.profile_picture.url if next_match.profile_picture else None
         }
     else:
@@ -531,7 +570,6 @@ def update_profile(request, profile_id):
         profile.grade = request.POST.get("grade", profile.grade)
         profile.hobbies = request.POST.get("hobbies", profile.hobbies)
         profile.clubs_and_extracurriculars = request.POST.get("clubs_and_extracurriculars", profile.clubs_and_extracurriculars)
-        profile.goals_after = request.POST.get("goals_after", profile.goals_after)
         profile.preferred_gender = request.POST.get("preferred_gender", profile.preferred_gender)
 
 
