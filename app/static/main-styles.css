@@ -45,9 +45,11 @@ body {
     overflow-x: hidden;
 }
 
+
+
 /* =============== General Style ============== */
 .container {
-    width: 80%;
+    width: 1050px;
     margin: 0 auto;
 }
 
@@ -160,7 +162,6 @@ nav .create {
     column-gap: 1rem;
     width: 100%;
     align-items: flex-start;
-    font: black;
 }
 
 /* =============== Sidebar ============== */
@@ -295,9 +296,6 @@ nav .create {
 
 
 
-
-
-
 .no-matches-message {
     display: flex;
     font-size: 2em;
@@ -306,13 +304,13 @@ nav .create {
 
 .match-text {
     color: white;
-    -webkit-text-stroke: .5px black;
+    -webkit-text-stroke: .308px black;
     font-size: 1.3em;
     text-shadow:
-    -.5px -.5px 0 #000,
-     .5px -.5px 0 #000,
-    -.5px  .5px 0 #000,
-     .5px  .5px 0 #000;
+    -.308px -.308px 0 #000,
+     .308px -.308px 0 #000,
+    -.308px  .308px 0 #000,
+     .308px  .308px 0 #000;
 }
 
 

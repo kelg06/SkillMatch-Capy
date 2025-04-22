@@ -30,7 +30,7 @@
         </div>
     </nav>
 
-    <main class=".main">
+    <main class="main">
         <div class="container">
             <div class="left">
                 <a class="profile" href="{% url 'profile' %}">
@@ -166,22 +166,59 @@
                     </div>
                     <div class="category">
                         <h6 class="active" onclick="toggleCategory('messages')">Messages</h6>
-                        <h6 class="active2" onclick="toggleCategory('friendrequest')">Friend Request</h6>            
+                        <h6 onclick="toggleCategory('friendrequest')">Friend Requests</h6>
+                        <h6 onclick="toggleCategory('friends')">Friends</h6>
                     </div>
-                    {% if chats %}
-                        <ul>
-                            {% for chat_info in chats %}
-                                <li id="chat-{{ chat_info.chat.id }}">
-                                    <button onclick="window.location.href='{% url 'chat' chat_id=chat_info.chat.id %}'" class="chat-btn">
-                                        {{ chat_info.friend.username }}
-                                    </button>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>No active chats</p>
-                    {% endif %}
-                    
+            
+                    <!-- Messages List -->
+                    <div id="messages-section">
+                        {% if chats %}
+                            <ul>
+                                {% for chat_info in chats %}
+                                    <li id="chat-{{ chat_info.chat.id }}">
+                                        <button onclick="window.location.href='{% url 'chat' chat_id=chat_info.chat.id %}'" class="chat-btn">
+                                            {{ chat_info.friend.username }}
+                                        </button>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No active chats</p>
+                        {% endif %}
+                    </div>
+            
+                    <!-- Friend Requests Placeholder -->
+                    <div id="friendrequest-section" style="display: none;">
+                        {% if friend_requests %}
+                            <ul>
+                                {% for request in friend_requests %}
+                                    <li id="request-{{ request.sender.id }}">
+                                        <span>{{ request.sender.username }}</span>
+                                        <button onclick="acceptFriend({{ request.sender.id }})">Accept</button>
+                                        <button onclick="declineFriend({{ request.sender.id }})">Decline</button>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No friend requests</p>
+                        {% endif %}
+                    </div>
+            
+                    <!-- Friends List -->
+                    <div id="friends-section" style="display: none;">
+                        {% if friends %}
+                            <ul>
+                                {% for friend in friends %}
+                                    <li id="friend-{{ friend.id }}">
+                                        <span>{{ friend.username }}</span>
+                                        <button onclick="unfriend({{ friend.id }})">Unfriend</button>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>You have no friends yet.</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -239,21 +276,24 @@
     </div>
 
     <script src="../static/main.js">
-        function toggleCategory(selectedCategory) {
-            const messages = document.querySelector('.right .messages .category .active');
-            const china = document.querySelector('.right .messages .category .active2');
-            
-            if (selectedCategory === 'messages') {
-                messages.classList.add('active');
-                messages.classList.remove('active2');
-                china.classList.add('active2');
-                china.classList.remove('active');
-
-            } else if (selectedCategory === 'china') {
-                china.classList.add('active');
-                china.classList.remove('active2');
-                messages.classList.add('active2');
-                messages.classList.remove('active');
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        function toggleCategory(category, event) {
+            const messageSec = document.getElementById("messages-section");
+            const requestSec = document.getElementById("friendrequest-section");
+            const friendsSec = document.getElementById("friends-section");
+        
+            // Toggle visibility of sections
+            messageSec.style.display = category === "messages" ? "block" : "none";
+            requestSec.style.display = category === "friendrequest" ? "block" : "none";
+            friendsSec.style.display = category === "friends" ? "block" : "none";
+        
+            // Remove 'active' class from all category headers
+            const cats = document.querySelectorAll(".category h6");
+            cats.forEach(h => h.classList.remove("active"));
+        
+            // Add 'active' class to the clicked category header
+            if (event && event.target) {
+                event.target.classList.add("active");
             }
         }
 
@@ -263,28 +303,42 @@
             fetch("{% url 'next_match' %}")
                 .then(response => response.json())
                 .then(data => {
-                    console.log("Match Data:", data);  // Ensure data is correct
-                    const container = document.getElementById("profile-container");
+                    console.log("Match Data:", data);
+                    const container = document.querySelector('.middle');
+        
                     if (data.no_matches) {
                         container.innerHTML = "<p>No more matches available.</p>";
                     } else {
+                        const coverPhotoStyle = data.cover_photo_url
+                            ? `background-image: url('${data.cover_photo_url}'); background-size: cover; background-position: center;`
+                            : `background-color: grey;`;
+        
                         container.innerHTML = `
-                            <div class="match-card" id="match-card">
-                                <div class="profile-pic-container">
-                                    <img src="${data.profile_picture_url || defaultProfilePic}" class="profile-pic" alt="Profile Picture">
+                            <div class="match" style="${coverPhotoStyle}">
+                                <div class="match-card">
+                                    <div class="profile-photo" style="border: 1px solid white;">
+                                        ${data.profile_picture_url ? `<img src="${data.profile_picture_url}" alt="${data.username}'s Profile Picture" class="profile-pic">` : ''}
+                                    </div>
+                                    <h3 id="match-username" class="match-text">${data.username}</h3>
+                                    <p class="match-text"><strong>Name:</strong> ${data.first_name || ''} ${data.last_name || ''}</p>
+                                    <p class="match-text"><strong>Major:</strong> ${data.major || 'N/A'}</p>
                                 </div>
-                                <h3 id="match-username">${data.username}</h3>
-                                <p><strong>Name:</strong> ${(data.first_name && data.last_name) ? data.first_name + ' ' + data.last_name : 'N/A'}</p>
-                                <p><strong>Hometown:</strong> ${data.hometown || 'N/A'}</p>
-                                <p><strong>Major:</strong> ${data.major || 'N/A'}</p>
-                                <button onclick="swipeLeft()">❌ Skip</button>
-                                <button onclick="swipeRight('${data.profile_id}')">✅ Match</button>
+                                <div class="button-group">
+                                    <button onclick="swipeLeft()">❌ Skip</button>
+                                    <button onclick="swipeRight('${data.profile_id}')">✅ Match</button>
+                                </div>
                             </div>
                         `;
                     }
                 });
         }
-
+        
+        
+        
+        console.log(data);
+        console.log("First Name: ", data.first_name);  // Check the name value
+        console.log("Last Name: ", data.last_name);
+             
         
         function swipe(direction) {
             const profileId = document.getElementById("match-card").dataset.profileId;
@@ -309,8 +363,26 @@
         }
 
         function swipeLeft() {
-            swipe("dislike");  // Send "dislike" direction
+            const direction = "dislike";  // Set the direction to "dislike"
+            const profileId = document.getElementById("match-card").dataset.profileId;  // Get the current profile's ID
+            fetch(`/swipe-profile/${profileId}/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": csrfToken,
+                },
+                body: `direction=${direction}`,
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data.message);
+                loadNextMatch();  // Load the next match after the swipe action
+            })
+            .catch((err) => {
+                console.error("Swipe failed:", err);
+            });
         }
+        
 
         function swipeRight(profileId) {
             const direction = "like";
@@ -332,6 +404,8 @@
                 console.error("Swipe failed:", err);
             });
         }
+        
+        
 
         function unfriend(profileId) {
             fetch(`/unfriend/${profileId}/`, {
@@ -387,10 +461,10 @@
                 hammer.on("swipeleft", swipeLeft);
                 hammer.on("swiperight", swipeRight);
             }
-
+        
             document.getElementById("like-btn")?.addEventListener("click", swipeRight);
             document.getElementById("dislike-btn")?.addEventListener("click", swipeLeft);
-        });
-    </script>
+        });  
+    </script>    
 </body>
 </html>
