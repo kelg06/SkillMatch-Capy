@@ -147,7 +147,6 @@ def next_match(request):
         "grade": top_match.grade,
         "hobbies": top_match.hobbies,
         "clubs_and_extracurriculars": top_match.clubs_and_extracurriculars,
-        "goals_after": top_match.goals_after,
         "profile_picture_url": top_match.profile_picture.url if top_match.profile_picture else None,
     })
 
@@ -164,7 +163,6 @@ def next_match(request):
         "grade": top_match.grade,
         "hobbies": top_match.hobbies,
         "clubs_and_extracurriculars": top_match.clubs_and_extracurriculars,
-        "goals_after": top_match.goals_after,
         "profile_picture_url": top_match.profile_picture.url if top_match.profile_picture else None,
     })
 
@@ -267,7 +265,6 @@ def get_next_match_data(user):
             "grade": next_match.grade,
             "hobbies": next_match.hobbies,
             "clubs_and_extracurriculars": next_match.clubs_and_extracurriculars,
-            "goals_after": next_match.goals_after,
             "profile_picture_url": next_match.profile_picture.url if next_match.profile_picture else None
         }
     else:
@@ -531,7 +528,6 @@ def update_profile(request, profile_id):
         profile.grade = request.POST.get("grade", profile.grade)
         profile.hobbies = request.POST.get("hobbies", profile.hobbies)
         profile.clubs_and_extracurriculars = request.POST.get("clubs_and_extracurriculars", profile.clubs_and_extracurriculars)
-        profile.goals_after = request.POST.get("goals_after", profile.goals_after)
         profile.preferred_gender = request.POST.get("preferred_gender", profile.preferred_gender)
 
 
