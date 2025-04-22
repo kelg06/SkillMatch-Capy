@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="{% static '../static/login-signup.css' %}">
 </head>
 <body>
-    {% csrf_token %}
     <div class="auth-container">
         <div class="auth-box">
             <h2>Login</h2>
@@ -30,6 +29,7 @@
             </form>
             
             <p>Don't have an account? <a href="{% url 'signup' %}">Sign Up</a></p>
+            <p>Forgot Password? <a href="{% url 'password_reset' %}">Click Here</a></p>
         </div>
     </div>
 
