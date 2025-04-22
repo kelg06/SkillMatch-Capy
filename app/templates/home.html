@@ -30,6 +30,7 @@
         </div>
     </nav>
 
+    <main class=".main">
         <div class="container">
             <div class="left">
                 <a class="profile" href="{% url 'profile' %}">
@@ -255,7 +256,7 @@
                 messages.classList.remove('active');
             }
         }
-        
+
         const defaultProfilePic = "{% static 'default_profile_pic.jpg' %}";
 
         function loadNextMatch() {
@@ -285,16 +286,7 @@
                     }
                 });
         }
-        
-        
-        
-        
-        
-        
-        console.log(data);
-        console.log("First Name: ", data.first_name);  // Check the name value
-        console.log("Last Name: ", data.last_name);
-             
+
         
         function swipe(direction) {
             const profileId = document.getElementById("match-card").dataset.profileId;
@@ -400,7 +392,7 @@
 
             document.getElementById("like-btn")?.addEventListener("click", swipeRight);
             document.getElementById("dislike-btn")?.addEventListener("click", swipeLeft);
-        }); 
-    </script>    
+        });
+    </script>
 </body>
 </html>
