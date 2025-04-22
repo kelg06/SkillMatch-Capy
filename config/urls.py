@@ -31,6 +31,7 @@ urlpatterns = [
     path('group-posts/', group_post_list, name='group_post_list'),
     path('group-posts/create/', create_group_post, name='create_group_post'),
     path('group-posts/delete/<int:post_id>/', delete_group_post, name='delete_group_post'),
+    path('sign/', sign, name='sign'),
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),

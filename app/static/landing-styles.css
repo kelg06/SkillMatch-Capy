@@ -109,7 +109,6 @@ Index:
 }
 
 .navbar {
-    display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: transparent;
@@ -117,15 +116,18 @@ Index:
     color: rgb(255, 255, 255);
     margin-left: 30px;
     width: 100%;
-    position: relative;  /* Change from fixed to relative */
+    position: relative !important;  /* Change from fixed to relative */
     z-index: 1;
+}
+#nav{
+    position: absolute;
+    display: block;
 }
 
 
 
 /* Add transition for smooth navbar movement */
 .navbar.scrolled {
-    position: absolute;
     top: 100vh; /* Push the navbar above the visual after scrolling */
     width: 100%;
     transition: top 0.3s ease;
