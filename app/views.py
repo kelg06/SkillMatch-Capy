@@ -87,11 +87,11 @@ def home_view(request):
     # Get matching profiles
     matches = find_study_partners(request.user)
     if matches == "No matches yet!":
-        current_match = []
+        current_match = None  
         message = matches
     else:
-        current_match = matches[:1]  # This will still be a list
-        message = None
+        current_match = matches[:1]
+        message = None  
 
     # Get chats and messages
     chats = Chat.objects.filter(Q(user1=request.user) | Q(user2=request.user)).prefetch_related('messages')
@@ -113,9 +113,6 @@ def home_view(request):
         "pending_request_ids": [p.id for p in pending_requests],
         "friends": user_profile.friends.all(),
         "sent_requests": sent_ids,
-        "pending_request_ids": [p.id for p in pending_requests],
-        "friends": user_profile.friends.all(),
-        "sent_requests": sent_ids,
         "matches": current_match,
         "message": message,
         "chats": chat_data,
@@ -125,18 +122,20 @@ def home_view(request):
 def next_match(request):
     user = request.user
 
+    # Assuming find_study_partners returns a list of profile matches
     matches = find_study_partners(user)
 
-    if isinstance(matches, str):
+    # Check if no matches were found
+    if isinstance(matches, str):  # In case it's an error message
         return JsonResponse({"no_matches": matches})
 
-    if not matches:
+    if not matches:  # If the matches list is empty
         return JsonResponse({"no_matches": "No matches available."})
 
-    # Send back the top match
+    # Get the top match (first match in the list)
     top_match = matches[0]
 
-    # Log the values to confirm they're being passed correctly
+    # Log the values for debugging
     print({
         "username": top_match.user.username,
         "first_name": top_match.user.first_name,
@@ -152,6 +151,7 @@ def next_match(request):
         "profile_picture_url": top_match.profile_picture.url if top_match.profile_picture else None,
     })
 
+    # Return the top match data as JSON
     return JsonResponse({
         "username": top_match.user.username,
         "profile_id": top_match.id,
@@ -182,10 +182,7 @@ def landing(request):
 @login_required
 def swipe_profile(request, profile_id):
     direction = request.POST.get("direction")
-def swipe_profile(request, profile_id):
-    direction = request.POST.get("direction")
     user_profile = Profile.objects.get(user=request.user)
-    swiped_profile = get_object_or_404(Profile, id=profile_id)
     swiped_profile = get_object_or_404(Profile, id=profile_id)
 
     # Ensure you are correctly accessing first_name and last_name
