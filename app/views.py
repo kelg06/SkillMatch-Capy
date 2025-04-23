@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .forms import *
+import logging
 from .utils import *
 import logging
 from django.views.decorators.http import require_POST
@@ -731,8 +732,12 @@ def admin_required(view_func):
     return _wrapped_view
 
 # View to create a group post (both super admins and group admins can create posts)
+
+logger = logging.getLogger(__name__)
+
 @admin_required
 def create_group_post(request):
+    logger.debug(f"Request method: {request.method}")
     if request.method == 'POST':
         form = GroupPostForm(request.POST, request.FILES)
         if form.is_valid():
@@ -740,10 +745,24 @@ def create_group_post(request):
             post.created_by = request.user
             post.save()
             return redirect('group_post_list')
+        else:
+            logger.debug(f"Form errors: {form.errors}")
     else:
         form = GroupPostForm()
-    return render(request, 'create_post.html', {'form': form})
 
+@login_required
+def group_post_list(request):
+    if not hasattr(request.user, 'profile'):
+        return redirect('create_profile')
+
+    posts = GroupPost.objects.all().order_by('-created_at')
+    form = GroupPostForm()  # Instantiate the form
+
+    return render(request, 'post_list.html', {
+        'posts': posts,
+        'form': form,  # Pass it to the template
+    })
+    
 # View to delete a group post (super admins can delete any post, group admins can delete their own posts)
 @login_required
 def delete_group_post(request, post_id):
@@ -757,15 +776,6 @@ def delete_group_post(request, post_id):
         return HttpResponseForbidden("You don't have permission to delete this post.")
 
 # View to list all group posts
-@login_required
-def group_post_list(request):
-    # Check if the user has a profile
-    if not hasattr(request.user, 'profile'):
-        return redirect('create_profile')  # Redirect to the profile creation page
-
-    # Fetch the group posts
-    posts = GroupPost.objects.all().order_by('-created_at')
-    return render(request, 'post_list.html', {'posts': posts})
 
 def contact_view(request):
     if request.method == 'POST':
