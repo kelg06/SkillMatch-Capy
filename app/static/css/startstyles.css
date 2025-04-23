@@ -245,8 +245,12 @@ sup {
   top: -0.5em;
 }
 
+.col-lg-4.text-lg-start p {
+  color: #81aac1;
+}
+
 a {
-  color: var(--bs-link-color);
+  color: #81aac1;
   text-decoration: underline;
 }
 a:hover {
