@@ -275,7 +275,7 @@
         </div>
     </div>
 
-    <script>
+    <script >
         const csrfToken = '{{ csrf_token }}';
         function toggleCategory(category, event) {
             const messageSec = document.getElementById("messages-section");
@@ -301,7 +301,7 @@
 
         function loadNextMatch() {
             fetch("{% url 'next_match' %}")
-                .then(response => response.json()
+                .then(response => response.json())
                 .then(data => {
                     console.log("Match Data:", data);  // Ensure data is correct
                     const container = document.querySelector('.middle');
@@ -347,15 +347,6 @@
         }
         
         
-        
-        
-        
-        
-        
-        {% comment %} console.log(data);
-        console.log("First Name: ", data.first_name);  // Check the name value
-        console.log("Last Name: ", data.last_name); {% endcomment %}
-             
         
         function swipe(direction) {
             const profileId = document.getElementById("match-card").dataset.profileId;

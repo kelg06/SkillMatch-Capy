@@ -26,19 +26,6 @@ from app.utils import is_group_admin, is_super_admin
 from .decorators import admin_required
 
 def sign(request):
-    # if request.method == "POST":
-    #     form = CustomSignupForm(request.POST)
-    #     if form.is_valid():
-    #         user = form.save()
-    #         messages.success(request, "Account created successfully! Please log in.")
-    #         return redirect("login")
-    # else:
-    #     form = CustomSignupForm()
-
-    # context = {
-    #     "form": form
-    # }
-    # return render(request, 'sign.html', context)
     if request.method == "POST":
         username = request.POST["username"]
         password = request.POST["password"]
@@ -756,3 +743,6 @@ def contact_view(request):
         form = ContactForm()
 
     return render(request, 'contact.html', {'form': form})
+
+def team(request):
+    return render(request, 'team.html')
