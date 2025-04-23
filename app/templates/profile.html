@@ -146,37 +146,23 @@
                     </div>
                 </div>
 
+                <!-- Friends List -->
                 <div id="friends-section">
+                    {% if friends %}
                     <ul class="friends-list">
-                        <li id="friend">
-                            <span>Arthur</span>
-                            <button>Unfriend</button>
-                        </li>
-                        <li id="friend">
-                            <span>Tandy</span>
-                            <button>Unfriend</button>
-                        </li>
-                        <li id="friend">
-                            <span>Tanner</span>
-                            <button>Unfriend</button>
-                        </li>
-                        <li id="friend">
-                            <span>Jim</span>
-                            <button>Unfriend</button>
-                        </li>
+                        {% for friend in friends %}
+                            <li id="friend-{{ friend.id }}">
+                                {% if friend.profile_picture %}
+                                    <img src="{{ friend.profile_picture.url }}" alt="Profile Picture" style="width:2.7rem;">
+                                {% endif %}
+                                {{ friend.user.username }}
+                                <button onclick="unfriend('{{ friend.id }}')">❌ Unfriend</button>
+                            </li>
+                        {% endfor %}
                     </ul>
-                    {% comment %} {% if friends %}
-                        <ul>
-                            {% for friend in friends %}
-                                <li id="friend-{{ friend.id }}">
-                                    <span>{{ friend.username }}</span>
-                                    <button onclick="unfriend({{ friend.id }})">Unfriend</button>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>You have no friends yet.</p>
-                    {% endif %} {% endcomment %}
+                {% else %}
+                    <p>No friends yet</p>
+                {% endif %}
                 </div>
             </div>
         </div>

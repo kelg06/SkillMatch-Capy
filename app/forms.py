@@ -11,12 +11,12 @@ class QuestionnaireForm(forms.ModelForm):
         model = Profile
         fields = [
             'grove_or_game_day', 'ideal_study_spot', 'study_time', 
-            'energy_source', 'personality_label', 'group_project_role', 
-            'personal_motto', 'exam_prep_style', 'productivity_time', 
-            'academic_strength', 'accountability_style', 'weekend_vibe', 
-            'meet_people', 'wish_more_of', 'favorite_tradition', 
-            'hot_take', 'secret_campus_hack', 'todays_vibe', 
-            'planner_fullness', 'social_energy', 'ghost_likelihood', 
+            'energy_source', 'group_project_role', 
+           'exam_prep_style', 
+            'academic_strength', 'accountability_style',
+            'wish_more_of', 
+            'hot_take', 
+            'planner_fullness', 'social_energy',
             'major_approach', 'post_grad_plan', 'college_motivation', 
             'campus_groups', 'match_involvement_importance',
             'social_energy_on_campus'
@@ -26,23 +26,14 @@ class QuestionnaireForm(forms.ModelForm):
             'ideal_study_spot': forms.RadioSelect(attrs={'class': 'form-control'}),
             'study_time': forms.RadioSelect(attrs={'class': 'form-control'}),
             'energy_source': forms.RadioSelect(attrs={'class': 'form-control'}),
-            'personality_label': forms.RadioSelect(attrs={'class': 'form-control'}),
             'group_project_role': forms.RadioSelect(attrs={'class': 'form-control'}),
-            'personal_motto': forms.RadioSelect(attrs={'class': 'form-control'}),
             'exam_prep_style': forms.RadioSelect(attrs={'class': 'form-control'}),
-            'productivity_time': forms.RadioSelect(attrs={'class': 'form-control'}),
             'academic_strength': forms.RadioSelect(attrs={'class': 'form-control'}),
             'accountability_style': forms.RadioSelect(attrs={'class': 'form-control'}),
-            'weekend_vibe': forms.RadioSelect(attrs={'class': 'form-control'}),
-            'meet_people': forms.RadioSelect(attrs={'class': 'form-control'}),
             'wish_more_of': forms.RadioSelect(attrs={'class': 'form-control'}),
-            'favorite_tradition': forms.RadioSelect(attrs={'class': 'form-control'}),
             'hot_take': forms.RadioSelect(attrs={'class': 'form-control'}),
-            'secret_campus_hack': forms.Textarea(attrs={'class': 'form-control'}),
-            'todays_vibe': forms.RadioSelect(attrs={'class': 'form-control'}),
             'planner_fullness': forms.NumberInput(attrs={'class': 'form-control'}),
             'social_energy': forms.RadioSelect(attrs={'class': 'form-control'}),
-            'ghost_likelihood': forms.Select(attrs={'class': 'form-control'}),
             'major_approach': forms.RadioSelect(attrs={'class': 'form-control'}),
             'post_grad_plan': forms.RadioSelect(attrs={'class': 'form-control'}),
             'college_motivation': forms.RadioSelect(attrs={'class': 'form-control'}),
@@ -146,12 +137,6 @@ class ProfileForm(forms.ModelForm):
         widget=forms.Textarea(attrs={"placeholder": "Tell us about your clubs and extracurricular activities (optional)", "class": "form-control form-field"})
     )
     
-    # Goals After Graduation (Required)
-    goals_after = forms.CharField(
-        max_length=255,
-        required=True,
-        widget=forms.Textarea(attrs={"placeholder": "What are your goals after graduation?", "class": "form-control form-field"})
-    )
 
     class Meta:
         model = Profile
@@ -159,7 +144,7 @@ class ProfileForm(forms.ModelForm):
             'profile_picture', 'cover_photo', 'first_name', 'last_name', 
             'age', 'gender', 'preferred_gender', 'hometown', 
             'major', 'minor', 'grade', 'hobbies', 
-            'clubs_and_extracurriculars', 'goals_after'
+            'clubs_and_extracurriculars'
         ]
         
 class CustomSignupForm(UserCreationForm):

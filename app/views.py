@@ -25,18 +25,20 @@ import json
 from app.utils import is_group_admin, is_super_admin
 from .decorators import admin_required
 
-def signup_view(request):
-    if request.method == "POST":
-        form = CustomSignupForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            messages.success(request, "Account created successfully! Please log in.")
-            return redirect("login")
-    else:
-        form = CustomSignupForm()
-    return render(request, "signup.html", {"form": form})
+def sign(request):
+    # if request.method == "POST":
+    #     form = CustomSignupForm(request.POST)
+    #     if form.is_valid():
+    #         user = form.save()
+    #         messages.success(request, "Account created successfully! Please log in.")
+    #         return redirect("login")
+    # else:
+    #     form = CustomSignupForm()
 
-def login_view(request):
+    # context = {
+    #     "form": form
+    # }
+    # return render(request, 'sign.html', context)
     if request.method == "POST":
         username = request.POST["username"]
         password = request.POST["password"]
@@ -54,9 +56,27 @@ def login_view(request):
             return redirect("home")
         else:
             messages.error(request, "Invalid credentials! Please try again.")
-            return render(request, "login.html")
+            return render(request, "sign.html")
+    return render(request, 'sign.html')
 
-    return render(request, "login.html")
+
+def signup_view(request):
+    if request.method == "POST":
+        form = CustomSignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            
+            # Check if the user has a profile and if the first name is filled
+            if hasattr(user, 'profile'):
+                if not user.profile.first_name:  # Check if first_name is empty
+                    return redirect('create_profile')
+            
+            # Redirect to home if the user has a profile with a first name
+            return redirect("home")
+    else:
+        form = CustomSignupForm()
+    return render(request, "signup.html", {"form": form})
 
 @login_required
 def home_view(request):
@@ -147,7 +167,6 @@ def next_match(request):
         "grade": top_match.grade,
         "hobbies": top_match.hobbies,
         "clubs_and_extracurriculars": top_match.clubs_and_extracurriculars,
-        "goals_after": top_match.goals_after,
         "profile_picture_url": top_match.profile_picture.url if top_match.profile_picture else None,
     })
 
@@ -164,7 +183,6 @@ def next_match(request):
         "grade": top_match.grade,
         "hobbies": top_match.hobbies,
         "clubs_and_extracurriculars": top_match.clubs_and_extracurriculars,
-        "goals_after": top_match.goals_after,
         "profile_picture_url": top_match.profile_picture.url if top_match.profile_picture else None,
     })
 
@@ -172,7 +190,6 @@ def next_match(request):
 def logout_view(request):
     logout(request)
     return redirect("landing")
-
 
 @login_required
 def profile_view(request):
@@ -313,7 +330,6 @@ def get_next_match_data(user):
             "grade": next_match.grade,
             "hobbies": next_match.hobbies,
             "clubs_and_extracurriculars": next_match.clubs_and_extracurriculars,
-            "goals_after": next_match.goals_after,
             "profile_picture_url": next_match.profile_picture.url if next_match.profile_picture else None
         }
     else:
@@ -321,7 +337,6 @@ def get_next_match_data(user):
         user.profile.current_match_index = 0
         user.profile.save()
         return {"no_matches": True}
-
 
 @login_required
 def create_profile(request):
@@ -379,7 +394,6 @@ def create_profile(request):
                 "profile_form": profile_form,
                 "questionnaire_form": questionnaire_form
             })
-       
 
 @csrf_exempt
 @login_required
@@ -565,31 +579,54 @@ def send_message(request, chat_id):
 
 @login_required
 def update_profile(request, profile_id):
-    profile = get_object_or_404(Profile, id=profile_id, user=request.user)
+    # profile = get_object_or_404(Profile, id=profile_id, user=request.user)
+
+    # if request.method == "POST":
+    #     profile.first_name = request.POST.get("first_name", profile.first_name)
+    #     profile.last_name = request.POST.get("last_name", profile.last_name)
+    #     profile.age = request.POST.get("age", profile.age)
+    #     profile.hometown = request.POST.get("hometown", profile.hometown)
+    #     profile.major = request.POST.get("major", profile.major)
+    #     profile.minor = request.POST.get("minor", profile.minor)
+    #     profile.grade = request.POST.get("grade", profile.grade)
+    #     profile.hobbies = request.POST.get("hobbies", profile.hobbies)
+    #     profile.clubs_and_extracurriculars = request.POST.get("clubs_and_extracurriculars", profile.clubs_and_extracurriculars)
+    #     profile.preferred_gender = request.POST.get("preferred_gender", profile.preferred_gender)
+
+
+
+    #     if 'profile_picture' in request.FILES:
+    #         profile.profile_picture = request.FILES['profile_picture']
+
+    #     profile.save()
+    #     messages.success(request, "Profile updated successfully!")
+    #     return redirect("home")
+
+    # return render(request, "update_profile.html", {"profile": profile})
+    profile = request.user.profile
 
     if request.method == "POST":
-        profile.first_name = request.POST.get("first_name", profile.first_name)
-        profile.last_name = request.POST.get("last_name", profile.last_name)
-        profile.age = request.POST.get("age", profile.age)
-        profile.hometown = request.POST.get("hometown", profile.hometown)
-        profile.major = request.POST.get("major", profile.major)
-        profile.minor = request.POST.get("minor", profile.minor)
-        profile.grade = request.POST.get("grade", profile.grade)
-        profile.hobbies = request.POST.get("hobbies", profile.hobbies)
-        profile.clubs_and_extracurriculars = request.POST.get("clubs_and_extracurriculars", profile.clubs_and_extracurriculars)
-        profile.goals_after = request.POST.get("goals_after", profile.goals_after)
-        profile.preferred_gender = request.POST.get("preferred_gender", profile.preferred_gender)
+        profile_form = ProfileForm(request.POST, request.FILES, instance=profile)
+        questionnaire_form = QuestionnaireForm(request.POST, instance=profile)
 
-
-        if 'profile_picture' in request.FILES:
-            profile.profile_picture = request.FILES['profile_picture']
-
-        profile.save()
-        messages.success(request, "Profile updated successfully!")
-        return redirect("home")
-
-    return render(request, "update_profile.html", {"profile": profile})
-
+        if profile_form.is_valid() and questionnaire_form.is_valid():
+            profile = profile_form.save(commit=False)
+            profile.user = request.user  # Ensure the current user is assigned to the profile
+            profile.save()  # Save the profile data
+            questionnaire_form.save()  # Save the questionnaire data
+            return redirect("profile")  # Redirect to home page after saving
+        else:
+            return render(request, "update_profile.html", {
+                "profile_form": profile_form,
+                "questionnaire_form": questionnaire_form
+            })
+    else:
+        profile_form = ProfileForm(instance=profile)
+        questionnaire_form = QuestionnaireForm(instance=profile)
+        return render(request, "update_profile.html", {
+            "profile_form": profile_form,
+            "questionnaire_form": questionnaire_form
+        })
 
 @login_required
 def delete_profile(request, profile_id):
@@ -692,7 +729,6 @@ def calendar(request):
         form = EventForm()
 
     return render(request, 'calendar.html', {'events': events, 'form': form})
-
 
 # Custom decorator to check if the user is either a super admin or group admin
 def admin_required(view_func):
