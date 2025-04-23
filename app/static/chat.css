@@ -113,3 +113,26 @@ form button[type="submit"] {
 form button[type="submit"]:hover {
     background-color: #27ae60;
 }
+.message-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.message-wrapper.sent {
+    flex-direction: row-reverse;
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+.last-seen {
+    font-size: 0.9rem;
+    color: #888;
+    margin-top: -10px;
+    margin-bottom: 15px;
+}

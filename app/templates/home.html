@@ -1,11 +1,12 @@
 {% load static %}
+{% load tz %} 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mySocial - Responsive Social Media Website Using HTML, CSS, JavaScript</title>
+    <title>Home</title>
     <!-- IconScout CDN -->
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.6/css/unicons.css">
     <!-- Stylesheet -->
@@ -30,7 +31,7 @@
         </div>
     </nav>
 
-    <main class=".main">
+    <main class="main">
         <div class="container">
             <div class="left">
                 <a class="profile" href="{% url 'profile' %}">
@@ -52,60 +53,43 @@
                         <span><i class="uil uil-compass"></i></span>
                         <h3>Events</h3>
                     </a>
-                    <a class="menu-item"  id="notifications">
-                        <span><i class="uil uil-bell"><small class="notification-count">9+</small></i></span>
-                        <h3>Notification</h3>
-                        <div class="notifications-popup">
-                            <div>
-                                <div class="profile-photo">
-                                </div>
-                                <div class="notification-body">
-                                    <b>Keke Benjamin</b> accepted your friend request
-                                    <small class="text-muted">2 Days Ago</small>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="profile-photo">
-                                </div>
-                                <div class="notification-body">
-                                    <b>John Doe</b> commented on your post
-                                    <small class="text-muted">1 Hour Ago</small>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="profile-photo">
-                                </div>
-                                <div class="notification-body">
-                                    <b>Marry Oppong</b> and <b>283 Others</b> liked your post
-                                    <small class="text-muted">4 Minutes Ago</small>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="profile-photo">
-                                </div>
-                                <div class="notification-body">
-                                    <b>Doris Y. Lartey</b> commented on a post you are tagged in
-                                    <small class="text-muted">2 Days Ago</small>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="profile-photo">
-                                </div>
-                                <div class="notification-body">
-                                    <b>Keyley Jenner</b> commented on a post you are tagged in
-                                    <small class="text-muted">1 Hour Ago</small>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="profile-photo">
-                                </div>
-                                <div class="notification-body">
-                                    <b>Jane Doe</b> commented on your post
-                                    <small class="text-muted">1 Hour Ago</small>
-                                </div>
-                            </div>
-                        </div>
+                    <a class="menu-item" id="notifications" class="popup hidden">
+                        <span>
+                            <i class="uil uil-bell">
+                                <small class="notification-count">{{ pending_requests|length }}</small>
+                            </i>
+                        </span>
+                        <h3>Notifications</h3>
                     </a>
+                    
+                    <!-- Friend Requests Popup -->
+                    <div id="notifications-popup" class="popup hidden">
+                        <h4>Friend Requests</h4>
+                        {% if pending_requests %}
+                            <ul class="friend-request-list">
+                                {% for profile in pending_requests %}
+                                    <li class="friend-request-item" data-profile-id="{{ profile.user.id }}">
+                                        <div class="avatar-container">
+                                            {% if profile.profile_picture %}
+                                                <img src="{{ profile.profile_picture.url }}" alt="Profile Photo" class="popup-avatar">
+                                            {% else %}
+                                                <img src="{% static 'images/default-profile.png' %}" alt="Default" class="popup-avatar">
+                                            {% endif %}
+                                        </div>
+                                        <span class="username">{{ profile.user.username }}</span>
+                                        <div class="action-buttons">
+                                            <button onclick="acceptFriend('{{ profile.id }}')" class="accept-btn">✔️</button>
+                                            <button onclick="declineFriend('{{ profile.id }}')" class="decline-btn">❌</button>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No friend requests</p>
+                        {% endif %}
+                    </div>
+                    
+                    
                     <a class="menu-item" id="theme">
                         <span><i class="uil uil-palette"></i></span>
                         <h3>Theme</h3>
@@ -173,15 +157,34 @@
                     <!-- Messages List -->
                     <div id="messages-section">
                         {% if chats %}
-                    <ul>
-                        {% for chat_info in chats %}
-                            <li id="chat-{{ chat_info.chat.id }}">
-                                <button onclick="window.location.href='{% url 'chat' chat_id=chat_info.chat.id %}'" class="chat-btn">
-                                    {{ chat_info.friend.username }}
-                                </button>
-                            </li>
-                        {% endfor %}
-                    </ul>
+                        <ul>
+                            {% for chat_info in chats %}
+                                <li id="chat-{{ chat_info.chat.id }}">
+                                    <button onclick="window.location.href='{% url 'chat' chat_id=chat_info.chat.id %}'" class="chat-btn">
+                                        {% if chat_info.friend.profile.profile_picture %}
+                                            <img class="chat-avatar" src="{{ chat_info.friend.profile.profile_picture.url }}" alt="{{ chat_info.friend.username }}'s profile picture">
+                                        {% else %}
+                                            <img class="chat-avatar" src="{% static 'images/default-profile.png' %}" alt="Default profile picture">
+                                        {% endif %}
+                        
+                                        <div class="chat-meta">
+                                            <div class="chat-header">
+                                                <span class="username">{{ chat_info.friend.username }}</span>
+                                                {% if chat_info.last_message %}
+                                                    <span class="chat-time">{{ chat_info.last_message.created_at|localtime|date:"g:i A" }}</span>
+                                                {% endif %}
+                                            </div>
+                                            <span class="chat-snippet">
+                                                {{ chat_info.last_message_snippet|truncatechars:40 }}
+                                            </span>
+                                        </div>
+                                    </button>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        
+                        
+                        
                 {% else %}
                     <p>No active chats</p>
                 {% endif %}
@@ -221,7 +224,7 @@
                     </div>
                 </div>
             </div>
-            
+        </div>
     </main>
 
     <div class="customize-theme">
@@ -303,11 +306,16 @@
             fetch("{% url 'next_match' %}")
                 .then(response => response.json())
                 .then(data => {
-                    console.log("Match Data:", data);  // Ensure data is correct
+                    console.log("Match Data:", data);
                     const container = document.querySelector('.middle');
+        
                     if (data.no_matches) {
                         container.innerHTML = "<p>No more matches available.</p>";
                     } else {
+                        const coverPhotoStyle = data.cover_photo_url
+                            ? `background-image: url('${data.cover_photo_url}'); background-size: cover; background-position: center;`
+                            : `background-color: grey;`;
+        
                         container.innerHTML = `
                             <div class="middle">
                                 {% if message %}
@@ -345,8 +353,6 @@
                     }
                 });
         }
-        
-        
         
         function swipe(direction) {
             const profileId = document.getElementById("match-card").dataset.profileId;
@@ -389,7 +395,6 @@
                 console.error("Swipe failed:", err);
             });
         }
-        
 
         function swipeRight(profileId) {
             const direction = "like";
@@ -411,8 +416,6 @@
                 console.error("Swipe failed:", err);
             });
         }
-        
-        
 
         function unfriend(profileId) {
             fetch(`/unfriend/${profileId}/`, {
@@ -458,6 +461,21 @@
                 }
             }).then(() => location.reload());
         }
+        document.addEventListener('DOMContentLoaded', function () {
+            const bell = document.getElementById('notifications');
+            const popup = document.getElementById('notifications-popup');
+    
+            bell.addEventListener('click', function (event) {
+                event.stopPropagation();
+                popup.classList.toggle('hidden');
+            });
+    
+            document.addEventListener('click', function (event) {
+                if (!popup.contains(event.target) && !bell.contains(event.target)) {
+                    popup.classList.add('hidden');
+                }
+            });
+        });
 
         document.addEventListener("DOMContentLoaded", () => {
             loadNextMatch();
