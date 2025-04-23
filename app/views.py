@@ -78,28 +78,6 @@ def signup_view(request):
         form = CustomSignupForm()
     return render(request, "signup.html", {"form": form})
 
-def login_view(request):
-    if request.method == "POST":
-        username = request.POST["username"]
-        password = request.POST["password"]
-        user = authenticate(request, username=username, password=password)
-        
-        if user:
-            login(request, user)
-            
-            # Check if the user has a profile and if the first name is filled
-            if hasattr(user, 'profile'):
-                if not user.profile.first_name:  # Check if first_name is empty
-                    return redirect('create_profile')
-            
-            # Redirect to home if the user has a profile with a first name
-            return redirect("home")
-        else:
-            messages.error(request, "Invalid credentials! Please try again.")
-            return render(request, "login.html")
-
-    return render(request, "login.html")
-
 @login_required
 def home_view(request):
     try:
@@ -213,8 +191,53 @@ def logout_view(request):
     logout(request)
     return redirect("landing")
 
+@login_required
 def profile_view(request):
-    return render(request, "profile.html")
+    try:
+        user_profile = Profile.objects.get(user=request.user)
+    except Profile.DoesNotExist:
+        return render(request, "home.html", {"profile": None})
+
+    # IDs to exclude from matching
+    liked_ids = user_profile.liked_profiles.values_list("id", flat=True)
+    disliked_ids = user_profile.disliked_profiles.values_list("id", flat=True)
+    sent_ids = FriendRequest.objects.filter(sender=request.user, accepted=False).values_list("receiver__profile__id", flat=True)
+    received_ids = FriendRequest.objects.filter(receiver=request.user, accepted=False).values_list("sender__profile__id", flat=True)
+    friend_ids = user_profile.friends.values_list("id", flat=True)
+
+    # Profiles the user hasn't interacted with
+    profiles = Profile.objects.exclude(user=request.user) \
+        .exclude(id__in=liked_ids) \
+        .exclude(id__in=disliked_ids) \
+        .exclude(id__in=sent_ids) \
+        .exclude(id__in=friend_ids)
+        # .exclude(id__in=received_ids) \
+
+    # Get pending friend requests
+    received_requests = FriendRequest.objects.filter(receiver=request.user, accepted=False)
+    pending_requests = [req.sender.profile for req in received_requests if hasattr(req.sender, 'profile')]
+
+    # Get chats and messages
+    chats = Chat.objects.filter(Q(user1=request.user) | Q(user2=request.user)).prefetch_related('messages')
+    chat_data = []
+    for chat in chats:
+        friend = chat.user2 if chat.user1 == request.user else chat.user1
+        messages = chat.messages.order_by('created_at')
+        chat_data.append({
+            'chat': chat,
+            'friend': friend,
+            'messages': messages,
+            'chat_id': chat.id,
+        })
+
+    return render(request, "profile.html", {
+        "profiles": profiles,
+        "profile": user_profile,
+        "pending_requests": pending_requests,
+        "pending_request_ids": [p.id for p in pending_requests],
+        "friends": user_profile.friends.all(),
+        "sent_requests": sent_ids,
+    })
 
 def landing(request):
     return render(request, "landing.html")
@@ -315,7 +338,6 @@ def get_next_match_data(user):
         user.profile.save()
         return {"no_matches": True}
 
-
 @login_required
 def create_profile(request):
     try:
@@ -372,7 +394,6 @@ def create_profile(request):
                 "profile_form": profile_form,
                 "questionnaire_form": questionnaire_form
             })
-       
 
 @csrf_exempt
 @login_required
@@ -558,30 +579,54 @@ def send_message(request, chat_id):
 
 @login_required
 def update_profile(request, profile_id):
-    profile = get_object_or_404(Profile, id=profile_id, user=request.user)
+    # profile = get_object_or_404(Profile, id=profile_id, user=request.user)
+
+    # if request.method == "POST":
+    #     profile.first_name = request.POST.get("first_name", profile.first_name)
+    #     profile.last_name = request.POST.get("last_name", profile.last_name)
+    #     profile.age = request.POST.get("age", profile.age)
+    #     profile.hometown = request.POST.get("hometown", profile.hometown)
+    #     profile.major = request.POST.get("major", profile.major)
+    #     profile.minor = request.POST.get("minor", profile.minor)
+    #     profile.grade = request.POST.get("grade", profile.grade)
+    #     profile.hobbies = request.POST.get("hobbies", profile.hobbies)
+    #     profile.clubs_and_extracurriculars = request.POST.get("clubs_and_extracurriculars", profile.clubs_and_extracurriculars)
+    #     profile.preferred_gender = request.POST.get("preferred_gender", profile.preferred_gender)
+
+
+
+    #     if 'profile_picture' in request.FILES:
+    #         profile.profile_picture = request.FILES['profile_picture']
+
+    #     profile.save()
+    #     messages.success(request, "Profile updated successfully!")
+    #     return redirect("home")
+
+    # return render(request, "update_profile.html", {"profile": profile})
+    profile = request.user.profile
 
     if request.method == "POST":
-        profile.first_name = request.POST.get("first_name", profile.first_name)
-        profile.last_name = request.POST.get("last_name", profile.last_name)
-        profile.age = request.POST.get("age", profile.age)
-        profile.hometown = request.POST.get("hometown", profile.hometown)
-        profile.major = request.POST.get("major", profile.major)
-        profile.minor = request.POST.get("minor", profile.minor)
-        profile.grade = request.POST.get("grade", profile.grade)
-        profile.hobbies = request.POST.get("hobbies", profile.hobbies)
-        profile.clubs_and_extracurriculars = request.POST.get("clubs_and_extracurriculars", profile.clubs_and_extracurriculars)
-        profile.preferred_gender = request.POST.get("preferred_gender", profile.preferred_gender)
+        profile_form = ProfileForm(request.POST, request.FILES, instance=profile)
+        questionnaire_form = QuestionnaireForm(request.POST, instance=profile)
 
-
-        if 'profile_picture' in request.FILES:
-            profile.profile_picture = request.FILES['profile_picture']
-
-        profile.save()
-        messages.success(request, "Profile updated successfully!")
-        return redirect("home")
-
-    return render(request, "update_profile.html", {"profile": profile})
-
+        if profile_form.is_valid() and questionnaire_form.is_valid():
+            profile = profile_form.save(commit=False)
+            profile.user = request.user  # Ensure the current user is assigned to the profile
+            profile.save()  # Save the profile data
+            questionnaire_form.save()  # Save the questionnaire data
+            return redirect("profile")  # Redirect to home page after saving
+        else:
+            return render(request, "update_profile.html", {
+                "profile_form": profile_form,
+                "questionnaire_form": questionnaire_form
+            })
+    else:
+        profile_form = ProfileForm(instance=profile)
+        questionnaire_form = QuestionnaireForm(instance=profile)
+        return render(request, "update_profile.html", {
+            "profile_form": profile_form,
+            "questionnaire_form": questionnaire_form
+        })
 
 @login_required
 def delete_profile(request, profile_id):
@@ -684,7 +729,6 @@ def calendar(request):
         form = EventForm()
 
     return render(request, 'calendar.html', {'events': events, 'form': form})
-
 
 # Custom decorator to check if the user is either a super admin or group admin
 def admin_required(view_func):

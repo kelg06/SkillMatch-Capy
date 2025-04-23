@@ -1,11 +1,305 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>mySocial - Responsive Social Media Website Using HTML, CSS, JavaScript</title>
+    <!-- IconScout CDN -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.6/css/unicons.css">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="../static/profile-styles.css">
 </head>
 <body>
-    This is your profile view
+    <nav>
+        <div class="container">
+            <h2 class="logo">
+                ClassMatch
+            </h2>
+            <div class="search-bar">
+                <i class="uil uil-search"></i>
+                <input type="search" placeholder="Search for creators, inspirations, and projects">
+            </div>
+            <div class="create">
+                <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
+                <div class="profile-photo">
+                    <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="profile-pic">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="container">
+            <div class="left">
+                <a class="profile" href="{% url 'profile' %}">
+                    <div class="profile-photo">
+                        <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="profile-pic">
+                    </div>
+
+                    <div class="handle">
+                        <p>{{ profile.first_name }} <br> {{ profile.last_name }}</p>
+                        <h4 class="text-muted">{{ user.username }}</h4>
+                    </div>
+                </a>
+                <div class="sidebar">
+                    <a class="menu-item active" href="{% url 'home' %}">
+                        <span><i class="uil uil-home"></i></span>
+                        <h3>Home</h3>
+                    </a>
+                    <a href="{% url 'group_post_list' %}" class="menu-item">
+                        <span><i class="uil uil-compass"></i></span>
+                        <h3>Events</h3>
+                    </a>
+                    <a class="menu-item"  id="notifications">
+                        <span><i class="uil uil-bell"><small class="notification-count">9+</small></i></span>
+                        <h3>Notification</h3>
+                        <div class="notifications-popup">
+                            <div>
+                                <div class="profile-photo">
+                                </div>
+                                <div class="notification-body">
+                                    <b>Keke Benjamin</b> accepted your friend request
+                                    <small class="text-muted">2 Days Ago</small>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="profile-photo">
+                                </div>
+                                <div class="notification-body">
+                                    <b>John Doe</b> commented on your post
+                                    <small class="text-muted">1 Hour Ago</small>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="profile-photo">
+                                </div>
+                                <div class="notification-body">
+                                    <b>Marry Oppong</b> and <b>283 Others</b> liked your post
+                                    <small class="text-muted">4 Minutes Ago</small>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="profile-photo">
+                                </div>
+                                <div class="notification-body">
+                                    <b>Doris Y. Lartey</b> commented on a post you are tagged in
+                                    <small class="text-muted">2 Days Ago</small>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="profile-photo">
+                                </div>
+                                <div class="notification-body">
+                                    <b>Keyley Jenner</b> commented on a post you are tagged in
+                                    <small class="text-muted">1 Hour Ago</small>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="profile-photo">
+                                </div>
+                                <div class="notification-body">
+                                    <b>Jane Doe</b> commented on your post
+                                    <small class="text-muted">1 Hour Ago</small>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <a class="menu-item" id="theme">
+                        <span><i class="uil uil-palette"></i></span>
+                        <h3>Theme</h3>
+                    </a>
+
+                    <a class="menu-item">
+                        <span><i class="uil uil-setting"></i></span>
+                        <h3>Setting</h3>
+                    </a>
+
+                </div>
+                <a href="{% url 'calendar' %}" class="btn btn-primary">Go to Calendar</a>
+            </div>
+
+            <div class="second-container">
+                <div class="middle">
+                {% if profile.cover_photo %}
+                    <div class="match" 
+                        style="background-image: url('{{ profile.cover_photo.url }}'); background-size: cover; background-position: center;">
+                {% else %}
+                    <div class="match" 
+                        style="background-color: grey;"> 
+                {% endif %}
+                        <div class="match-card">
+                            <div class="profile-photo-2" style="border: 1px solid white;">
+                                {% if profile.profile_picture %}
+                                    <img src="{{ profile.profile_picture.url }}" alt="{{ profile.user.username }}'s Profile Picture">
+                                {% endif %}
+                            </div>
+                            <h3 id="match-username" class="match-text">{{ profile.user.username }}</h3>
+                            <p class="match-text"><strong>Name:</strong> {{ profile.first_name }} {{ profile.last_name }}</p>
+                            <p class="match-text"><strong>Major:</strong> {{ profile.major }}</p>
+                        </div> 
+                    </div>
+                    <div class="ud-buttons">
+                        <button class="btn2 btn-primary"><a href="{% url 'update_profile' profile.id %}" class="btn-links">Update Profile</a></button>
+                        <button class="btn2 btn-primary"><a href="{% url 'delete_profile' profile.id %}" class="btn-links">Delete Profile</a></button>
+                    </div>
+                </div>
+
+                <!-- Friends List -->
+                <div id="friends-section">
+                    {% if friends %}
+                    <ul class="friends-list">
+                        {% for friend in friends %}
+                            <li id="friend-{{ friend.id }}">
+                                {% if friend.profile_picture %}
+                                    <img src="{{ friend.profile_picture.url }}" alt="Profile Picture" style="width:2.7rem;">
+                                {% endif %}
+                                {{ friend.user.username }}
+                                <button onclick="unfriend('{{ friend.id }}')">❌ Unfriend</button>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No friends yet</p>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="customize-theme">
+        <div class="card">
+            <h2>Customize your view</h2>
+            <p class="text-muted">Manage your font size, color, and background</p>
+
+            <div class="font-size">
+                <h4>Font Size</h4>
+                <div>
+                    <h6>Aa</h6>
+                    <div class="choose-size">
+                        <span class="font-size-1"></span>
+                        <span class="font-size-2 active"></span>
+                        <span class="font-size-3"></span>
+                        <span class="font-size-4"></span>
+                        <span class="font-size-5"></span>
+                    </div>
+                    <h3>Aa</h3>
+                </div>
+            </div>
+
+            <div class="color">
+                <h4>Color</h4>
+                <div class="choose-color">
+                    <span class="color-1 active"></span>
+                    <span class="color-2"></span>
+                    <span class="color-3"></span>
+                    <span class="color-4"></span>
+                    <span class="color-5"></span>
+                </div>
+            </div>
+
+            <div class="background">
+                <h4>Background</h4>
+                <div class="choose-bg">
+                    <div class="bg-1 active">
+                        <span></span>
+                        <h5 for="bg-1">Light</h5>
+                    </div>
+                    <div class="bg-2">
+                        <span></span>
+                        <h5 for="bg-2">Dim</h5>
+                    </div>
+                    <div class="bg-3">
+                        <span></span>
+                        <h5 for="bg-3">Dark</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../static/main.js">
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        function toggleCategory(category, event) {
+            const messageSec = document.getElementById("messages-section");
+            const requestSec = document.getElementById("friendrequest-section");
+            const friendsSec = document.getElementById("friends-section");
+        
+            // Toggle visibility of sections
+            messageSec.style.display = category === "messages" ? "block" : "none";
+            requestSec.style.display = category === "friendrequest" ? "block" : "none";
+            friendsSec.style.display = category === "friends" ? "block" : "none";
+        
+            // Remove 'active' class from all category headers
+            const cats = document.querySelectorAll(".category h6");
+            cats.forEach(h => h.classList.remove("active"));
+        
+            // Add 'active' class to the clicked category header
+            if (event && event.target) {
+                event.target.classList.add("active");
+            }
+        }
+
+
+        function unfriend(profileId) {
+            fetch(`/unfriend/${profileId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
+            }).then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                if (data.success) {
+                    document.querySelector(`#friend-${profileId}`)?.remove();
+                    document.querySelector(`#chat-${profileId}`)?.remove();
+                }
+            });
+        }
+
+        function removeCard(profileId) {
+            const card = document.getElementById(`profile-${profileId}`);
+            if (card) {
+                card.style.transform = 'translateX(100%)';
+                setTimeout(() => card.remove(), 300);
+            }
+        }
+
+        function acceptFriend(profileId) {
+            fetch(`/accept-friend-request/${profileId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
+            }).then(() => location.reload());
+        }
+
+        function declineFriend(profileId) {
+            fetch(`/decline-friend-request/${profileId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
+            }).then(() => location.reload());
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadNextMatch();
+        
+            const matchCard = document.getElementById("match-card");
+            if (matchCard) {
+                const hammer = new Hammer(matchCard);
+                hammer.on("swipeleft", swipeLeft);
+                hammer.on("swiperight", swipeRight);
+            }
+        
+            document.getElementById("like-btn")?.addEventListener("click", swipeRight);
+            document.getElementById("dislike-btn")?.addEventListener("click", swipeLeft);
+        });  
+    </script>    
 </body>
 </html>

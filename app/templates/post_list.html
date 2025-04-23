@@ -10,30 +10,66 @@
 
     <h2>Group Posts</h2>
 
-    {% if user.profile and user.profile.is_group_admin %}
-        <a href="{% url 'create_group_post' %}" class="create-post-btn">➕ Create a New Post</a>
-    {% endif %}
+    <div class='buttons'>
+        {% if user.profile and user.profile.is_group_admin %}
+            <a href="{% url 'create_group_post' %}" class="create-post-btn">&#43; Create a New Post</a>
+        {% endif %}
 
-    <a href="{% url 'home' %}" class="back-home">🏠 Back Home</a>
+        <a href="{% url 'home' %}" class="create-post-btn">&#x1f3e0; Back Home</a>
+    </div>
+    <div class="grid">
+        {% for post in posts %}
+            <div class="item blog">
+                <div class="content">
+                    <div class="title">
+                        <h3>{{ forloop.counter }}: {{ post.title }}</h3>
+                    </div>
+                    {% if post.image %}
+                        <div class="image-wrapper">
+                            <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image rounded">
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <p>No posts available.</p>
+        {% endfor %}
+    </div>
+    
+    
+    <script>
+    function resizeGridItem(item) {
+        let grid = document.getElementsByClassName("grid")[0];
+        let rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
+        let rowGap = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-row-gap'));
+        let content = item.querySelector('.content');
+        if (!content) return;
+        let rowSpan = Math.ceil((content.getBoundingClientRect().height + rowGap) / (rowHeight + rowGap));
+        item.style.gridRowEnd = "span " + rowSpan;
+    }
 
-    {% for post in posts %}
-        <div class="post-container">
-            <h3 class="post-title">{{ post.title }}</h3>
-            {% if post.image %}
-                <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image">
-            {% endif %}
-            <p class="post-meta">By <strong>{{ post.created_by.username }}</strong> on {{ post.created_at|date:"F d, Y H:i" }}</p>
+    function resizeAllGridItems() {
+        let allItems = document.getElementsByClassName("item");
+        for (let x = 0; x < allItems.length; x++) {
+        resizeGridItem(allItems[x]);
+        }
+    }
 
-            {% if user.profile and user.profile.is_super_admin or user.profile.is_group_admin and user == post.created_by %}
-                <form method="post" action="{% url 'delete_group_post' post.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="delete-btn">🗑️ Delete</button>
-                </form>
-            {% endif %}
-        </div>
-    {% empty %}
-        <p>No posts available.</p>
-    {% endfor %}
+    function resizeInstance(instance) {
+        let item = instance.elements[0];
+        resizeGridItem(item);
+    }
 
+    window.addEventListener("load", resizeAllGridItems);
+    window.addEventListener("resize", resizeAllGridItems);
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let allItems = document.getElementsByClassName("item");
+        for (let x = 0; x < allItems.length; x++) {
+        imagesLoaded(allItems[x], resizeInstance);
+        }
+    });
+
+    </script>
 </body>
 </html>

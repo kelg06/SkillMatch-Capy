@@ -30,7 +30,7 @@
         </div>
     </nav>
 
-    <main class=".main">
+    <main class="main">
         <div class="container">
             <div class="left">
                 <a class="profile" href="{% url 'profile' %}">
@@ -221,7 +221,7 @@
                     </div>
                 </div>
             </div>
-            
+        </div>
     </main>
 
     <div class="customize-theme">
@@ -301,13 +301,18 @@
 
         function loadNextMatch() {
             fetch("{% url 'next_match' %}")
-                .then(response => response.json()
+                .then(response => response.json())
                 .then(data => {
-                    console.log("Match Data:", data);  // Ensure data is correct
+                    console.log("Match Data:", data);
                     const container = document.querySelector('.middle');
+        
                     if (data.no_matches) {
                         container.innerHTML = "<p>No more matches available.</p>";
                     } else {
+                        const coverPhotoStyle = data.cover_photo_url
+                            ? `background-image: url('${data.cover_photo_url}'); background-size: cover; background-position: center;`
+                            : `background-color: grey;`;
+        
                         container.innerHTML = `
                             <div class="middle">
                                 {% if message %}
@@ -345,17 +350,6 @@
                     }
                 });
         }
-        
-        
-        
-        
-        
-        
-        
-        {% comment %} console.log(data);
-        console.log("First Name: ", data.first_name);  // Check the name value
-        console.log("Last Name: ", data.last_name); {% endcomment %}
-             
         
         function swipe(direction) {
             const profileId = document.getElementById("match-card").dataset.profileId;
@@ -398,7 +392,6 @@
                 console.error("Swipe failed:", err);
             });
         }
-        
 
         function swipeRight(profileId) {
             const direction = "like";
@@ -420,8 +413,6 @@
                 console.error("Swipe failed:", err);
             });
         }
-        
-        
 
         function unfriend(profileId) {
             fetch(`/unfriend/${profileId}/`, {
