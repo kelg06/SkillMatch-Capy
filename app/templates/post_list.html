@@ -1,5 +1,5 @@
 {% load static %}
-
+{% load widget_tweaks %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,10 +12,10 @@
 
     <div class='buttons'>
         {% if user.profile and user.profile.is_group_admin %}
-            <a href="{% url 'create_group_post' %}" class="create-post-btn">&#43; Create a New Post</a>
+            <a class="create-post-btn" onclick="openModal()">&#43; Create a New Post</a>
         {% endif %}
 
-        <a href="{% url 'home' %}" class="create-post-btn">&#x1f3e0; Back Home</a>
+        <a href="{% url 'home' %}" class="back-home-btn">&#x1f3e0; Back Home</a>
     </div>
     <div class="grid">
         {% for post in posts %}
@@ -29,46 +29,95 @@
                             <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image rounded">
                         </div>
                     {% endif %}
+                    <div class="post-meta-container">
+                        <p class="post-meta">By&nbsp;<strong>{{ post.created_by.username }}</strong>&nbsp;on&nbsp;{{ post.created_at|date:"F d, Y H:i" }}</p>
+                        {% if user.profile and user.profile.is_super_admin or user.profile.is_group_admin and user == post.created_by %}
+                            <form method="post" action="{% url 'delete_group_post' post.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="delete-btn">🗑️ Delete</button>
+                            </form>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         {% empty %}
             <p>No posts available.</p>
         {% endfor %}
     </div>
+
+    <div id="postModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 class="modal-title">Create Group Post</h2>
+            <form method="post" enctype="multipart/form-data" class="form" action="{% url 'create_group_post' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.title.label }}
+                    {{ form.title|add_class:"custom-input" }}
+                </div>
+                <div class="form-group">
+                    {{ form.image.label }}
     
-    
+                    <!-- Hidden file input -->
+                    <label for="image-upload" class="custom-upload-label">
+                        <img src="{% static '../static/images/upload-simple.svg' %}" alt="Upload Image" class="upload-icon">
+                        <span>Upload Image</span>
+                    </label>
+                    {{ form.image|add_class:"custom-input hidden-input" }}
+                </div>
+                <button type="submit" class="custom-button">Post</button>
+            </form> 
+        </div>
+    </div>
     <script>
-    function resizeGridItem(item) {
-        let grid = document.getElementsByClassName("grid")[0];
-        let rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
-        let rowGap = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-row-gap'));
-        let content = item.querySelector('.content');
-        if (!content) return;
-        let rowSpan = Math.ceil((content.getBoundingClientRect().height + rowGap) / (rowHeight + rowGap));
-        item.style.gridRowEnd = "span " + rowSpan;
-    }
 
-    function resizeAllGridItems() {
-        let allItems = document.getElementsByClassName("item");
-        for (let x = 0; x < allItems.length; x++) {
-        resizeGridItem(allItems[x]);
+        function openModal() {
+            document.getElementById("postModal").style.display = "block";
         }
-    }
-
-    function resizeInstance(instance) {
-        let item = instance.elements[0];
-        resizeGridItem(item);
-    }
-
-    window.addEventListener("load", resizeAllGridItems);
-    window.addEventListener("resize", resizeAllGridItems);
-
-    document.addEventListener("DOMContentLoaded", function () {
-        let allItems = document.getElementsByClassName("item");
-        for (let x = 0; x < allItems.length; x++) {
-        imagesLoaded(allItems[x], resizeInstance);
+        
+        function closeModal() {
+            document.getElementById("postModal").style.display = "none";
         }
-    });
+        
+        // Optional: close modal if you click outside of it
+        window.onclick = function(event) {
+            var modal = document.getElementById("postModal");
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        function resizeGridItem(item) {
+            let grid = document.getElementsByClassName("grid")[0];
+            let rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
+            let rowGap = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-row-gap'));
+            let content = item.querySelector('.content');
+            if (!content) return;
+            let rowSpan = Math.ceil((content.getBoundingClientRect().height + rowGap) / (rowHeight + rowGap));
+            item.style.gridRowEnd = "span " + rowSpan;
+        }
+
+        function resizeAllGridItems() {
+            let allItems = document.getElementsByClassName("item");
+            for (let x = 0; x < allItems.length; x++) {
+            resizeGridItem(allItems[x]);
+            }
+        }
+
+        function resizeInstance(instance) {
+            let item = instance.elements[0];
+            resizeGridItem(item);
+        }
+
+        window.addEventListener("load", resizeAllGridItems);
+        window.addEventListener("resize", resizeAllGridItems);
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let allItems = document.getElementsByClassName("item");
+            for (let x = 0; x < allItems.length; x++) {
+            imagesLoaded(allItems[x], resizeInstance);
+            }
+        });
 
     </script>
 </body>

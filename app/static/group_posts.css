@@ -31,7 +31,7 @@
 body {
     font-family: Arial, sans-serif;
     padding: 30px;
-    background-color: #f0f0f0;
+    background-color: #B1DDF6;
 }
 
 h2 {
@@ -39,6 +39,7 @@ h2 {
 }
 
 .create-post-btn {
+    width: 200px;
     font-size: 1.2em;
     margin-top: 20px;
     display: inline-block;
@@ -48,6 +49,20 @@ h2 {
     border-radius: var(--card-border-radius);
     padding: 10px 15px;
     height: 25px;
+    cursor: pointer;
+}
+.back-home-btn {
+    width: 160px;
+    font-size: 1.2em;
+    margin-top: 20px;
+    display: inline-block;
+    text-decoration: none;
+    color: #f0f0f0;
+    background-color: #CE1126;
+    border-radius: var(--card-border-radius);
+    padding: 10px 15px;
+    height: 25px;
+    cursor: pointer;
 }
 
 .create-post-btn:hover {
@@ -99,25 +114,35 @@ h2 {
     color: #007bff;
 }
 
+.post-meta-container {
+    display: flex;
+    justify-content: space-around;
+}
 
 .post-meta {
-    color: #777;
-    font-size: 0.9em;
+    color: white;
+    font-size: .90em;
+    display: flex;
     margin-bottom: 10px;
+    justify-content: center;
+
 }
 
 .delete-btn {
     background-color: #dc3545;
     color: white;
     border: none;
-    padding: 8px 12px;
+    padding: 2px 5px;
+    width: 50px;
     border-radius: 4px;
     cursor: pointer;
 }
 
 .buttons {
-    /* display: flex; */
+    display: flex;
     margin-bottom: 20px;
+    width: 500px;
+    justify-content: space-between;
 }
 
 .delete-btn:hover {
@@ -144,17 +169,134 @@ h2 {
 
 
 
+/* input[type="file"] {
+    display: none;
+} */
+
+
+.custom-input {
+    border: 2px solid #B1DDF6;
+    padding: 10px;
+    border-radius: 5px;
+    width: 50%;
+}
+
+.custom-button {
+    margin: 20px;
+    width: 100px;
+    background-color: #ce1126;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.custom-button:hover {
+    background-color: #a60b1d;
+}
+
+.custom-file-upload {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.file-upload {
+    width: 40px;
+}
+
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 999;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
+}
+
+.modal-title {
+    color: gray;
+}
+
+.modal-content {
+    display: flex;
+    height: 37%;
+    background-color: #14213D;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 400px;
+    border-radius: 8px;
+    position: relative;
+    color: #f0f0f0;
+    flex-direction: column;
+}
+
+.close {
+    color: #aaa;
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+}
 
 
 
 
 
 
+.custom-input:focus,
+.custom-input:active,
+.custom-input:not(:placeholder-shown) {
+    box-shadow: 0 0 5px rgba(206, 17, 38, 0.5);
+    background-color: #fef6f7;
+}
 
+.hidden-input {
+    display: none;
+}
 
+.custom-upload-label {
+    width: 50%;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
 
+.custom-upload-label:hover {
+    background-color: #f0f0f0;
+    color: black;
+}
 
-
+.upload-icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+}
 
 
 
@@ -168,11 +310,13 @@ h2 {
     display: grid;
     grid-gap: 10px;
     grid-template-columns: repeat(auto-fill, minmax(20%,1fr));
-    grid-auto-rows: 20px;
+    grid-auto-rows: 25px;
 }
 
 .item {
-    background-color: transparent;
+    border-radius: var(--card-border-radius);
+    margin-top: 10px;
+    background-color: #14213D;
     height: fit-content;
 }
 
@@ -190,10 +334,7 @@ h2 {
     background-color: #607D8B;
 }
 
-.blog .title{
+.blog .title {
+    border-radius: var(--card-border-radius);
     background-color: #14213D;
-}
-
-.photo .title{
-    background-color: #f44336;
 }
