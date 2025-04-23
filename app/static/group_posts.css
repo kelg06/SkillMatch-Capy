@@ -50,6 +50,7 @@ h2 {
     padding: 10px 15px;
     height: 25px;
     cursor: pointer;
+    transition: 0.5s;
 }
 .back-home-btn {
     width: 160px;
@@ -63,6 +64,11 @@ h2 {
     padding: 10px 15px;
     height: 25px;
     cursor: pointer;
+    transition: .5s;
+}
+
+.back-home-btn:hover {
+    background-color: #a10e1f;
 }
 
 .create-post-btn:hover {
