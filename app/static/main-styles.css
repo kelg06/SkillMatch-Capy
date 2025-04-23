@@ -919,3 +919,114 @@ main .container .right {
         width: 80vw; 
     }
 } 
+.popup {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    width: 300px;
+}
+
+.friend-request-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.friend-request-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.avatar-container img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.username {
+    flex: 1;
+    margin-left: 0.5rem;
+    font-weight: bold;
+}
+
+.action-buttons button {
+    margin-left: 0.5rem;
+    font-size: 1.2rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.accept-btn {
+    color: green;
+}
+
+.decline-btn {
+    color: red;
+}
+.hidden {
+    display: none;
+}
+
+.chat-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    width: 100%;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.2s;
+}
+
+.chat-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.chat-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+ul li {
+    border-bottom: 1px solid #ddd;
+}
+
+.chat-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 10px;
+    border: none;
+    background: transparent;
+    width: 100%;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.2s;
+}
+
+.chat-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.chat-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+

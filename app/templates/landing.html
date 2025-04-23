@@ -266,10 +266,8 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
-                        <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#portfolio">Portfolio</a></li>
                         <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#team">Team</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'team' %}">Team</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
                     </ul>
                 </div>
@@ -301,7 +299,8 @@
                                 <h4>Step 1:</h4>
                                 <h4 class="subheading">Sign In/Up</h4>
                             </div>
-                            <div class="timeline-body"><p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!</p></div>
+                            <div class="timeline-body"><p class="text-muted">Create an account to connect with other students, find study partners, and explore campus events.
+                                Already have an account? Just log in to start matching, messaging, and managing your student life—all in one place.</p></div>
                         </div>
                     </li>
                     <li class="timeline-inverted">
@@ -313,7 +312,7 @@
                                 <h4>Step 2:</h4>
                                 <h4 class="subheading">Create Your Profile</h4>
                             </div>
-                            <div class="timeline-body"><p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!</p></div>
+                            <div class="timeline-body"><p class="text-muted">Tell us about yourself! Add your age, major, hometown, and study preferences. Your profile helps us match you with the right study partners and connect you with others on campus.</p></div>
                         </div>
                     </li>
                     <li>
@@ -325,27 +324,27 @@
                                 <h4>Step 3:</h4>
                                 <h4 class="subheading">Complete Our Questionaire</h4>
                             </div>
-                            <div class="timeline-body"><p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!</p></div>
+                            <div class="timeline-body"><p class="text-muted">Answer a few quick questions to help us understand your study habits, interests, and campus involvement. This helps us recommend better matches and events tailored to you!</p></div>
                         </div>
                     </li>
                     <li class="timeline-inverted">
                         <div class="timeline-image" style="display: flex; justify-content: center; align-items: center;">
-                            <img class="img-fluid" src="{% static 'images/syllabus.png' %}" alt="..." style="width: 100px; height: auto;">
+                            <img class="img-fluid" src="{% static 'images/convo.png' %}" alt="..." style="width: 100px; height: auto;">
                         </div>
                         <div class="timeline-panel">
                             <div class="timeline-heading">
                                 <h4>Step 4:</h4>
-                                <h4 class="subheading">Upload Your Syllabus</h4>
+                                <h4 class="subheading">Match and MeetUp/Study</h4>
                             </div>
-                            <div class="timeline-body"><p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!</p></div>
+                            <div class="timeline-body"><p class="text-muted">Get matched with students who share your study habits and availability. Once matched, you can chat, plan meetups, and collaborate to stay on track and succeed together.</p></div>
                         </div>
                     </li>
                     <li class="timeline-inverted">
                         <div class="timeline-image">
                             <h4 style="color: black;">
-                                Get
+                                Study
                                 <br />
-                                Matched!
+                                Hard!
                                 <br />
                             </h4>
                         </div>
@@ -357,11 +356,11 @@
         <footer class="footer py-4">
             <div class="container">
                 <div class="row align-items-center">
-                    <div class="col-lg-4 text-lg-start">Created by Arthur Fielder & Markel Gladney</div>
+                    <div class="col-lg-4 text-lg-start">Created by <a href="https://www.linkedin.com/in/arthur-fielder" target="_blank">Arthur Fielder</a> & <a href="https://www.linkedin.com/in/markelgladney" target="_blank"> Markel Gladney </a></div>
                     <div class="col-lg-4 my-3 my-lg-0">
                         <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
                         <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-dark btn-social mx-2" href="#!" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a class="btn btn-dark btn-social mx-2" href="https://www.instagram.com/classmatchu/" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                     </div>
                     <div class="col-lg-4 text-lg-end">
                         <a class="link-dark text-decoration-none me-3" href="#!">Privacy Policy</a>

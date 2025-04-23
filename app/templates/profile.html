@@ -52,60 +52,42 @@
                         <span><i class="uil uil-compass"></i></span>
                         <h3>Events</h3>
                     </a>
-                    <a class="menu-item"  id="notifications">
-                        <span><i class="uil uil-bell"><small class="notification-count">9+</small></i></span>
-                        <h3>Notification</h3>
-                        <div class="notifications-popup">
-                            <div>
-                                <div class="profile-photo">
-                                </div>
-                                <div class="notification-body">
-                                    <b>Keke Benjamin</b> accepted your friend request
-                                    <small class="text-muted">2 Days Ago</small>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="profile-photo">
-                                </div>
-                                <div class="notification-body">
-                                    <b>John Doe</b> commented on your post
-                                    <small class="text-muted">1 Hour Ago</small>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="profile-photo">
-                                </div>
-                                <div class="notification-body">
-                                    <b>Marry Oppong</b> and <b>283 Others</b> liked your post
-                                    <small class="text-muted">4 Minutes Ago</small>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="profile-photo">
-                                </div>
-                                <div class="notification-body">
-                                    <b>Doris Y. Lartey</b> commented on a post you are tagged in
-                                    <small class="text-muted">2 Days Ago</small>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="profile-photo">
-                                </div>
-                                <div class="notification-body">
-                                    <b>Keyley Jenner</b> commented on a post you are tagged in
-                                    <small class="text-muted">1 Hour Ago</small>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="profile-photo">
-                                </div>
-                                <div class="notification-body">
-                                    <b>Jane Doe</b> commented on your post
-                                    <small class="text-muted">1 Hour Ago</small>
-                                </div>
-                            </div>
-                        </div>
+                    <a class="menu-item" id="notifications" class="popup hidden">
+                        <span>
+                            <i class="uil uil-bell">
+                                <small class="notification-count">{{ pending_requests|length }}</small>
+                            </i>
+                        </span>
+                        <h3>Notifications</h3>
                     </a>
+                    
+                    <!-- Friend Requests Popup -->
+                    <div id="notifications-popup" class="popup hidden">
+                        <h4>Friend Requests</h4>
+                        {% if pending_requests %}
+                            <ul class="friend-request-list">
+                                {% for profile in pending_requests %}
+                                    <li class="friend-request-item" data-profile-id="{{ profile.user.id }}">
+                                        <div class="avatar-container">
+                                            {% if profile.profile_picture %}
+                                                <img src="{{ profile.profile_picture.url }}" alt="Profile Photo" class="popup-avatar">
+                                            {% else %}
+                                                <img src="{% static 'images/default-profile.png' %}" alt="Default" class="popup-avatar">
+                                            {% endif %}
+                                        </div>
+                                        <span class="username">{{ profile.user.username }}</span>
+                                        <div class="action-buttons">
+                                            <button onclick="acceptFriend('{{ profile.id }}')" class="accept-btn">✔️</button>
+                                            <button onclick="declineFriend('{{ profile.id }}')" class="decline-btn">❌</button>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No friend requests</p>
+                        {% endif %}
+                    </div>
+                    
                     <a class="menu-item" id="theme">
                         <span><i class="uil uil-palette"></i></span>
                         <h3>Theme</h3>
@@ -286,6 +268,21 @@
                 }
             }).then(() => location.reload());
         }
+        document.addEventListener('DOMContentLoaded', function () {
+            const bell = document.getElementById('notifications');
+            const popup = document.getElementById('notifications-popup');
+    
+            bell.addEventListener('click', function (event) {
+                event.stopPropagation();
+                popup.classList.toggle('hidden');
+            });
+    
+            document.addEventListener('click', function (event) {
+                if (!popup.contains(event.target) && !bell.contains(event.target)) {
+                    popup.classList.add('hidden');
+                }
+            });
+        });
 
         document.addEventListener("DOMContentLoaded", () => {
             loadNextMatch();

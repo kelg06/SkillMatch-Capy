@@ -911,3 +911,58 @@ main .container .right {
         width: 80vw; 
     }
 } 
+
+.popup {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    width: 300px;
+}
+
+.friend-request-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.friend-request-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.avatar-container img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.username {
+    flex: 1;
+    margin-left: 0.5rem;
+    font-weight: bold;
+}
+
+.action-buttons button {
+    margin-left: 0.5rem;
+    font-size: 1.2rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.accept-btn {
+    color: green;
+}
+
+.decline-btn {
+    color: red;
+}
+.hidden {
+    display: none;
+}
+

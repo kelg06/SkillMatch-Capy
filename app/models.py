@@ -6,6 +6,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     current_match_index = models.IntegerField(default=0)
+    last_seen = models.DateTimeField(null=True, blank=True)
 
 
     # Admin roles

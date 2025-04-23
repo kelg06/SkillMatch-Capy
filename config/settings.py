@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'app',
+    'django.contrib.humanize',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -113,11 +114,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
+
+TIME_ZONE = 'America/Chicago'
 USE_TZ = True
+
 
 
 # Static files (CSS, JavaScript, Images)
@@ -134,8 +137,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  # or your provider’s SMTP
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'mgladney25@basecampcodingacademy.org'
-EMAIL_HOST_PASSWORD = 'ajog dpdu nadt kccg'  # use an app password, not your Gmail password!
+EMAIL_HOST_USER = 'ClassmatchU@gmail.com'
+EMAIL_HOST_PASSWORD = 'snbn opii psqh mxzz'  # use an app password, not your Gmail password!
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 

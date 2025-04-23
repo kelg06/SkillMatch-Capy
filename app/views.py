@@ -26,19 +26,6 @@ from app.utils import is_group_admin, is_super_admin
 from .decorators import admin_required
 
 def sign(request):
-    # if request.method == "POST":
-    #     form = CustomSignupForm(request.POST)
-    #     if form.is_valid():
-    #         user = form.save()
-    #         messages.success(request, "Account created successfully! Please log in.")
-    #         return redirect("login")
-    # else:
-    #     form = CustomSignupForm()
-
-    # context = {
-    #     "form": form
-    # }
-    # return render(request, 'sign.html', context)
     if request.method == "POST":
         username = request.POST["username"]
         password = request.POST["password"]
@@ -77,6 +64,7 @@ def signup_view(request):
     else:
         form = CustomSignupForm()
     return render(request, "signup.html", {"form": form})
+
 
 @login_required
 def home_view(request):
@@ -137,6 +125,7 @@ def home_view(request):
         "message": message,
         "chats": chat_data,
     })
+
 
 @login_required
 def next_match(request):
@@ -509,7 +498,8 @@ def decline_friend_request(request, profile_id):
         return JsonResponse({"success": False, "message": str(e)}, status=500)
 
 
-from django.contrib import messages  # Ensure you import messages
+from django.utils.timesince import timesince
+from django.utils import timezone
 
 @login_required
 def chat_detail(request, chat_id):
@@ -542,6 +532,7 @@ def chat_detail(request, chat_id):
         'form': form,
         'other_user': other_user,
     })
+
 
 @login_required
 def send_message(request, chat_id):
@@ -800,3 +791,6 @@ def contact_view(request):
         form = ContactForm()
 
     return render(request, 'contact.html', {'form': form})
+
+def team(request):
+    return render(request, 'team.html')

@@ -18,7 +18,7 @@ body {
 .frame {
     height: 600px;
     width: 420px;
-    background-color: black;
+    background-color: #CE1126;
     background-size: cover;
     margin-left: auto;
     margin-right: auto; 
@@ -42,6 +42,7 @@ body {
 .nav {
     width: 100%;
     height: 100px;
+    margin-left: 20px;
     padding-top: 40px;
     opacity: 1;
     transition: all .5s ease
@@ -80,11 +81,12 @@ li {
 }
 
 .signup-active a {
-    cursor: pointer;
-    color: #ffffff;
+    padding-bottom: 10px;
+    color: #ffffff !important;
     text-decoration: none;
-    border-bottom: solid 1px #1059FF;
-    padding-bottom: 10px
+    border-bottom: solid 2px #1059FF;
+    transition: all .25s ease;
+    cursor: pointer
 }
 
 .signup-inactive a {
@@ -98,6 +100,7 @@ li {
     width: 430px;
     height: 375px;
     font-size: 16px;
+    margin-bottom: -20px;
     font-weight: 300;
     padding-left: 37px;
     padding-right: 37px;
@@ -317,6 +320,8 @@ textarea:focus {
 }
 
 .btn-signin {
+    color: #ffffff;
+    background-color: #1059FF;
     float: left;
     padding-top: 8px;
     width: 100%;
@@ -355,14 +360,19 @@ textarea:focus {
     background-color: rgba(255, 255, 255, 1)
 }
 
-a.btn-signup:hover,
-a.btn-signin:hover {
+button.btn-signup:hover{
+    cursor: pointer;
+    background-color: #0F4FE6;
+    transition: background-color .5s
+}
+button.btn-signin:hover {
     cursor: pointer;
     background-color: #0F4FE6;
     transition: background-color .5s
 }
 
 .forgot {
+    color: #ffffff;
     height: 100px;
     width: 80%;
     margin-left: auto;
@@ -384,7 +394,7 @@ a.btn-signin:hover {
 }
 
 .forgot a {
-    color: rgba(255, 255, 255, .3);
+    color: #ffffff;
     font-weight: 400;
     font-size: 13px;
     text-decoration: none
@@ -437,7 +447,7 @@ a.btn-signin:hover {
 
 .profile-photo-down {
     top: -636px;
-    opacity: 1
+    opacity: 1;
 }
 
 h1 {
@@ -504,3 +514,37 @@ a.btn-goback:hover {
     fill: #1059FF;
     transform: rotate(180deg)
 }
+
+.messages {
+    text-align: center;
+}
+
+.messages p {
+    margin-bottom: -20px;
+}
+ /* Header Styles */
+ .site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* padding: 15px 20px; */
+
+   
+  }
+  
+  .site-header .logo img {
+    height: 50px; /* Adjust this value based on your logo's dimensions */
+    
+  }
+  
+  .site-header .navigation .home-link {
+    text-decoration: none;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+    transition: color 0.3s ease;
+  }
+  
+  .site-header .navigation .home-link:hover {
+    color: #f1c40f;
+  }
