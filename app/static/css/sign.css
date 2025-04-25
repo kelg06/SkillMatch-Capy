@@ -18,7 +18,7 @@ body {
 .frame {
     height: 600px;
     width: 420px;
-    background-color: #CE1126;
+    background-color: #81c6ee;
     background-size: cover;
     margin-left: auto;
     margin-right: auto; 
@@ -31,6 +31,12 @@ body {
 
 .frame-long {
     height: 615px
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .frame-short {
@@ -97,7 +103,7 @@ li {
 }
 
 .form-signin {
-    width: 430px;
+    width: 100%;
     height: 375px;
     font-size: 16px;
     margin-bottom: -20px;
@@ -105,7 +111,9 @@ li {
     padding-left: 37px;
     padding-right: 37px;
     padding-top: 55px;
-    transition: opacity .5s ease, transform .5s ease
+    transition: opacity .5s ease, transform .5s ease;
+    display: flex;
+    flex-direction: column;
 }
 
 .form-signin-left {
@@ -522,29 +530,50 @@ a.btn-goback:hover {
 .messages p {
     margin-bottom: -20px;
 }
- /* Header Styles */
- .site-header {
+/* Header Styles */
+.site-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* padding: 15px 20px; */
+}
 
-   
-  }
-  
-  .site-header .logo img {
+.site-header .logo img {
     height: 50px; /* Adjust this value based on your logo's dimensions */
-    
-  }
-  
-  .site-header .navigation .home-link {
+}
+
+.site-header .navigation .home-link {
     text-decoration: none;
     color: #fff;
     font-size: 18px;
     font-weight: 600;
     transition: color 0.3s ease;
-  }
-  
-  .site-header .navigation .home-link:hover {
+}
+
+.site-header .navigation .home-link:hover {
     color: #f1c40f;
-  }
+}
+
+@media screen and (max-width: 768px) {
+    .frame {
+        width: 95%;
+    }
+    .signin-active a {
+        font-size: .78em;
+    }
+    
+    .signin-inactive a {
+        font-size: .78em;
+    }
+    
+    .form-signup {
+        width: 100%;
+    }
+    
+    .signup-active a {
+        font-size: .78em;
+    }
+    
+    .signup-inactive a {
+        font-size: .78em;
+    }
+}

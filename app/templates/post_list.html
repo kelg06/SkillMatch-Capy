@@ -1,77 +1,230 @@
 {% load static %}
+{% load tz %} 
 {% load widget_tweaks %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Group Posts</title>
-    <link rel="stylesheet" href="{% static 'group_posts.css' %}">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <!-- IconScout CDN -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.6/css/unicons.css">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="../static/group-posts.css">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
+    <nav>
+        <div class="container">
+            <h2 class="logo">ClassMatch</h2>
+            <div class="search-bar">
+                <i class="uil uil-search"></i>
+                <input type="search" placeholder="Search for creators, inspirations, and projects">
+            </div>
+            <div class="create">
+                <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
+                <div class="profile-photo">
+                    <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="profile-pic">
+                </div>
+            </div>
+        </div>
+    </nav>
 
-    <h2>Group Posts</h2>
-
-    <div class='buttons'>
-        {% if user.profile and user.profile.is_group_admin %}
-            <a class="create-post-btn" onclick="openModal()">&#43; Create a New Post</a>
-        {% endif %}
-
-        <a href="{% url 'home' %}" class="back-home-btn">&#x1f3e0; Back Home</a>
-    </div>
-    <div class="grid">
-        {% for post in posts %}
-            <div class="item blog">
-                <div class="content">
-                    <div class="title">
-                        <h3>{{ forloop.counter }}: {{ post.title }}</h3>
+    <main class="main">
+        <div class="container">
+            <div class="left">
+                <a class="profile" href="{% url 'profile' %}">
+                    <div class="profile-photo">
+                        <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="profile-pic">
                     </div>
-                    {% if post.image %}
-                        <div class="image-wrapper">
-                            <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image rounded">
-                        </div>
-                    {% endif %}
-                    <div class="post-meta-container">
-                        <p class="post-meta">By&nbsp;<strong>{{ post.created_by.username }}</strong>&nbsp;on&nbsp;{{ post.created_at|date:"F d, Y H:i" }}</p>
-                        {% if user.profile and user.profile.is_super_admin or user.profile.is_group_admin and user == post.created_by %}
-                            <form method="post" action="{% url 'delete_group_post' post.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="delete-btn">🗑️ Delete</button>
-                            </form>
+                    <div class="handle">
+                        <p>{{ profile.first_name }} <br> {{ profile.last_name }}</p>
+                        <h4 class="text-muted">{{ user.username }}</h4>
+                    </div>
+                </a>
+                <div class="sidebar">
+                    <a class="menu-item" href="{% url 'home' %}">
+                        <span><i class="uil uil-home"></i></span>
+                        <h3>Home</h3>   
+                    </a>
+                    <a href="{% url 'group_post_list' %}" class="menu-item active">
+                        <span><i class="uil uil-compass"></i></span>
+                        <h3>Events</h3>
+                    </a>
+                    <a class="menu-item" id="notifications" class="popup hidden">
+                        <span>
+                            <i class="uil uil-bell">
+                                <small class="notification-count">{{ pending_requests|length }}</small>
+                            </i>
+                        </span>
+                        <h3>Notifications</h3>
+                    </a>
+                    
+                    <!-- Friend Requests Popup -->
+                    <div id="notifications-popup" class="popup hidden">
+                        <h4>Friend Requests</h4>
+                        {% if pending_requests %}
+                            <ul class="friend-request-list">
+                                {% for profile in pending_requests %}
+                                    <li class="friend-request-item" data-profile-id="{{ profile.user.id }}">
+                                        <div class="avatar-container">
+                                            {% if profile.profile_picture %}
+                                                <img src="{{ profile.profile_picture.url }}" alt="Profile Photo" class="popup-avatar">
+                                            {% else %}
+                                                <img src="{% static 'images/default-profile.png' %}" alt="Default" class="popup-avatar">
+                                            {% endif %}
+                                        </div>
+                                        <span class="username">{{ profile.user.username }}</span>
+                                        <div class="action-buttons">
+                                            <button onclick="acceptFriend('{{ profile.id }}')" class="accept-btn">✔️</button>
+                                            <button onclick="declineFriend('{{ profile.id }}')" class="decline-btn">❌</button>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No friend requests</p>
                         {% endif %}
+                    </div>
+                    
+                    <a class="menu-item" id="theme">
+                        <span><i class="uil uil-palette"></i></span>
+                        <h3>Theme</h3>
+                    </a>
+
+                    <a class="menu-item">
+                        <span><i class="uil uil-setting"></i></span>
+                        <h3>Setting</h3>
+                    </a>
+                </div>
+                <a href="{% url 'calendar' %}" class="btn btn-primary">Go to Calendar</a>
+            </div>
+
+            <div class="middle">
+                {% comment %} Post Section {% endcomment %}
+                <h2>Group Posts</h2>
+                <div class='buttons'>
+                    {% if user.profile and user.profile.is_group_admin %}
+                        <a class="create-post-btn" onclick="openModal()">&#43; Create a New Post</a>
+                    {% endif %}
+                </div>
+                <div class="grid">
+                    {% for post in posts %}
+                        <div class="item blog">
+                            <div class="content">
+                                <div class="title">
+                                    <h3>{{ forloop.counter }}: {{ post.title }}</h3>
+                                </div>
+                                {% if post.image %}
+                                    <div class="image-wrapper">
+                                        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image rounded">
+                                    </div>
+                                {% endif %}
+                                <div class="post-meta-container">
+                                    <p class="post-meta">By&nbsp;<strong>{{ post.created_by.username }}</strong>&nbsp;on&nbsp;{{ post.created_at|date:"F d, Y H:i" }}</p>
+                                    {% if user.profile and user.profile.is_super_admin or user.profile.is_group_admin and user == post.created_by %}
+                                        <form method="post" action="{% url 'delete_group_post' post.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="delete-btn">🗑️</button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p>No posts available.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+
+            <div id="postModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal()">&times;</span>
+                    <h2 class="modal-title">Create Group Post</h2>
+                    <form method="post" enctype="multipart/form-data" class="form" action="{% url 'create_group_post' %}">
+                        {% csrf_token %}
+                        
+                        <div class="form-group">
+                            {{ form.title.label }}
+                            {{ form.title|add_class:"custom-input" }}
+                        </div>
+                        
+                        <div class="form-group">
+                            {{ form.image.label }}
+                            
+                            <!-- Link label to actual Django form field -->
+                            <label for="{{ form.image.id_for_label }}" class="custom-upload-label">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                                <span>&ensp; Upload Image</span>
+                            </label>
+                            
+                            <!-- Use the real input, style it to be hidden -->
+                            {{ form.image|add_class:"custom-input hidden-input" }}
+                        </div>
+                        
+                        <button type="submit" class="custom-button">Post</button>
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="customize-theme">
+        <div class="card">
+            <h2>Customize your view</h2>
+            <p class="text-muted">Manage your font size, color, and background</p>
+
+            <div class="font-size">
+                <h4>Font Size</h4>
+                <div>
+                    <h6>Aa</h6>
+                    <div class="choose-size">
+                        <span class="font-size-1"></span>
+                        <span class="font-size-2 active"></span>
+                        <span class="font-size-3"></span>
+                        <span class="font-size-4"></span>
+                        <span class="font-size-5"></span>
+                    </div>
+                    <h3>Aa</h3>
+                </div>
+            </div>
+
+            <div class="color">
+                <h4>Color</h4>
+                <div class="choose-color">
+                    <span class="color-1 active"></span>
+                    <span class="color-2"></span>
+                    <span class="color-3"></span>
+                    <span class="color-4"></span>
+                    <span class="color-5"></span>
+                </div>
+            </div>
+
+            <div class="background">
+                <h4>Background</h4>
+                <div class="choose-bg">
+                    <div class="bg-1 active">
+                        <span></span>
+                        <h5 for="bg-1">Light</h5>
+                    </div>
+                    <div class="bg-2">
+                        <span></span>
+                        <h5 for="bg-2">Dim</h5>
+                    </div>
+                    <div class="bg-3">
+                        <span></span>
+                        <h5 for="bg-3">Dark</h5>
                     </div>
                 </div>
             </div>
-        {% empty %}
-            <p>No posts available.</p>
-        {% endfor %}
-    </div>
-
-    <div id="postModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2 class="modal-title">Create Group Post</h2>
-            <form method="post" enctype="multipart/form-data" class="form" action="{% url 'create_group_post' %}">
-                {% csrf_token %}
-                <div class="form-group">
-                    {{ form.title.label }}
-                    {{ form.title|add_class:"custom-input" }}
-                </div>
-                <div class="form-group">
-                    {{ form.image.label }}
-    
-                    <!-- Hidden file input -->
-                    <label for="image-upload" class="custom-upload-label">
-                        <img src="{% static '../static/images/upload-simple.svg' %}" alt="Upload Image" class="upload-icon">
-                        <span>Upload Image</span>
-                    </label>
-                    {{ form.image|add_class:"custom-input hidden-input" }}
-                </div>
-                <button type="submit" class="custom-button">Post</button>
-            </form> 
         </div>
     </div>
 
     <script>
-
         function openModal() {
             document.getElementById("postModal").style.display = "block";
         }
@@ -120,6 +273,44 @@
             }
         });
 
+        const csrfToken = '{{ csrf_token }}';
+    
+        function acceptFriend(profileId) {
+            fetch(`/accept-friend-request/${profileId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
+            }).then(() => location.reload());
+        }
+    
+        function declineFriend(profileId) {
+            fetch(`/decline-friend-request/${profileId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
+            }).then(() => location.reload());
+        }
+    
+        document.addEventListener('DOMContentLoaded', function () {
+            const bell = document.getElementById('notifications');
+            const popup = document.getElementById('notifications-popup');
+    
+            bell.addEventListener('click', function (event) {
+                event.stopPropagation();
+                popup.classList.toggle('hidden');
+            });
+    
+            document.addEventListener('click', function (event) {
+                if (!popup.contains(event.target) && !bell.contains(event.target)) {
+                    popup.classList.add('hidden');
+                }
+            });
+        });
     </script>
+    
 </body>
 </html>

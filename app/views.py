@@ -47,19 +47,18 @@ def sign(request):
             return render(request, "sign.html")
     return render(request, 'sign.html')
 
-
 def signup_view(request):
     if request.method == "POST":
         form = CustomSignupForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            
+
             # Check if the user has a profile and if the first name is filled
             if hasattr(user, 'profile'):
                 if not user.profile.first_name:  # Check if first_name is empty
                     return redirect('create_profile')
-            
+
             # Redirect to home if the user has a profile with a first name
             return redirect("home")
     else:
@@ -752,17 +751,26 @@ def create_group_post(request):
 
 @login_required
 def group_post_list(request):
-    if not hasattr(request.user, 'profile'):
+    try:
+        user_profile = Profile.objects.get(user=request.user)
+    except Profile.DoesNotExist:
         return redirect('create_profile')
 
+    # Get pending friend requests
+    received_requests = FriendRequest.objects.filter(receiver=request.user, accepted=False)
+    pending_requests = [req.sender.profile for req in received_requests if hasattr(req.sender, 'profile')]
+
     posts = GroupPost.objects.all().order_by('-created_at')
-    form = GroupPostForm()  # Instantiate the form
+    form = GroupPostForm()
 
     return render(request, 'post_list.html', {
         'posts': posts,
-        'form': form,  # Pass it to the template
+        'form': form,
+        'profile': user_profile,
+        'pending_requests': pending_requests,
     })
-    
+
+
 # View to delete a group post (super admins can delete any post, group admins can delete their own posts)
 @login_required
 def delete_group_post(request, post_id):
