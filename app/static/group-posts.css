@@ -145,10 +145,13 @@ nav .create {
 
 .main .container {
     display: grid;
-    grid-template-columns: 18vw auto  20vw;
+    grid-template-columns: 18vw auto 20vw;
     column-gap: 2rem;
     position: relative;
+    margin-bottom: 10dvw;
 }
+
+
 
 /* =============== Left ============== */
 .main .container .left {
@@ -360,6 +363,16 @@ dialog::backdrop {
     opacity: 90%;
     justify-content: space-evenly;
 }
+
+
+
+.buttons {
+    display: flex;
+    margin-bottom: 20px;
+    width: 500px;
+    justify-content: space-between;
+}
+
 
 
 
@@ -628,6 +641,71 @@ main .container .right {
 
 
 
+
+
+
+
+.post-meta-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.post-meta {
+    color: white;
+    font-size: .90em;
+    display: flex;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    justify-content: center;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 2px 5px 4px 5px;
+    font-size: 1.4em;
+    width: 50px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+
+.post-image {
+    width: 100%;
+    height: auto;
+}
+
+
+.item {
+    border-radius: var(--card-border-radius);
+    margin-top: 10px;
+    background-color: #14213D;
+    height: fit-content;
+}
+
+.create-post-btn {
+    width: 240px;
+    text-align: center;
+    font-size: 1.2em;
+    margin-top: 20px;
+    display: inline-block;
+    text-decoration: none;
+    color: #f0f0f0;
+    background-color: #CE1126;
+    border-radius: var(--card-border-radius);
+    padding: 10px 15px;
+    height: 45px;
+    cursor: pointer;
+    transition: 0.5s;
+}
+
+.create-post-btn:hover {
+    background-color: #a10e1f;
+}
+
+
 .right .messages .message-requests {
     color: var(--color-primary);
 }
@@ -740,6 +818,167 @@ main .container .right {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+
+
+.grid {
+    width: 740px;
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 25px;
+}
+
+.custom-input {
+    border: 2px solid #B1DDF6;
+    padding: 10px;
+    border-radius: 5px;
+    width: 50%;
+}
+
+.custom-button {
+    margin: 20px;
+    width: 100px;
+    background-color: #ce1126;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.custom-button:hover {
+    background-color: #a60b1d;
+}
+
+.custom-file-upload {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.file-upload {
+    width: 40px;
+}
+
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 999;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
+}
+
+.modal-title {
+    color: #b1ddf6;
+}
+
+.modal-content {
+    display: flex;
+    height: 60%;
+    background-color: #14213D;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 400px;
+    border-radius: 8px;
+    position: relative;
+    color: #f0f0f0;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.close {
+    color: #aaa;
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+}
+
+
+
+
+
+
+.custom-input:focus,
+.custom-input:active,
+.custom-input:not(:placeholder-shown) {
+    box-shadow: 0 0 5px rgba(206, 17, 38, 0.5);
+    background-color: #fef6f7;
+}
+
+.hidden-input {
+    display: none;
+}
+
+.custom-upload-label {
+    width: 50%;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+.custom-upload-label:hover {
+    background-color: #f0f0f0;
+    color: black;
+}
+
+.upload-icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+}
+
+
+
+
+
+
+
+.title {
+    padding: 20px;
+}
+
+.title h3{
+    font-size: 1.2em;
+    color: #ffffff;
+    text-transform: uppercase;
+}
+
+.project .title{
+    background-color: #607D8B;
+}
+
+
+.blog .title {
+    border-radius: var(--card-border-radius);
+    background-color: #14213D;
 }
 
 .customize-theme .choose-size span {

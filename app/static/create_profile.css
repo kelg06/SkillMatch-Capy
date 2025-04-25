@@ -6,6 +6,10 @@
 }
 
 body {
+    background-image: url(../static/images/mainphoto.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;  
     font-family: 'Helvetica Neue', sans-serif;
     background-color: #f0f2f5;
     color: #333;
@@ -36,10 +40,12 @@ h3 {
 /* Form rows */
 .form-row {
     display: flex;
-    flex-wrap: wrap;
     gap: 20px;
     margin-bottom: 20px;
+    flex-direction: row;
 }
+
+
 
 .form-group, .form-column, .questionnaire-field {
     flex: 1 1 100%;
@@ -50,6 +56,7 @@ h3 {
 .questionnaire-field {
     margin-bottom: 30px;
 }
+
 
 .form-group input,
 .form-group select,

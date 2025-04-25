@@ -9,11 +9,13 @@
 </head>
 <body>
 
-    <h2>Update Profile</h2>
+    
     <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
         {% csrf_token %}
         <div class="container">
-            <h2 class="text-center mb-4">Profile Information</h2>
+            <div class="update-intro">
+                <h2 class="text-center mb-4">Profile Information</h2>
+            </div>
             <div class="form-row">
                 <div class="form-group">
                     <label for="id_profile_picture">Profile Picture:</label>
