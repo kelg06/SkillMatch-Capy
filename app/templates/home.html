@@ -18,10 +18,7 @@
             <h2 class="logo">
                 ClassMatch
             </h2>
-            <div class="search-bar">
-                <i class="uil uil-search"></i>
-                <input type="search" placeholder="Search for creators, inspirations, and projects">
-            </div>
+            
             <div class="create">
                 <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
                 <div class="profile-photo">
@@ -150,8 +147,6 @@
                     </div>
                     <div class="category">
                         <h6 class="active" onclick="toggleCategory('messages')">Messages</h6>
-                        <h6 onclick="toggleCategory('friendrequest')">Friend Requests</h6>
-                        <h6 onclick="toggleCategory('friends')">Friends</h6>
                     </div>
             
                     <!-- Messages List -->
@@ -182,46 +177,12 @@
                                 </li>
                             {% endfor %}
                         </ul>
-                        
-                        
-                        
+                        <p id="no-chats-found" style="display: none; color: gray;">No chats found.</p>    
                 {% else %}
                     <p>No active chats</p>
                 {% endif %}
                     </div>
             
-                    <!-- Friend Requests Placeholder -->
-                    <div id="friendrequest-section" style="display: none;">
-                        {% if pending_requests %}
-                    <ul>
-                        {% for profile in pending_requests %}
-                            <li data-profile-id="{{ match.user.id }}">
-                                {{ profile.user.username }}
-                                <button onclick="acceptFriend('{{ profile.id }}')">✔️</button>
-                                <button onclick="declineFriend('{{ profile.id }}')">❌</button>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p>No friend requests</p>
-                {% endif %}
-                    </div>
-            
-                    <!-- Friends List -->
-                    <div id="friends-section" style="display: none;">
-                        {% if friends %}
-                        <ul class="friends-list">
-                            {% for friend in friends %}
-                                <li id="friend-{{ friend.id }}">
-                                    {{ friend.user.username }}
-                                    <button onclick="unfriend('{{ friend.id }}')">❌ Unfriend</button>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>No friends yet</p>
-                    {% endif %}
-                    </div>
                 </div>
             </div>
         </div>
@@ -277,6 +238,8 @@
             </div>
         </div>
     </div>
+
+    <script src='../static/home.js' ></script>
 
     <script >
         const csrfToken = '{{ csrf_token }}';
@@ -490,6 +453,33 @@
             document.getElementById("like-btn")?.addEventListener("click", swipeRight);
             document.getElementById("dislike-btn")?.addEventListener("click", swipeLeft);
         });  
+        document.addEventListener("DOMContentLoaded", () => {
+            const searchInput = document.getElementById("message-search");
+            const chatItems = document.querySelectorAll("#messages-section ul li");
+            const noChatsFound = document.getElementById("no-chats-found");
+        
+            function filterChats() {
+                const searchValue = searchInput.value.toLowerCase();
+                let anyVisible = false;
+        
+                chatItems.forEach(item => {
+                    const username = item.querySelector(".username").textContent.toLowerCase();
+                    if (username.includes(searchValue)) {
+                        item.style.display = "block";
+                        anyVisible = true;
+                    } else {
+                        item.style.display = "none";
+                    }
+                });
+        
+                noChatsFound.style.display = anyVisible ? "none" : "block";
+            }
+        
+            if (searchInput) {
+                // Changed from keyup to input so we catch the clear button too
+                searchInput.addEventListener("input", filterChats);
+            }
+        }); 
     </script>    
 </body>
 </html>

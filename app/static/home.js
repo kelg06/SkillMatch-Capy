@@ -34,7 +34,7 @@ function acceptFriend(profileId) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken
+            'X-CSRFToken': csrfToken1
         }
     }).then(response => response.json())
       .then(data => {
@@ -64,7 +64,7 @@ function declineFriend(profileId) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken
+            'X-CSRFToken': csrfToken1
         }
     }).then(response => response.json())
       .then(data => {
@@ -87,7 +87,7 @@ function acceptFriend(profileId) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken
+            'X-CSRFToken': csrfToken1
         }
     }).then(response => response.json())
     .then(data => {
@@ -118,14 +118,14 @@ function getCookie(name) {
     return cookieValue;
 }
 
-const csrfToken = getCookie('csrftoken');
+const csrfToken1 = getCookie('csrftoken');
 
 function unfriend(profileId) {
     fetch(`/unfriend/${profileId}/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken
+            'X-CSRFToken': csrfToken1
         }
     }).then(response => response.json())
     .then(data => {
