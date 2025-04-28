@@ -6,28 +6,14 @@
     <link rel="stylesheet" href="{% static 'calendar.css' %}">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 </head>
 <body>
     <h2>Event Calendar</h2>
 
-    <!-- Button to open the event form modal -->
-    {% comment %} <button onclick="openEventForm()">Add Event</button> {% endcomment %}
-
     <!-- Button to navigate back to the home page -->
     <button onclick="window.location.href='{% url 'home' %}'">Back to Home</button>
-
-    <!-- Event Form Modal -->
-    {% comment %} <div id="eventFormModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeEventForm()">&times;</span>
-            <h3>Add New Event</h3>
-            <form id="eventForm" method="POST">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit">Save Event</button>
-            </form>
-        </div>
-    </div> {% endcomment %}
 
     <!-- Calendar Display -->
     <div id="calendar"></div>

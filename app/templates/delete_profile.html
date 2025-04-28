@@ -1,7 +1,18 @@
-<h2>Delete Profile</h2>
-<p>Are you sure you want to delete your profile? This action cannot be undone.</p>
-<form method="POST">
-    {% csrf_token %}
-    <button type="submit">Delete</button>
-    <a href="{% url 'home' %}">Cancel</a>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <h2>Delete Profile</h2>
+    <p>Are you sure you want to delete your profile? This action cannot be undone.</p>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit">Delete</button>
+        <a href="{% url 'home' %}">Cancel</a>
+    </form>
+</body>
+</html>

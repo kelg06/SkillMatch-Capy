@@ -12,7 +12,6 @@ body {
 .container {
     width: 100%;
     padding-top: 60px;
-    padding-bottom: 100px
 }
 
 .frame {
@@ -224,7 +223,7 @@ textarea:focus {
     background: rgba(255, 255, 255, .3);
     border: none;
     padding-right: 40px;
-    transition: background .5s ease
+    transition: background .5s ease;
 }
 
 [type="checkbox"]:not(:checked),

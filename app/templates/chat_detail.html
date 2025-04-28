@@ -6,10 +6,11 @@
     <meta charset="UTF-8">
     <title>Chat</title>
     <link rel="stylesheet" href="{% static 'chat.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
 </head>
 <body>
-    <button onclick="window.location.href='{% url 'home' %}'">Back to Home</button>
     <div class="chat-container">
+        <button onclick="window.location.href='{% url 'home' %}'">Back to Home</button>
         <h2>Chat with {{ other_user.username }}</h2>
         
 
