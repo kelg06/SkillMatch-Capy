@@ -1,0 +1,74 @@
+{% load static %}
+{% load tz %} 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+    <link rel="stylesheet" href="{% static 'chat.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+</head>
+<body>
+    <div class="chat-container">
+        <button onclick="window.location.href='{% url 'home' %}'">Back to Home</button>
+        <h2>Chat with {{ other_user.username }}</h2>
+        
+
+        <div class="chat-box" id="chatBox">
+            {% for message in messages %}
+                <div class="message-wrapper {% if message.sender == request.user %}sent{% else %}received{% endif %}">
+                    {% if message.sender.profile.profile_picture %}
+                        <img class="avatar" src="{{ message.sender.profile.profile_picture.url }}" alt="{{ message.sender.username }}'s profile picture">
+                    {% else %}
+                        <img class="avatar" src="{% static 'images/default-profile.png' %}" alt="Default profile picture">
+                    {% endif %}
+        
+                    <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}">
+                        <strong>{{ message.sender.username }}</strong>: {{ message.content }}
+                        <div class="timestamp">{{ message.created_at|localtime|date:"M j, Y • g:i A" }}</div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>No messages yet.</p>
+            {% endfor %}
+        </div>
+        
+        
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Send</button>
+        </form>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const messageInput = document.querySelector('textarea[name="content"]'); // ← updated to 'content'
+            const form = messageInput.closest('form');
+        
+            messageInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault(); // prevent newline
+                    form.submit(); // submit form on Enter
+                }
+            });
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            const messageInput = document.querySelector('textarea[name="content"]');
+            const form = messageInput.closest('form');
+            const chatBox = document.getElementById('chatBox');
+    
+            // Submit on Enter (but allow Shift+Enter for newline)
+            messageInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    form.submit();
+                }
+            });
+    
+            // Auto-scroll to bottom
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+        </script>
+</body>
+</html>

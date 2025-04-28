@@ -34,26 +34,28 @@ function acceptFriend(profileId) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken
+            'X-CSRFToken': csrfToken1
         }
-    }).then(response => {
-        if (response.ok) {
-            alert("Friend request accepted!");
+    }).then(response => response.json())
+      .then(data => {
+        if (data.success) {
+            alert(data.message);
             // Remove from pending requests
             const pendingRequestItem = document.querySelector(`li[data-profile-id='${profileId}']`);
             if (pendingRequestItem) {
                 pendingRequestItem.remove();
             }
-            // Add to friends section
-            const friendsList = document.querySelector('.friends-list'); // Ensure you have a class for the friends list
+            // Add to friends list
+            const friendsList = document.querySelector('.friends-list'); 
             const newFriendItem = document.createElement('li');
-            newFriendItem.textContent = `Friend: ${profileId}`; // Adjust as necessary
+            newFriendItem.textContent = data.friend_username;
             friendsList.appendChild(newFriendItem);
         } else {
-            alert("Failed to accept friend request.");
+            alert(data.message);
         }
     });
 }
+
 
 
 
@@ -62,32 +64,81 @@ function declineFriend(profileId) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}'
+            'X-CSRFToken': csrfToken1
         }
-    }).then(response => {
-        if (response.ok) {
-            alert("Friend request declined!");
-            location.reload();  // Refresh to update the profile list
+    }).then(response => response.json())
+      .then(data => {
+        if (data.success) {
+            alert(data.message);
+            // Remove from pending requests
+            const pendingRequestItem = document.querySelector(`li[data-profile-id='${profileId}']`);
+            if (pendingRequestItem) {
+                pendingRequestItem.remove();
+            }
         } else {
-            alert("Failed to decline friend request.");
+            alert(data.message);
         }
     });
 }
 
-function sendFriendRequest(profileId) {
-    fetch(`/send-friend-request/${profileId}/`, {
+
+function acceptFriend(profileId) {
+    fetch(`/accept-friend-request/${profileId}/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken
+            'X-CSRFToken': csrfToken1
         }
     }).then(response => response.json())
     .then(data => {
         alert(data.message);
         if (data.success) {
+            // Optionally, update the UI to reflect the accepted friend request
             removeCard(profileId);
+            location.reload();  // Refresh the page to update the friends list
         }
     }).catch(error => {
-        console.error("Error sending friend request:", error);
+        console.error("Error accepting friend request:", error);
+        alert("Failed to accept friend request.");
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+const csrfToken1 = getCookie('csrftoken');
+
+function unfriend(profileId) {
+    fetch(`/unfriend/${profileId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken1
+        }
+    }).then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        if (data.success) {
+            // Ensure the friend list item ID matches the pattern
+            const friendElement = document.querySelector(`#friend-${profileId}`);
+            if (friendElement) {
+                friendElement.remove();
+            }
+        }
+    }).catch(error => {
+        console.error("Error unfriending:", error);
+        alert("Failed to unfriend.");
     });
 }

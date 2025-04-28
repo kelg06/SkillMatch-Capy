@@ -1,162 +1,406 @@
 {% load static %}
+{% load tz %} 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
-    <link rel="stylesheet" href="{% static 'home.css' %}">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
-    <script>
-        // Include CSRF token as a global variable
-        const csrfToken = '{{ csrf_token }}';
-    </script>
+    <!-- IconScout CDN -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.6/css/unicons.css">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="../static/main-styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 </head>
 <body>
     <nav>
         <div class="container">
-            <div class="logo">StudySwipe</div>
-            <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+            <h2 class="logo">
+                ClassMatch
+            </h2>
+            
+            <div class="create">
+                <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
+                <a class="profile" href="{% url 'profile' %}">
+                    <div class="profile-photo">
+                        <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="profile-pic">
+                    </div>
+                </a>
+            </div>
         </div>
     </nav>
 
-    <main>
+    <main class="main">
         <div class="container">
-            <h1>Welcome, {{ user.username }}</h1>
-            {% comment %} <div>
-                <a href="{% url 'update_profile' profile.id %}">Update Profile</a>
-                <a href="{% url 'delete_profile' profile.id %}">Delete Profile</a>
-            </div> {% endcomment %}
+            <div class="left">
+                <a class="profile" href="{% url 'profile' %}">
+                    <div class="profile-photo">
+                        <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="profile-pic">
+                    </div>
 
-            <div class="content">
-                <!-- Sidebar for Friend Requests and Chats -->
+                    <div class="handle">
+                        <p style="color: black;">{{ profile.first_name }} <br> {{ profile.last_name }}</p>
+                        <h4 class="text-muted">{{ user.username }}</h4>
+                    </div>
+                </a>
                 <div class="sidebar">
-                    <h3>Friend Requests</h3>
-                    {% if pending_requests %}
-                        <ul>
-                            {% for profile in pending_requests %}
-                                <li>
-                                    {{ profile.user.username }}
-                                    <button onclick="declineFriend('{{ profile.user.id }}')">❌</button>
-                                    <button onclick="acceptFriend('{{ profile.user.id }}')">✔️</button>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>No friend requests</p>
-                    {% endif %}
+                    <a class="menu-item active">
+                        <span><i class="uil uil-home"></i></span>
+                        <h3>Home</h3>   
+                    </a>
+                    <a href="{% url 'group_post_list' %}" class="menu-item">
+                        <span><i class="uil uil-compass"></i></span>
+                        <h3>Events</h3>
+                    </a>
+                    <a class="menu-item" id="notifications" class="popup hidden">
+                        <span>
+                            <i class="uil uil-bell">
+                                <small class="notification-count">{{ pending_requests|length }}</small>
+                            </i>
+                        </span>
+                        <h3>Notifications</h3>
+                    </a>
+                    
+                    <!-- Friend Requests Popup -->
+                    <div id="notifications-popup" class="popup hidden">
+                        <h4>Friend Requests</h4>
+                        {% if pending_requests %}
+                            <ul class="friend-request-list">
+                                {% for profile in pending_requests %}
+                                    <li class="friend-request-item" data-profile-id="{{ profile.user.id }}">
+                                        <div class="avatar-container">
+                                            {% if profile.profile_picture %}
+                                                <img src="{{ profile.profile_picture.url }}" alt="Profile Photo" class="popup-avatar">
+                                            {% else %}
+                                                <img src="{% static 'images/default-profile.png' %}" alt="Default" class="popup-avatar">
+                                            {% endif %}
+                                        </div>
+                                        <span class="username">{{ profile.user.username }}</span>
+                                        <div class="action-buttons">
+                                            <button onclick="acceptFriend('{{ profile.id }}')" class="accept-btn">✔️</button>
+                                            <button onclick="declineFriend('{{ profile.id }}')" class="decline-btn">❌</button>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No friend requests</p>
+                        {% endif %}
+                    </div>
+                    
+                    
+                    <a class="menu-item" id="theme">
+                        <span><i class="uil uil-palette"></i></span>
+                        <h3>Theme</h3>
+                    </a>
 
-                    <h3>Friends</h3>
-                    {% if friends %}
-                        <ul class="friends-list">
-                            {% for friend in friends %}
-                                <li>{{ friend.user.username }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>No friends yet</p>
-                    {% endif %}
+                    <a class="menu-item">
+                        <span><i class="uil uil-setting"></i></span>
+                        <h3>Setting</h3>
+                    </a>
 
-                    <h3>Chats</h3>
-                    {% if chats %}
-                        <ul>
-                            {% for chat in chats %}
-                                <li>
-                                    <a href="{% url 'chat' chat.friend.username %}">{{ chat.friend.username }}</a>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>No active chats</p>
-                    {% endif %}
                 </div>
+                <a href="{% url 'calendar' %}" class="btn btn-primary">Go to Calendar</a>
+            </div>
 
-                <!-- Main Content Area -->
-                <div class="main-content">
-                    {% if not profile %}
-                        <p>You haven't created a profile yet!</p>
-                        <a href="{% url 'create_profile' %}" class="btn">Create Profile</a>
-                    {% else %}
-                        <h2>Swipe through profiles!</h2>
-                        <div id="profile-container" class="tinder-cards">
-                            {% for profile in profiles %}
-                                <div class="profile-card" id="profile-{{ profile.user.id }}" data-profile-id="{{ profile.user.id }}">
-                                    <div class="profile-pic-container">
-                                        {% if profile.profile_picture %}
-                                            <img src="{{ profile.profile_picture.url }}" alt="{{ profile.user.username }}'s Profile Picture" class="profile-pic">
-                                        {% else %}
-                                            <img src="{% static 'default_profile_pic.jpg' %}" alt="Default Profile Picture" class="profile-pic">
+            <div class="middle">
+                {% if message %}
+                    <p>{{ message }}</p>
+                {% else %}
+                    {% for match in matches %}
+                        {% if match.cover_photo %}
+                            <div class="match" 
+                                style="background-image: url('{{ match.cover_photo.url }}'); background-size: cover; background-position: center;">
+                        {% else %}
+                            <div class="match" 
+                                style="background-color: grey;"> 
+                        {% endif %}
+                                <div class="match-card">
+                                    <div class="profile-photo" style="border: 1px solid white;">
+                                        {% if match.profile_picture %}
+                                            <img src="{{ match.profile_picture.url }}" alt="{{ match.user.username }}'s Profile Picture" class="profile-pic">
                                         {% endif %}
                                     </div>
-                
-                                    <h3>{{ profile.user.username }}</h3>
-                                    <p><strong>Bio:</strong> {{ profile.bio }}</p>
-                                    <p><strong>Age:</strong> {{ profile.age }}</p>
-                                    <p><strong>Study Times:</strong> {{ profile.study_times }}</p>
-                                    <p><strong>Classes:</strong>
-                                        {% for class in profile.classes.all %}
-                                            {{ class.name }}{% if not forloop.last %}, {% endif %}
-                                        {% endfor %}
-                                    </p>
-                                    
-                                    {% if profile.id in sent_requests %}
-                                    <p>Friend request sent</p>
-                                    <button onclick="removeCard('{{ profile.user.id }}')">❌</button>
-                                {% elif profile.id in pending_request_ids %}
-                                    <p>Friend request received</p>
-                                    <button onclick="acceptFriend('{{ profile.id }}')">✔️</button>
-                                    <button onclick="declineFriend('{{ profile.id }}')">❌</button>
-                                {% elif profile.user in friends %}
-                                    <p>Already Friends</p>
-                                {% else %}
-                                    <button onclick="sendFriendRequest('{{ profile.user.id }}')">✔️ Add Friend</button>
-                                    <button onclick="removeCard('{{ profile.user.id }}')">❌</button>
-                                {% endif %}</div>
-                            {% empty %}
-                                <p>No more profiles to show.</p>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
+                                    <h3 id="match-username" class="match-text">{{ match.user.username }}</h3>
+                                    <p class="match-text"><strong>Name:</strong> {{ match.first_name }} {{ match.last_name }}</p>
+                                    <p class="match-text"><strong>Major:</strong> {{ match.major }}</p>
+                                </div>
+                                <div class="button-group">
+                                    <button onclick="swipeLeft('{{match.id}}')">❌ Skip</button>
+                                    <button onclick="swipeRight('{{ match.id }}')">✅ Match</button>
+                                </div>
+                            </div>
+                    {% empty %}
+                        <p>No study partners found.</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            
+
+            <div class="right">
+                <div class="messages">
+                    <div class="heading">
+                        <h4>Messages</h4>
+                        <i class="uil uil-edit"></i>
+                    </div>
+                    <div class="search-bar">
+                        <i class="uil uil-search"></i>
+                        <input type="search" placeholder="Search messages" id="message-search">
+                    </div>
+                    <div class="category">
+                        <h6 class="active" onclick="toggleCategory('messages')">Messages</h6>
+                    </div>
+            
+                    <!-- Messages List -->
+                    <div id="messages-section">
+                        {% if chats %}
+                            <ul>
+                                {% for chat_info in chats %}
+                                    <li id="chat-{{ chat_info.chat.id }}">
+                                        <button onclick="window.location.href='{% url 'chat' chat_id=chat_info.chat.id %}'" class="chat-btn">
+                                            {% if chat_info.friend.profile.profile_picture %}
+                                                <img class="chat-avatar" src="{{ chat_info.friend.profile.profile_picture.url }}" alt="{{ chat_info.friend.username }}'s profile picture">
+                                            {% else %}
+                                                <img class="chat-avatar" src="{% static 'images/default-profile.png' %}" alt="Default profile picture">
+                                            {% endif %}
+                            
+                                            <div class="chat-meta">
+                                                <div class="chat-header">
+                                                    <span class="username">{{ chat_info.friend.username }}</span>
+                                                    {% if chat_info.last_message %}
+                                                        <span class="chat-time">{{ chat_info.last_message.created_at|localtime|date:"g:i A" }}</span>
+                                                    {% endif %}
+                                                </div>
+                                                <span class="chat-snippet">
+                                                    {{ chat_info.last_message_snippet|truncatechars:40 }}
+                                                </span>
+                                            </div>
+                                        </button>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                            <p id="no-chats-found" style="display: none; color: gray;">No chats found.</p>    
+                        {% else %}
+                            <p>No active chats</p>
+                        {% endif %}
+                    </div>
+            
                 </div>
-                
             </div>
         </div>
     </main>
 
-    <!-- WebSocket for Chat -->
-    {% if chat_partner %}
-        <div class="chat-section">
-            <h3>Chat with {{ chat_partner.username }}</h3>
-            <div id="chat-log" style="border: 1px solid #ccc; height: 200px; overflow-y: scroll;"></div>
-            <input id="chat-message-input" type="text" placeholder="Type a message">
-            <button id="chat-message-submit">Send</button>
+    <div class="customize-theme">
+        <div class="card">
+            <h2>Customize your view</h2>
+            <p class="text-muted">Manage your font size, color, and background</p>
+
+            <div class="font-size">
+                <h4>Font Size</h4>
+                <div>
+                    <h6>Aa</h6>
+                    <div class="choose-size">
+                        <span class="font-size-1"></span>
+                        <span class="font-size-2 active"></span>
+                        <span class="font-size-3"></span>
+                        <span class="font-size-4"></span>
+                        <span class="font-size-5"></span>
+                    </div>
+                    <h3>Aa</h3>
+                </div>
+            </div>
+
+            <div class="color">
+                <h4>Color</h4>
+                <div class="choose-color">
+                    <span class="color-1 active"></span>
+                    <span class="color-2"></span>
+                    <span class="color-3"></span>
+                    <span class="color-4"></span>
+                    <span class="color-5"></span>
+                </div>
+            </div>
+
+            <div class="background">
+                <h4>Background</h4>
+                <div class="choose-bg">
+                    <div class="bg-1 active">
+                        <span></span>
+                        <h5 for="bg-1">Light</h5>
+                    </div>
+                    <div class="bg-2">
+                        <span></span>
+                        <h5 for="bg-2">Dim</h5>
+                    </div>
+                    <div class="bg-3">
+                        <span></span>
+                        <h5 for="bg-3">Dark</h5>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
 
-        <script>
-            const user = "{{ user.username }}";  // Get logged-in user's username dynamically
-            const chatPartnerUsername = "{{ chat_partner.username }}";  // Get the chat partner's username dynamically
-            const roomName = `${user}-${chatPartnerUsername}`;  // Create dynamic room name
+    <script src='../static/home.js' ></script>
 
-            const chatSocket = new WebSocket(
-                'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
-            );
+    <script >
+        const csrfToken = '{{ csrf_token }}';
+        function toggleCategory(category, event) {
+            const messageSec = document.getElementById("messages-section");
+            const requestSec = document.getElementById("friendrequest-section");
+            const friendsSec = document.getElementById("friends-section");
+        
+            // Toggle visibility of sections
+            messageSec.style.display = category === "messages" ? "block" : "none";
+            requestSec.style.display = category === "friendrequest" ? "block" : "none";
+            friendsSec.style.display = category === "friends" ? "block" : "none";
+        
+            // Remove 'active' class from all category headers
+            const cats = document.querySelectorAll(".category h6");
+            cats.forEach(h => h.classList.remove("active"));
+        
+            // Add 'active' class to the clicked category header
+            if (event && event.target) {
+                event.target.classList.add("active");
+            }
+        }
 
-            chatSocket.onmessage = function(e) {
-                const data = JSON.parse(e.data);
-                const message = `${data.username}: ${data.message}`;
-                document.getElementById('chat-log').innerHTML += message + '<br>';
-            };
+        const defaultProfilePic = "{% static 'default_profile_pic.jpg' %}";
 
-            document.getElementById('chat-message-submit').onclick = function() {
-                const messageInput = document.getElementById('chat-message-input');
-                const message = messageInput.value;
-                chatSocket.send(JSON.stringify({'message': message, 'username': user}));
-                messageInput.value = '';
-            };
-        </script>
-    {% endif %}
+        function loadNextMatch() {
+            fetch("{% url 'next_match' %}")
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Match Data:", data);
+                    const container = document.querySelector('.middle');
+        
+                    if (data.no_matches) {
+                        container.innerHTML = "<p>No more matches available.</p>";
+                    } else {
+                        const coverPhotoStyle = data.cover_photo_url
+                            ? `background-image: url('${data.cover_photo_url}'); background-size: cover; background-position: center;`
+                            : `background-color: grey;`;
+        
+                        container.innerHTML = `
+                            <div class="middle">
+                                {% if message %}
+                                    <p>{{ message }}</p>
+                                {% else %}
+                                    {% for match in matches %}
+                                        {% if match.cover_photo %}
+                                            <div class="match" 
+                                                style="background-image: url('{{ match.cover_photo.url }}'); background-size: cover; background-position: center;">
+                                        {% else %}
+                                            <div class="match" 
+                                                style="background-color: grey;"> 
+                                        {% endif %}
+                                                <div class="match-card">
+                                                    <div class="profile-photo" style="border: 1px solid white;">
+                                                        {% if match.profile_picture %}
+                                                            <img src="{{ match.profile_picture.url }}" alt="{{ match.user.username }}'s Profile Picture" class="profile-pic">
+                                                        {% endif %}
+                                                    </div>
+                                                    <h3 id="match-username" class="match-text">{{ match.user.username }}</h3>
+                                                    <p class="match-text"><strong>Name:</strong> {{ match.first_name }} {{ match.last_name }}</p>
+                                                    <p class="match-text"><strong>Major:</strong> {{ match.major }}</p>
+                                                </div>
+                                                <div class="button-group">
+                                                    <button onclick="swipeLeft('{{ match.id }}')">❌ Skip</button>
+                                                    <button onclick="swipeRight('{{ match.id }}')">✅ Match</button>
+                                                </div>
+                                            </div>
+                                    {% empty %}
+                                        <p>No study partners found.</p>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        `;
+                    }
+                });
+        }
+        
+        function swipe(direction) {
+            const profileId = document.getElementById("match-card").dataset.profileId;
+            fetch(`/swipe-profile/${profileId}/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": csrfToken,
+                },
+                body: `direction=${direction}`,
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data.message);
+                if (data.status === "matched" || data.status === "liked" || data.status === "disliked") {
+                    loadNextMatch();  // Load next profile after swipe
+                }
+            })
+            .catch((err) => {
+                console.error("Swipe failed:", err);
+            });
+        }
 
-    <script>
+        function swipeLeft(profileId) {
+            const direction = "dislike";  // Set the direction to "dislike"
+            fetch(`/swipe-profile/${profileId}/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": csrfToken,
+                },
+                body: `direction=${direction}`,
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data.message);
+                loadNextMatch();  // Load the next match after the swipe action
+            })
+            .catch((err) => {
+                console.error("Swipe failed:", err);
+            });
+        }
+
+        function swipeRight(profileId) {
+            const direction = "like";
+            fetch(`/swipe-profile/${profileId}/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": csrfToken,
+                },
+                body: `direction=${direction}`,  // Send direction "like" and profileId
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data.message);
+                // Immediately refresh the page to load the next profile after match
+                window.location.reload();  // Refresh the page to load the next match
+            })
+            .catch((err) => {
+                console.error("Swipe failed:", err);
+            });
+        }
+
+        function unfriend(profileId) {
+            fetch(`/unfriend/${profileId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
+            }).then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                if (data.success) {
+                    document.querySelector(`#friend-${profileId}`)?.remove();
+                    document.querySelector(`#chat-${profileId}`)?.remove();
+                }
+            });
+        }
+        
         function removeCard(profileId) {
             const card = document.getElementById(`profile-${profileId}`);
             if (card) {
@@ -165,57 +409,81 @@
             }
         }
 
-        function sendFriendRequest(profileId) {
-            fetch(`/send-friend-request/${profileId}/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken  // Use the CSRF token here
-                }
-            }).then(response => {
-                if (response.ok) {
-                    removeCard(profileId);
-                    alert("Friend request sent!");
-                } else {
-                    alert("Failed to send friend request.");
-                }
-            });
-        }
-
         function acceptFriend(profileId) {
             fetch(`/accept-friend-request/${profileId}/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken  // Use the CSRF token here
+                    'X-CSRFToken': csrfToken
                 }
-            }).then(response => {
-                if (response.ok) {
-                    alert("Friend request accepted!");
-                    location.reload();
-                } else {
-                    alert("Failed to accept friend request.");
-                }
-            });
+            }).then(() => location.reload());
         }
 
         function declineFriend(profileId) {
-            alert("Friend request declined!");
+            fetch(`/decline-friend-request/${profileId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
+            }).then(() => location.reload());
         }
-
-        // Handle swiping effect using Hammer.js
-        document.addEventListener("DOMContentLoaded", () => {
-            const cards = document.querySelectorAll('.profile-card');
-            cards.forEach(card => {
-                const hammer = new Hammer(card);
-                hammer.on('swipeleft', () => {
-                    removeCard(card.dataset.profileId);
-                });
-                hammer.on('swiperight', () => {
-                    sendFriendRequest(card.dataset.profileId);
-                });
+        document.addEventListener('DOMContentLoaded', function () {
+            const bell = document.getElementById('notifications');
+            const popup = document.getElementById('notifications-popup');
+    
+            bell.addEventListener('click', function (event) {
+                event.stopPropagation();
+                popup.classList.toggle('hidden');
+            });
+    
+            document.addEventListener('click', function (event) {
+                if (!popup.contains(event.target) && !bell.contains(event.target)) {
+                    popup.classList.add('hidden');
+                }
             });
         });
-    </script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadNextMatch();
+        
+            const matchCard = document.getElementById("match-card");
+            if (matchCard) {
+                const hammer = new Hammer(matchCard);
+                hammer.on("swipeleft", swipeLeft);
+                hammer.on("swiperight", swipeRight);
+            }
+        
+            document.getElementById("like-btn")?.addEventListener("click", swipeRight);
+            document.getElementById("dislike-btn")?.addEventListener("click", swipeLeft);
+        });  
+        document.addEventListener("DOMContentLoaded", () => {
+            const searchInput = document.getElementById("message-search");
+            const chatItems = document.querySelectorAll("#messages-section ul li");
+            const noChatsFound = document.getElementById("no-chats-found");
+        
+            function filterChats() {
+                const searchValue = searchInput.value.toLowerCase();
+                let anyVisible = false;
+        
+                chatItems.forEach(item => {
+                    const username = item.querySelector(".username").textContent.toLowerCase();
+                    if (username.includes(searchValue)) {
+                        item.style.display = "block";
+                        anyVisible = true;
+                    } else {
+                        item.style.display = "none";
+                    }
+                });
+        
+                noChatsFound.style.display = anyVisible ? "none" : "block";
+            }
+        
+            if (searchInput) {
+                // Changed from keyup to input so we catch the clear button too
+                searchInput.addEventListener("input", filterChats);
+            }
+        }); 
+    </script>    
 </body>
 </html>

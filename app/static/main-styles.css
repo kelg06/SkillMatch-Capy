@@ -7,10 +7,10 @@
     --light-color-lightness: 95%;
     --white-color-lightness: 100%;
 
-    --color-white: hsl(252, 30%, var(--white-color-lightness));
-    --color-light: hsl(252, 30%, var(--light-color-lightness));
+    --color-white: #F0F0F0;
+    --color-light: #B1DDF6;
     --color-grey: hsl(252, 15%, 65%);
-    --color-primary: hsl(var(--primary-color-hue), 75%, 60%);
+    --color-primary: #CE1126;
     --color-secondary: hsl(252, 100%, 90%);
     --color-success: hsl(120, 95%, 65%);
     --color-danger: hsl(0, 95%, 65%);
@@ -45,17 +45,29 @@ body {
     overflow-x: hidden;
 }
 
+
+
 /* =============== General Style ============== */
 .container {
-    width: 80%;
+    width: 1050px;
     margin: 0 auto;
 }
 
 .profile-photo {
-    width: 2.7rem;
-    aspect-ratio: 1/1;
-    border-radius: 50%;
-    overflow: hidden;
+    width: 2.7em; /* Use 'em' to keep it responsive */
+    height: 2.7em; /* Make sure the height matches the width */
+    aspect-ratio: 1 / 1; /* Keeps the aspect ratio square */
+    border-radius: 50%; /* Makes it a circle */
+    overflow: hidden; /* Hides any overflow (image outside the circle) */
+    display: flex;
+    justify-content: center; /* Centers the image */
+    align-items: center; /* Centers the image */
+}
+
+.profile-photo img {
+    width: 100%; /* Make image fill the container */
+    height: 100%; /* Make image fill the container */
+    object-fit: cover; /* Prevent stretching, just crop to fit */
 }
 
 img {
@@ -76,6 +88,9 @@ img {
 .btn:hover {
     opacity: 0.8;
 }
+
+
+
 
 .btn-primary {
     background: var(--color-primary);
@@ -108,7 +123,7 @@ nav .container {
 }
 
 .search-bar {
-    background: var(--color-light);
+    background: #dadada;
     border-radius: var(--border-radius);
     padding: var(--search-padding);
 }
@@ -132,12 +147,12 @@ nav .create {
 }
 
 /* =============== Main ============== */
-main {
+.main {
     position: relative;
     top: 5.4rem;
 }
 
-main .container {
+.main .container {
     display: grid;
     grid-template-columns: 18vw auto  20vw;
     column-gap: 2rem;
@@ -145,20 +160,20 @@ main .container {
 }
 
 /* =============== Left ============== */
-main .container .left {
+.main .container .left {
     height: max-content;
     position: sticky;
     top: var(--sticky-top-left);
 }
 
-main .container .left .profile {
+.main .container .left .profile {
     padding: var(--card-padding);
     background: var(--color-white);
     border-radius: var(--card-border-radius);
     display: flex;
-    align-items: center;
     column-gap: 1rem;
     width: 100%;
+    align-items: flex-start;
 }
 
 /* =============== Sidebar ============== */
@@ -175,10 +190,11 @@ main .container .left .profile {
     cursor: pointer;
     transition: all 300ms ease;
     position: relative;
+    color: rgb(86, 86, 86);
 }
 
 .left .sidebar .menu-item:hover {
-    background: var(--color-light);
+    background: #dadada;
 }
 
 .left .sidebar i {
@@ -199,6 +215,7 @@ main .container .left .profile {
     top: -0.2rem;
     right: -0.3rem;
 }
+
 
 .left .sidebar h3 {
     margin-left: 1.5rem;
@@ -286,6 +303,129 @@ main .container .left .profile {
     gap: 0.5rem;
 }
 
+
+
+
+
+
+.no-matches-message {
+    display: flex;
+    font-size: 2em;
+    align-items: center;
+}
+
+.match-text {
+    color: white;
+    -webkit-text-stroke: .308px black;
+    font-size: 1.3em;
+    text-shadow:
+    -.308px -.308px 0 #000,
+     .308px -.308px 0 #000,
+    -.308px  .308px 0 #000,
+     .308px  .308px 0 #000;
+}
+
+
+.middle {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+}
+
+.match {
+    border-radius: var(--card-border-radius);
+    padding: var(--card-padding);
+    display: flex;
+    height: 85vh;
+    width: 60vh;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1.5px solid #f0f0f0;
+}
+
+dialog#profile {
+    border: none;
+    padding: 0;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 300px;
+    max-width: 90%;
+    background: white;
+    font-family: 'Segoe UI', sans-serif;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+dialog::backdrop {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+}
+
+.button-group {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 5%;
+    width: 100%;
+    opacity: 90%;
+    justify-content: space-evenly;
+}
+
+
+
+.button-group button {
+    padding: 0.5rem 1.2rem;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 110px;
+    border-radius: var(--card-border-radius);
+}
+
+
+
+
+dialog#profile > div {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+}
+
+dialog#profile a.btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+dialog#profile a.btn:hover {
+    background-color: #0056b3;
+}
+
+dialog#profile p {
+    margin-bottom: 10px;
+    color: #444;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .middle .stories .story {
     padding: var(--card-padding);
     border-radius: var(--card-border-radius);
@@ -344,7 +484,7 @@ main .container .left .profile {
     no-repeat center center/cover;
 }
 
-.middle .story .profile-photo {
+.middle .story {
     width: 2rem;
     height: 2rem;
     align-self: start;
@@ -473,9 +613,29 @@ main .container .right {
     font-size: 0.75rem;
 }
 
-.right .messages .category .active {
-    border-color: var(--color-dark);
+
+
+
+
+.right .messages .category h6 {
+    cursor: pointer;  /* Make the text clickable */
+    padding: 10px;     /* Add padding to increase clickable area */
+    transition: border-color 0.3s ease;  /* Smooth transition for border color */
 }
+
+.right .messages .category .active {
+    border-color: var(--color-dark);  /* Active state border for Messages */
+}
+
+.right .messages .category .active2 {
+    border-color: var(--color-light);  /* Active state border for China */
+}
+
+
+
+
+
+
 
 .right .messages .message-requests {
     color: var(--color-primary);
@@ -488,12 +648,12 @@ main .container .right {
     align-items: start;
 }
 
-.right .message .profile-photo {
+.right .message {
     position: relative;
     overflow: visible;
 }
 
-.right .profile-photo img {
+.right img {
     border-radius: 50%;
 }
 
@@ -505,7 +665,7 @@ main .container .right {
     font-size:0.8rem;
 }
 
-.right .messages .message .profile-photo .active {
+.right .messages .message .active {
     width: 0.8rem;
     height: 0.8rem;
     border-radius: 50%;
@@ -697,9 +857,6 @@ main .container .right {
     margin-right: 1rem;
 }
 
-/* ================= 
-MEDIA QUERIES FOR SMALL LAPTOP AND BIG TABLETS 
-==================== */
 
 @media screen and (max-width: 1200px) {
     .container {
@@ -733,10 +890,6 @@ MEDIA QUERIES FOR SMALL LAPTOP AND BIG TABLETS
     }
 }
 
-/* ================= 
-MEDIA QUERIES FOR SMALL TABLETS AND MOBILE PHONES
-==================== */
-
 @media screen and (max-width: 992px) {
     nav .search-bar {
         display: none;
@@ -754,7 +907,6 @@ MEDIA QUERIES FOR SMALL TABLETS AND MOBILE PHONES
         right: 0;
     }
 
-    /* Notification Popup */
     .left .notifications-popup { 
         position: absolute;
         left: -20rem;
@@ -779,4 +931,98 @@ MEDIA QUERIES FOR SMALL TABLETS AND MOBILE PHONES
     .customize-theme .card {
         width: 80vw; 
     }
+} 
+.popup {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
 }
+
+.friend-request-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.friend-request-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.avatar-container img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.username {
+    flex: 1;
+    margin-left: 0.5rem;
+    font-weight: bold;
+}
+
+.action-buttons button {
+    margin-left: 0.5rem;
+    font-size: 1.2rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.accept-btn {
+    color: green;
+}
+
+.decline-btn {
+    color: red;
+}
+.hidden {
+    display: none;
+}
+
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+ul li {
+    border-bottom: 1px solid #ddd;
+}
+.chat-btn:hover {
+    background-color: #c8c8c8;
+}
+
+.chat-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.chat-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 10px;
+    border: none;
+    background: transparent;
+    width: 100%;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.2s;
+}
+
+.chat-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+

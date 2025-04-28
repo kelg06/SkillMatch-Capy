@@ -5,73 +5,150 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Profile</title>
-    <link rel="stylesheet" href="{% static 'create_profile.css' %}">
+    <link rel="stylesheet" href="{% static '../static/create_profile.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 </head>
 <body>
-    <div class="container">
-        <h2>Create Your Profile</h2>
-        <form method="post" enctype="multipart/form-data"> <!-- Ensure to add enctype for file uploads -->
-            {% csrf_token %}
-            
-            <div class="form-group">
-                <!-- Render the form fields as paragraphs -->
-                {{ form.as_p }} 
+    <form method="post" enctype="multipart/form-data" class="form" novalidate>
+        {% csrf_token %}
+        <div class="container">
+            <h2 class="text-center mb-4">Profile Information</h2>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="id_profile_picture">Profile Picture:</label>
+                    {{ profile_form.profile_picture }}
+                </div>
+                <div class="form-group">
+                    <label for="id_cover_photo">Cover Photo:</label>
+                    {{ profile_form.cover_photo }}
+                </div>
             </div>
 
-            <!-- Display errors for the entire form -->
-            {% for field in form %}
-                {% if field.errors %}
-                    <div class="error-message">
-                        {% for error in field.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            {% endfor %}
+            <div class="form-row">
+                <div class="form-group">
+                    {{ profile_form.first_name }}
+                </div>
+                <div class="form-group">
+                    {{ profile_form.last_name }}
+                </div>
+            </div>
 
-            <button type="submit" class="submit-btn">Save Profile</button>
-        </form>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Age</label>
+                    {{ profile_form.age }}
+                </div>
+                <div class="form-group">
+                    <label>Gender</label>
+                    {{ profile_form.gender }}
+                </div>
+                <div class="form-group">
+                    <label>Preferred Study Partner</label>
+                    {{ profile_form.preferred_gender }}
+                </div>
+            </div>
 
-        <!-- Friend Request Section -->
-        <div class="friend-requests">
-            <h3>Pending Friend Requests</h3>
-            {% if friend_requests %}
-                <ul>
-                    {% for request in friend_requests %}
-                        <li>
-                            {{ request.user.username }}
-                            <button onclick="acceptFriend('{{ request.user.id }}')">✔️</button>
-                            <button onclick="declineFriend('{{ request.user.id }}')">❌</button>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>No pending friend requests.</p>
-            {% endif %}
+            <div class="form-row">
+                <div class="form-group">
+                    {{ profile_form.hometown }}
+                </div>
+                <div class="form-group">
+                    {{ profile_form.major }}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    {{ profile_form.minor }}
+                </div>
+                <div class="form-group">
+                    {{ profile_form.grade }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                {{ profile_form.hobbies }}
+            </div>
+
+            <div class="form-group">
+                {{ profile_form.clubs_and_extracurriculars }}
+            </div>
+
+            <h3 class="mt-4">Questionnaire</h3>
+            {% include 'questionnaire_sections.html' %}
+
+            <div class="error-message">
+                {% for field in profile_form %}
+                    {% if field.errors %}
+                        <div class="alert alert-danger">
+                            {% for error in field.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                {% for error in errors %}
+                    {% if field.errors %}
+                        <div class="alert alert-danger">
+                            {% for error in field.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="navigation-buttons mt-4">
+                <button type="button" id="prev-btn" style="display: none;">Previous</button>
+                <button type="button" id="next-btn">Next</button>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Save Profile</button>
         </div>
-    </div>
+    </form>
 
     <script>
-        function acceptFriend(profileId) {
-            fetch(`/accept-friend-request/${profileId}/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                }
-            }).then(response => {
-                if (response.ok) {
-                    alert("Friend request accepted!");
-                    location.reload();
-                } else {
-                    alert("Failed to accept friend request.");
-                }
+        let currentSection = 0;
+        const sections = document.querySelectorAll('.questionnaire-section');
+        const nextBtn = document.getElementById('next-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const errorMessages = document.querySelectorAll('.error-message');
+
+        function hideErrorMessages() {
+            errorMessages.forEach(error => {
+                setTimeout(() => {
+                    error.style.display = 'none';
+                }, 3000); 
             });
         }
 
-        function declineFriend(profileId) {
-            alert("Friend request declined!");
+        function showSection(index) {
+            sections.forEach((section, i) => {
+                section.style.display = i === index ? 'block' : 'none';
+            });
+            prevBtn.style.display = index === 0 ? 'none' : 'inline-block';
+            nextBtn.style.display = index === sections.length - 1 ? 'none' : 'inline-block';
         }
+
+        nextBtn.addEventListener('click', () => {
+            if (currentSection < sections.length - 1) {
+                currentSection++;
+                showSection(currentSection);
+                hideErrorMessages();  // Hide error messages after moving to the next section
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentSection > 0) {
+                currentSection--;
+                showSection(currentSection);
+                hideErrorMessages();  // Hide error messages after moving to the previous section
+            }
+        });
+
+        showSection(currentSection);
     </script>
 </body>
 </html>
