@@ -1,4 +1,5 @@
-@media screen and (min-width: 1024px) {
+@media screen and (max-width: 1024px) {
+        
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
 
 
@@ -40,6 +41,7 @@
     }
 
     body {
+        margin-bottom: 10px;
         font-family: 'Poppins', sans-serif;
         color: var(--color-dark);
         background: var(--color-light);
@@ -78,10 +80,6 @@
         display: flex;
         justify-content: center; /* Centers the image */
         align-items: center; /* Centers the image */
-    }
-
-    .profile {
-        display: flex;
     }
 
     .profile-photo img {
@@ -173,10 +171,21 @@
     /* =============== Left Sidebar ============== */
     .main .container {
         height: max-content;
+        position: sticky;
         top: var(--sticky-top-left);
     }
 
-    .main .container .left .profile {
+    .main .container .left {
+        padding: var(--card-padding);
+        background: var(--color-white);
+        border-radius: var(--card-border-radius);
+        display: flex;
+        column-gap: 1rem;
+        width: 95vw;
+        align-items: flex-start;
+    }
+
+    /* .left {
         padding: var(--card-padding);
         background: var(--color-white);
         border-radius: var(--card-border-radius);
@@ -184,7 +193,8 @@
         column-gap: 1rem;
         width: 100%;
         align-items: flex-start;
-    }
+    } */
+
     .left .sidebar {
         margin-top: 1rem;
         background: var(--color-white);
@@ -227,6 +237,10 @@
         margin-bottom: 2rem;
     }
 
+
+
+
+    /* left off */
     /* =============== Sidebar ============== */
     .left .sidebar i .notification-count {
         background: var(--color-danger);
@@ -471,6 +485,7 @@
 
     /* =============== Friends Section ============== */
     .friends-container {
+        background: transparent;
         width: 340px;
         padding: 1.5rem;
         background-color: #f9f9f9;
@@ -823,5 +838,169 @@
     }
     .hidden {
         display: none;
+    }
+}
+
+/* =============== Responsive Breakpoints ============== */
+@media screen and (max-width: 1024px) {
+    nav {
+        position: absolute;
+    }
+    .container {
+        width: 100%;
+    }
+
+    main .container {
+        grid-template-columns: 5rem auto 30vw;
+        gap: 1rem;
+    }
+
+    .left {
+        margin-top: 9vh;
+    }
+
+    .customize-theme .card {
+        width: 80vw;
+    }
+    .container {
+        width: 90%;
+    }
+
+    nav .search-bar {
+        display: none;
+    }
+
+    .main .container {
+        margin-top: 7vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .left {
+        z-index: 1;
+        justify-content: center;
+        border-top: 1px solid #ddd;
+    }
+
+    .left .sidebar {
+        margin: 0;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 1.5rem;
+        background: none;
+        border-radius: 0;
+    }
+
+    .left .sidebar .menu-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: auto;
+        padding: 0.5rem 0;
+    }
+
+    .left .sidebar i {
+        margin: 0;
+    }
+
+    .left .sidebar h3,
+    .left .profile,
+    .left .btn {
+        display: none;
+    }
+
+    .left .notifications-popup {
+        position: absolute;
+        left: -20rem;
+        width: 20rem;
+    }
+
+    .left .notifications-popup::before {
+        top: 1.3rem;
+        left: calc(20rem - 0.6rem);
+    }
+
+    .main .container .middle {
+        grid-column: auto;
+    }
+
+    .main .container .right {
+        display: none;
+    }
+
+    .second-container {
+        width: 90vw;
+        height: auto;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .customize-theme .card {
+        width: 80vw;
+    }
+}
+
+/* For mobile phones (below 768px) */
+@media screen and (max-width: 768px) {
+    nav .search-bar input[type="search"] {
+        width: 60vw;
+    }
+
+    .match {
+        height: 78vh;
+        width: 49vh;
+    }
+
+    .friends-container {
+        background: transparent;
+        border-radius: 0 0 var(--card-border-radius) var(--card-border-radius) ;
+        height: 80vh;
+        margin-bottom: 0;
+        width: 100%;
+    }
+
+    .ud-buttons {
+        flex-direction: row;
+        width: 100%;
+        height: auto;
+        margin: 1rem 0;
+    }
+}
+
+/* For very small screens (below 480px) */
+@media screen and (max-width: 480px) {
+    nav .container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .button-group {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn2 {
+        width: 90%;
+    }
+
+    .match {
+        height: 55vh;
+        width: 39vh;
+    }
+
+    .second-container {
+        width: 95vw;
+    }
+}
+
+
+@media screen and (max-width: 375px) {
+    .left {
+        margin-top: 12.5vh;
     }
 }

@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.6/css/unicons.css">
     <!-- Stylesheet -->
     <link rel="stylesheet" href="../static/profile-styles.css">
+    <link rel="stylesheet" href="../static/profile-mobile.css">
 </head>
 <body>
     <nav>
@@ -138,58 +139,15 @@
                                         </div>
                                         <span class="username">{{ friend.user.username }}</span>
                                     </div>
-                                    <button onclick="unfriend('{{ friend.id }}')" class="unfriend-btn">&#10005; Unfriend</button>
-                                </li>
-                                <li id="friend-{{ friend.id }}" class="friend-item">
-                                    <div class="pfp-username">
-                                        <div class="friend-pfp-container">
-                                            {% if friend.profile_picture %}
-                                                <img src="{{ friend.profile_picture.url }}" alt="Profile Picture" class="friend-pfp">
-                                            {% endif %}
-                                        </div>
-                                        <span class="username">{{ friend.user.username }}</span>
-                                    </div>
-                                    <button onclick="unfriend('{{ friend.id }}')" class="unfriend-btn">&#10005; Unfriend</button>
-                                </li>
-                                <li id="friend-{{ friend.id }}" class="friend-item">
-                                    <div class="pfp-username">
-                                        <div class="friend-pfp-container">
-                                            {% if friend.profile_picture %}
-                                                <img src="{{ friend.profile_picture.url }}" alt="Profile Picture" class="friend-pfp">
-                                            {% endif %}
-                                        </div>
-                                        <span class="username">{{ friend.user.username }}</span>
-                                    </div>
-                                    <button onclick="unfriend('{{ friend.id }}')" class="unfriend-btn">&#10005; Unfriend</button>
-                                </li>
-                                <li id="friend-{{ friend.id }}" class="friend-item">
-                                    <div class="pfp-username">
-                                        <div class="friend-pfp-container">
-                                            {% if friend.profile_picture %}
-                                                <img src="{{ friend.profile_picture.url }}" alt="Profile Picture" class="friend-pfp">
-                                            {% endif %}
-                                        </div>
-                                        <span class="username">{{ friend.user.username }}</span>
-                                    </div>
-                                    <button onclick="unfriend('{{ friend.id }}')" class="unfriend-btn">&#10005; Unfriend</button>
-                                </li>
-                                <li id="friend-{{ friend.id }}" class="friend-item">
-                                    <div class="pfp-username">
-                                        <div class="friend-pfp-container">
-                                            {% if friend.profile_picture %}
-                                                <img src="{{ friend.profile_picture.url }}" alt="Profile Picture" class="friend-pfp">
-                                            {% endif %}
-                                        </div>
-                                        <span class="username">{{ friend.user.username }}</span>
-                                    </div>
-                                    <button onclick="unfriend('{{ friend.id }}')" class="unfriend-btn">&#10005; Unfriend</button>
+                                    <button onclick="unfriend('{{ friend.id }}')" class="unfriend-btn">&#10005;</button>
                                 </li>
                             {% endfor %}
                         </ul>
                     {% else %}
                         <p class="no-friends-text">No friends yet</p>
                     {% endif %}
-                </div>                
+                </div>
+                
             </div>
         </div>
     </main>
@@ -246,30 +204,9 @@
     </div>
 
     <script>
-        console.log('This will work');
         const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
         const csrfToken = csrfInput ? csrfInput.value : '';
-        function toggleCategory(category, event) {
-            const messageSec = document.getElementById("messages-section");
-            const requestSec = document.getElementById("friendrequest-section");
-            const friendsSec = document.getElementById("friends-section");
-        
-            // Toggle visibility of sections
-            messageSec.style.display = category === "messages" ? "block" : "none";
-            requestSec.style.display = category === "friendrequest" ? "block" : "none";
-            friendsSec.style.display = category === "friends" ? "block" : "none";
-        
-            // Remove 'active' class from all category headers
-            const cats = document.querySelectorAll(".category h6");
-            cats.forEach(h => h.classList.remove("active"));
-        
-            // Add 'active' class to the clicked category header
-            if (event && event.target) {
-                event.target.classList.add("active");
-            }
-        }
-
-
+    
         function unfriend(profileId) {
             fetch(`/unfriend/${profileId}/`, {
                 method: 'POST',
@@ -286,15 +223,7 @@
                 }
             });
         }
-
-        function removeCard(profileId) {
-            const card = document.getElementById(`profile-${profileId}`);
-            if (card) {
-                card.style.transform = 'translateX(100%)';
-                setTimeout(() => card.remove(), 300);
-            }
-        }
-
+    
         function acceptFriend(profileId) {
             fetch(`/accept-friend-request/${profileId}/`, {
                 method: 'POST',
@@ -304,7 +233,7 @@
                 }
             }).then(() => location.reload());
         }
-
+    
         function declineFriend(profileId) {
             fetch(`/decline-friend-request/${profileId}/`, {
                 method: 'POST',
@@ -314,6 +243,7 @@
                 }
             }).then(() => location.reload());
         }
+    
         document.addEventListener('DOMContentLoaded', function () {
             const bell = document.getElementById('notifications');
             const popup = document.getElementById('notifications-popup');
@@ -329,20 +259,6 @@
                 }
             });
         });
-
-        document.addEventListener("DOMContentLoaded", () => {
-            loadNextMatch();
-        
-            const matchCard = document.getElementById("match-card");
-            if (matchCard) {
-                const hammer = new Hammer(matchCard);
-                hammer.on("swipeleft", swipeLeft);
-                hammer.on("swiperight", swipeRight);
-            }
-        
-            document.getElementById("like-btn")?.addEventListener("click", swipeRight);
-            document.getElementById("dislike-btn")?.addEventListener("click", swipeLeft);
-        });  
-    </script>    
+    </script>        
 </body>
 </html>
