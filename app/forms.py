@@ -55,14 +55,14 @@ class ProfileForm(forms.ModelForm):
     profile_picture = forms.ImageField(
         required=True,
         error_messages={'required': 'Please upload a profile picture.'},
-        widget=forms.ClearableFileInput(attrs={"class": "form-control form-field"})
+        widget=forms.FileInput
     )
     
     # Cover Photo (Required)
     cover_photo = forms.ImageField(
         required=True,
         error_messages={'required': 'Please upload a cover photo.'},
-        widget=forms.ClearableFileInput(attrs={"class": "form-control form-field"})
+        widget=forms.FileInput
     )
 
     # First Name (Required)
