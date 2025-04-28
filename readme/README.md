@@ -9,10 +9,10 @@
 
   COLOR PALETTE            |  DEMO
 :-------------------------:|:-------------------------:
-<img style="width: 100%;" src="ColorPal.png" alt="Color Palette">   |  <video width=80% controls><source src="2025-02-14 08-52-53.mp4" type="video/mp4">DEMO Video</video>
+<img style="width: 100%;" src="ColorPal.png" alt="Color Palette">   |  <video width=80% controls><source src="preview (1).mp4" type="video/mp4">DEMO Video</video>
 </div>
 
-## **KEY FEATURES:**
+## **KEY FEATURES:**7
 ClassMatch helps students connect with others on campus. Users can create and update detailed profiles, send and manage friend requests, and engage in private one-on-one messaging. The platform includes group posts for Super Admins and Group Admins to share content. Users can view and add events to a calendar, and a contact form allows communication with admins. Role-based access ensures only authorized users can manage posts and profiles. Dynamic updates and AJAX integration enhance the user experience.
 ## **HOW TO USE (Visual Studio Code)**
 
