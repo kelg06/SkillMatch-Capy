@@ -1,11 +1,176 @@
-<h2>Update Profile</h2>
-<form method="POST">
-    {% csrf_token %}
-    <label>Bio:</label>
-    <input type="text" name="bio" value="{{ profile.bio }}"><br>
-    <label>Age:</label>
-    <input type="number" name="age" value="{{ profile.age }}"><br>
-    <label>Study Times:</label>
-    <input type="text" name="study_times" value="{{ profile.study_times }}"><br>
-    <button type="submit">Update</button>
-</form>
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Profile</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'update_profile.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+    
+    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+        {% csrf_token %}
+        <div class="container">
+            <div class="update-intro">
+                <h2 class="text-center mb-4">Profile Information</h2>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="id_profile_picture">Profile Picture:</label>
+                    {{ profile_form.profile_picture }}
+                </div>
+                <div class="form-group">
+                    <label for="id_cover_photo">Cover Photo:</label>
+                    {{ profile_form.cover_photo }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    {{ profile_form.first_name }}
+                </div>
+                <div class="form-group">
+                    {{ profile_form.last_name }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Age</label>
+                    {{ profile_form.age }}
+                </div>
+                <div class="form-group">
+                    <label>Gender</label>
+                    {{ profile_form.gender }}
+                </div>
+                <div class="form-group">
+                    <label>Preferred Gender</label>
+                    {{ profile_form.preferred_gender }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    {{ profile_form.hometown }}
+                </div>
+                <div class="form-group">
+                    {{ profile_form.major }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    {{ profile_form.minor }}
+                </div>
+                <div class="form-group">
+                    {{ profile_form.grade }}
+                </div>
+            </div>
+            <div class="form-group">
+                {{ profile_form.hobbies }}
+            </div>
+            <div class="form-group">
+                {{ profile_form.clubs_and_extracurriculars }}
+            </div>
+
+            <h3 class="mt-4">Questionnaire</h3>
+            <div class="form-group">
+                <label class="question-label">Are you more...</label>
+                {{ questionnaire_form.grove_or_game_day }}
+            </div>
+            <div class="form-group">
+                <label class="question-label">Ideal study spot:</label>
+                {{ questionnaire_form.ideal_study_spot }}
+            </div>
+            <div class="questionnaire-field">
+                <label class="question-label">When do you study?</label>
+                {{ questionnaire_form.study_time }}
+            </div>
+            <div class="form-group">
+                <label class="question-label">Biggest source of energy?</label>
+                {{ questionnaire_form.energy_source }}
+            </div>
+            <div class="form-group">
+                <label class="question-label">On a group project, I’m most likely to...</label>
+                {{ questionnaire_form.group_project_role }}
+            </div>
+            <div class="form-group">
+                <label class="question-label">How do you usually prep for an exam?</label>
+                {{ questionnaire_form.exam_prep_style }}
+            </div>
+            <div class="form-group">
+                <label class="question-label">Biggest academic strength?</label>
+                {{ questionnaire_form.academic_strength }}
+            </div>
+            <div class="form-group">
+                <label class="question-label">What kind of accountability works best for you?</label>
+                {{ questionnaire_form.accountability_style }}
+            </div>
+            <div class="form-group">
+                <label class="question-label">What do you wish you had more of?</label>
+                {{ questionnaire_form.wish_more_of }}
+            </div>
+            <div class="form-group">
+                <label class="question-label">Hot take:</label>
+                {{ questionnaire_form.hot_take }}
+            </div>
+            <div class="form-column">
+                <label class="question-label">How busy is your schedule? 1-100</label>
+                {{ questionnaire_form.planner_fullness }}
+            </div>
+            <div class="form-group">
+                <label class="question-label">Social energy right now:</label>
+                {{ questionnaire_form.social_energy }}
+            </div>
+            <div class="form-group">
+                <label class="question-label">What best describes your approach to your major?</label>
+                {{ questionnaire_form.major_approach }}
+            </div>
+            <div class="form-group">
+                <label class="question-label">What’s your game plan after graduation?</label>
+                {{ questionnaire_form.post_grad_plan }}
+            </div>
+            <div class="form-group">
+                <label class="question-label">What motivates you most in college right now?</label>
+                {{ questionnaire_form.college_motivation }}
+            </div>
+            <div class="form-group">
+                <label class="question-label">Are you involved with any of these groups on campus?</label>
+                {{ questionnaire_form.campus_groups }}
+            </div>
+            
+            <div class="form-group">
+                <label class="question-label">How important is it that your match is involved on campus too?</label>
+                {{ questionnaire_form.match_involvement_importance }}
+            </div>
+            <div class="form-group">
+                <label class="question-label">Which describes your social energy on campus?</label>
+                {{ questionnaire_form.social_energy_on_campus }}
+            </div>
+
+            <div class="error-message">
+                {% for field in profile_form %}
+                    {% if field.errors %}
+                        <div class="alert alert-danger">
+                            {% for error in field.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                {% for field in questionnaire_form %}
+                    {% if field.errors %}
+                        <div class="alert alert-danger">
+                            {% for error in field.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Update</button>
+        </div>
+    </form>
+
+</body>
+</html>

@@ -1,0 +1,156 @@
+/* General body styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f4f8;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Back button */
+button {
+    background-color: #CE1126;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-bottom: 20px;
+}
+
+button:hover {
+    background-color: darkred;
+}
+
+/* Chat container */
+.chat-container {
+    max-width: 700px;
+    margin: auto;
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    height: calc(100dvh - 40px);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+/* Header */
+.chat-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #333;
+}
+
+/* Chat messages box */
+.chat-box {
+    width:100%;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+    background-color: #fafafa;
+    margin-bottom: 20px;
+}
+
+
+/* Individual message */
+.message {
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    border-radius: 10px;
+    max-width: 80%;
+    word-wrap: break-word;
+    position: relative;
+}
+
+/* Sent messages (right aligned) */
+.message.sent {
+    background-color: #d1f0ff;
+    margin-left: auto;
+    text-align: right;
+}
+
+/* Received messages (left aligned) */
+.message.received {
+    background-color: #f1f1f1;
+    margin-right: auto;
+    text-align: left;
+}
+
+/* Timestamps */
+.timestamp {
+    font-size: 0.75em;
+    color: #777;
+    margin-top: 4px;
+}
+
+/* Form styles */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+form p {
+    margin: 0;
+}
+
+form input[type="text"], form textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1em;
+    width: 100%;
+}
+
+form button[type="submit"] {
+    background-color: #CE1126;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+form button[type="submit"]:hover {
+    background-color: darkred;
+}
+.message-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.message-wrapper.sent {
+    flex-direction: row-reverse;
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+.last-seen {
+    font-size: 0.9rem;
+    color: #888;
+    margin-top: -10px;
+    margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+    .chat-box {
+        height:50vh;
+        width: 100%
+    }
+    .message.sent {
+        max-width: 200px;
+    }
+}
