@@ -1,9 +1,9 @@
 <div align="center">
   <img style="width: 30%;" src="new-logo.png" alt="project image">  
   
-  # **CashTalk**
+  # **ClassMatch**
 
-  #### CashTalk is an online banking and ATM service designed for secure and seamless financial transactions.
+  #### ClassMatch helps students easily connect, create study profiles, and find perfect study partners on campus.
 
   
 
