@@ -52,13 +52,21 @@ body {
     width: 1050px;
     margin: 0 auto;
 }
-
 .profile-photo {
-    width: 2.7rem;
-    aspect-ratio: 1 / 1;
-    border-radius: 50%;
-    overflow: hidden;
+    width: 2.7em; /* Use 'em' to keep it responsive */
+    height: 2.7em; /* Make sure the height matches the width */
+    aspect-ratio: 1 / 1; /* Keeps the aspect ratio square */
+    border-radius: 50%; /* Makes it a circle */
+    overflow: hidden; /* Hides any overflow (image outside the circle) */
     display: flex;
+    justify-content: center; /* Centers the image */
+    align-items: center; /* Centers the image */
+}
+
+.profile-photo img {
+    width: 100%; /* Make image fill the container */
+    height: 100%; /* Make image fill the container */
+    object-fit: cover; /* Prevent stretching, just crop to fit */
 }
 
 img {

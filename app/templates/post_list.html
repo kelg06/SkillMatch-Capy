@@ -19,15 +19,13 @@
     <nav>
         <div class="container">
             <h2 class="logo">ClassMatch</h2>
-            <div class="search-bar">
-                <i class="uil uil-search"></i>
-                <input type="search" placeholder="Search for creators, inspirations, and projects">
-            </div>
             <div class="create">
                 <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
-                <div class="profile-photo">
-                    <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="profile-pic">
-                </div>
+                <a class="profile" href="{% url 'profile' %}">
+                    <div class="profile-photo">
+                        <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="profile-pic">
+                    </div>
+                </a>
             </div>
         </div>
     </nav>
@@ -40,7 +38,7 @@
                         <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="profile-pic">
                     </div>
                     <div class="handle">
-                        <p>{{ profile.first_name }} <br> {{ profile.last_name }}</p>
+                        <p style="color: black;">{{ profile.first_name }} <br> {{ profile.last_name }}</p>
                         <h4 class="text-muted">{{ user.username }}</h4>
                     </div>
                 </a>

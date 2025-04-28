@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.6/css/unicons.css">
     <!-- Stylesheet -->
     <link rel="stylesheet" href="../static/profile-styles.css">
+    <link rel="stylesheet" href="../static/profile-mobile.css">
 </head>
 <body>
     <nav>
@@ -17,10 +18,6 @@
             <h2 class="logo">
                 ClassMatch
             </h2>
-            <div class="search-bar">
-                <i class="uil uil-search"></i>
-                <input type="search" placeholder="Search for creators, inspirations, and projects">
-            </div>
             <div class="create">
                 <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
                 <div class="profile-photo">
@@ -39,12 +36,12 @@
                     </div>
 
                     <div class="handle">
-                        <p>{{ profile.first_name }} <br> {{ profile.last_name }}</p>
+                        <p style="color: black;">{{ profile.first_name }} <br> {{ profile.last_name }}</p>
                         <h4 class="text-muted">{{ user.username }}</h4>
                     </div>
                 </a>
                 <div class="sidebar">
-                    <a class="menu-item active" href="{% url 'home' %}">
+                    <a class="menu-item" href="{% url 'home' %}">
                         <span><i class="uil uil-home"></i></span>
                         <h3>Home</h3>
                     </a>
@@ -123,29 +120,34 @@
                         </div> 
                     </div>
                     <div class="ud-buttons">
-                        <button class="btn2 btn-primary"><a href="{% url 'update_profile' profile.id %}" class="btn-links">Update Profile</a></button>
-                        <button class="btn2 btn-primary"><a href="{% url 'delete_profile' profile.id %}" class="btn-links">Delete Profile</a></button>
+                        <button class="btn2 btn-primary"><a href="{% url 'update_profile' profile.id %}" class="btn-links">Update</a></button>
+                        <button class="btn2 btn-primary"><a href="{% url 'delete_profile' profile.id %}" class="btn-links">Delete</a></button>
                     </div>
                 </div>
 
                 <!-- Friends List -->
-                <div id="friends-section">
+                <div id="friends-section" class="friends-container">
                     {% if friends %}
-                    <ul class="friends-list">
-                        {% for friend in friends %}
-                            <li id="friend-{{ friend.id }}">
-                                {% if friend.profile_picture %}
-                                    <img src="{{ friend.profile_picture.url }}" alt="Profile Picture" style="width:2.7rem;">
-                                {% endif %}
-                                {{ friend.user.username }}
-                                <button onclick="unfriend('{{ friend.id }}')">❌ Unfriend</button>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p>No friends yet</p>
-                {% endif %}
+                        <ul class="friends-list">
+                            {% for friend in friends %}
+                                <li id="friend-{{ friend.id }}" class="friend-item">
+                                    <div class="pfp-username">
+                                        <div class="friend-pfp-container">
+                                            {% if friend.profile_picture %}
+                                                <img src="{{ friend.profile_picture.url }}" alt="Profile Picture" class="friend-pfp">
+                                            {% endif %}
+                                        </div>
+                                        <span class="username">{{ friend.user.username }}</span>
+                                    </div>
+                                    <button onclick="unfriend('{{ friend.id }}')" class="unfriend-btn">&#10005;</button>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="no-friends-text">No friends yet</p>
+                    {% endif %}
                 </div>
+                
             </div>
         </div>
     </main>
@@ -201,29 +203,10 @@
         </div>
     </div>
 
-    <script src="../static/main.js">
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        function toggleCategory(category, event) {
-            const messageSec = document.getElementById("messages-section");
-            const requestSec = document.getElementById("friendrequest-section");
-            const friendsSec = document.getElementById("friends-section");
-        
-            // Toggle visibility of sections
-            messageSec.style.display = category === "messages" ? "block" : "none";
-            requestSec.style.display = category === "friendrequest" ? "block" : "none";
-            friendsSec.style.display = category === "friends" ? "block" : "none";
-        
-            // Remove 'active' class from all category headers
-            const cats = document.querySelectorAll(".category h6");
-            cats.forEach(h => h.classList.remove("active"));
-        
-            // Add 'active' class to the clicked category header
-            if (event && event.target) {
-                event.target.classList.add("active");
-            }
-        }
-
-
+    <script>
+        const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
+        const csrfToken = csrfInput ? csrfInput.value : '';
+    
         function unfriend(profileId) {
             fetch(`/unfriend/${profileId}/`, {
                 method: 'POST',
@@ -240,15 +223,7 @@
                 }
             });
         }
-
-        function removeCard(profileId) {
-            const card = document.getElementById(`profile-${profileId}`);
-            if (card) {
-                card.style.transform = 'translateX(100%)';
-                setTimeout(() => card.remove(), 300);
-            }
-        }
-
+    
         function acceptFriend(profileId) {
             fetch(`/accept-friend-request/${profileId}/`, {
                 method: 'POST',
@@ -258,7 +233,7 @@
                 }
             }).then(() => location.reload());
         }
-
+    
         function declineFriend(profileId) {
             fetch(`/decline-friend-request/${profileId}/`, {
                 method: 'POST',
@@ -268,6 +243,7 @@
                 }
             }).then(() => location.reload());
         }
+    
         document.addEventListener('DOMContentLoaded', function () {
             const bell = document.getElementById('notifications');
             const popup = document.getElementById('notifications-popup');
@@ -283,20 +259,6 @@
                 }
             });
         });
-
-        document.addEventListener("DOMContentLoaded", () => {
-            loadNextMatch();
-        
-            const matchCard = document.getElementById("match-card");
-            if (matchCard) {
-                const hammer = new Hammer(matchCard);
-                hammer.on("swipeleft", swipeLeft);
-                hammer.on("swiperight", swipeRight);
-            }
-        
-            document.getElementById("like-btn")?.addEventListener("click", swipeRight);
-            document.getElementById("dislike-btn")?.addEventListener("click", swipeLeft);
-        });  
-    </script>    
+    </script>        
 </body>
 </html>
