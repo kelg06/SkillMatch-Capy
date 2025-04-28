@@ -9,7 +9,7 @@
 
   COLOR PALETTE            |  DEMO
 :-------------------------:|:-------------------------:
-<img style="width: 100%;" src="ColorPal.png" alt="Color Palette">   |  <video width=80% controls><source src="2025-02-14 08-52-53.mp4" type="video/mp4">DEMO Video</video>
+<img style="width: 100%;" src="ColorPal.png" alt="Color Palette">   |  <video width=80% controls><source src="preview.mp4" type="video/mp4">DEMO Video</video>
 </div>
 
 ## **KEY FEATURES:**
