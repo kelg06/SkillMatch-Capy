@@ -8,7 +8,7 @@ body {
 
 /* Back button */
 button {
-    background-color: #3498db;
+    background-color: #CE1126;
     color: white;
     border: none;
     padding: 10px 16px;
@@ -19,7 +19,7 @@ button {
 }
 
 button:hover {
-    background-color: #2980b9;
+    background-color: darkred;
 }
 
 /* Chat container */
@@ -30,7 +30,13 @@ button:hover {
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    height: calc(100dvh - 40px);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
+
 
 /* Header */
 .chat-container h2 {
@@ -41,14 +47,16 @@ button:hover {
 
 /* Chat messages box */
 .chat-box {
+    width:100%;
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 20px;
-    height: 400px;
+    flex: 1;
     overflow-y: auto;
     background-color: #fafafa;
     margin-bottom: 20px;
 }
+
 
 /* Individual message */
 .message {
@@ -101,7 +109,7 @@ form input[type="text"], form textarea {
 }
 
 form button[type="submit"] {
-    background-color: #2ecc71;
+    background-color: #CE1126;
     color: white;
     border: none;
     padding: 10px 16px;
@@ -111,7 +119,7 @@ form button[type="submit"] {
 }
 
 form button[type="submit"]:hover {
-    background-color: #27ae60;
+    background-color: darkred;
 }
 .message-wrapper {
     display: flex;
@@ -135,4 +143,14 @@ form button[type="submit"]:hover {
     color: #888;
     margin-top: -10px;
     margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+    .chat-box {
+        height:50vh;
+        width: 100%
+    }
+    .message.sent {
+        max-width: 200px;
+    }
 }

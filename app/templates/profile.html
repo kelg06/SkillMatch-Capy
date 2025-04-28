@@ -17,10 +17,6 @@
             <h2 class="logo">
                 ClassMatch
             </h2>
-            <div class="search-bar">
-                <i class="uil uil-search"></i>
-                <input type="search" placeholder="Search for creators, inspirations, and projects">
-            </div>
             <div class="create">
                 <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
                 <div class="profile-photo">
@@ -39,12 +35,12 @@
                     </div>
 
                     <div class="handle">
-                        <p>{{ profile.first_name }} <br> {{ profile.last_name }}</p>
+                        <p style="color: black;">{{ profile.first_name }} <br> {{ profile.last_name }}</p>
                         <h4 class="text-muted">{{ user.username }}</h4>
                     </div>
                 </a>
                 <div class="sidebar">
-                    <a class="menu-item active" href="{% url 'home' %}">
+                    <a class="menu-item" href="{% url 'home' %}">
                         <span><i class="uil uil-home"></i></span>
                         <h3>Home</h3>
                     </a>
@@ -123,29 +119,77 @@
                         </div> 
                     </div>
                     <div class="ud-buttons">
-                        <button class="btn2 btn-primary"><a href="{% url 'update_profile' profile.id %}" class="btn-links">Update Profile</a></button>
-                        <button class="btn2 btn-primary"><a href="{% url 'delete_profile' profile.id %}" class="btn-links">Delete Profile</a></button>
+                        <button class="btn2 btn-primary"><a href="{% url 'update_profile' profile.id %}" class="btn-links">Update</a></button>
+                        <button class="btn2 btn-primary"><a href="{% url 'delete_profile' profile.id %}" class="btn-links">Delete</a></button>
                     </div>
                 </div>
 
                 <!-- Friends List -->
-                <div id="friends-section">
+                <div id="friends-section" class="friends-container">
                     {% if friends %}
-                    <ul class="friends-list">
-                        {% for friend in friends %}
-                            <li id="friend-{{ friend.id }}">
-                                {% if friend.profile_picture %}
-                                    <img src="{{ friend.profile_picture.url }}" alt="Profile Picture" style="width:2.7rem;">
-                                {% endif %}
-                                {{ friend.user.username }}
-                                <button onclick="unfriend('{{ friend.id }}')">❌ Unfriend</button>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p>No friends yet</p>
-                {% endif %}
-                </div>
+                        <ul class="friends-list">
+                            {% for friend in friends %}
+                                <li id="friend-{{ friend.id }}" class="friend-item">
+                                    <div class="pfp-username">
+                                        <div class="friend-pfp-container">
+                                            {% if friend.profile_picture %}
+                                                <img src="{{ friend.profile_picture.url }}" alt="Profile Picture" class="friend-pfp">
+                                            {% endif %}
+                                        </div>
+                                        <span class="username">{{ friend.user.username }}</span>
+                                    </div>
+                                    <button onclick="unfriend('{{ friend.id }}')" class="unfriend-btn">&#10005; Unfriend</button>
+                                </li>
+                                <li id="friend-{{ friend.id }}" class="friend-item">
+                                    <div class="pfp-username">
+                                        <div class="friend-pfp-container">
+                                            {% if friend.profile_picture %}
+                                                <img src="{{ friend.profile_picture.url }}" alt="Profile Picture" class="friend-pfp">
+                                            {% endif %}
+                                        </div>
+                                        <span class="username">{{ friend.user.username }}</span>
+                                    </div>
+                                    <button onclick="unfriend('{{ friend.id }}')" class="unfriend-btn">&#10005; Unfriend</button>
+                                </li>
+                                <li id="friend-{{ friend.id }}" class="friend-item">
+                                    <div class="pfp-username">
+                                        <div class="friend-pfp-container">
+                                            {% if friend.profile_picture %}
+                                                <img src="{{ friend.profile_picture.url }}" alt="Profile Picture" class="friend-pfp">
+                                            {% endif %}
+                                        </div>
+                                        <span class="username">{{ friend.user.username }}</span>
+                                    </div>
+                                    <button onclick="unfriend('{{ friend.id }}')" class="unfriend-btn">&#10005; Unfriend</button>
+                                </li>
+                                <li id="friend-{{ friend.id }}" class="friend-item">
+                                    <div class="pfp-username">
+                                        <div class="friend-pfp-container">
+                                            {% if friend.profile_picture %}
+                                                <img src="{{ friend.profile_picture.url }}" alt="Profile Picture" class="friend-pfp">
+                                            {% endif %}
+                                        </div>
+                                        <span class="username">{{ friend.user.username }}</span>
+                                    </div>
+                                    <button onclick="unfriend('{{ friend.id }}')" class="unfriend-btn">&#10005; Unfriend</button>
+                                </li>
+                                <li id="friend-{{ friend.id }}" class="friend-item">
+                                    <div class="pfp-username">
+                                        <div class="friend-pfp-container">
+                                            {% if friend.profile_picture %}
+                                                <img src="{{ friend.profile_picture.url }}" alt="Profile Picture" class="friend-pfp">
+                                            {% endif %}
+                                        </div>
+                                        <span class="username">{{ friend.user.username }}</span>
+                                    </div>
+                                    <button onclick="unfriend('{{ friend.id }}')" class="unfriend-btn">&#10005; Unfriend</button>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="no-friends-text">No friends yet</p>
+                    {% endif %}
+                </div>                
             </div>
         </div>
     </main>
@@ -201,8 +245,10 @@
         </div>
     </div>
 
-    <script src="../static/main.js">
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    <script>
+        console.log('This will work');
+        const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
+        const csrfToken = csrfInput ? csrfInput.value : '';
         function toggleCategory(category, event) {
             const messageSec = document.getElementById("messages-section");
             const requestSec = document.getElementById("friendrequest-section");
