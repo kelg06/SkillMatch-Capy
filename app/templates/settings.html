@@ -8,11 +8,9 @@
     <title>mySocial - Responsive Social Media Website Using HTML, CSS, JavaScript</title>
     <!-- IconScout CDN -->
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.6/css/unicons.css">
-
-
-
-    <link rel="stylesheet" href="../static/profile-basics.css" media="screen and (min-width: 1024px)" />
-    <link rel="stylesheet" href="../static/profile-mobile.css" media="screen and (max-width: 1024px)" />
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="../static/profile-basics.css">
+    <link rel="stylesheet" href="../static/profile-mobile.css">
 </head>
 <body>
     <nav>
@@ -36,13 +34,12 @@
                     <div class="profile-photo">
                         <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="profile-pic">
                     </div>
-            
+
                     <div class="handle">
                         <p style="color: black;">{{ profile.first_name }} <br> {{ profile.last_name }}</p>
                         <h4 class="text-muted">{{ user.username }}</h4>
                     </div>
                 </a>
-
                 <div class="sidebar">
                     <a class="menu-item" href="{% url 'home' %}">
                         <span><i class="uil uil-home"></i></span>
@@ -52,46 +49,39 @@
                         <span><i class="uil uil-compass"></i></span>
                         <h3>Events</h3>
                     </a>
-
-                    <a class="menu-item" id="notifications">
+                    <a class="menu-item" id="notifications" class="popup hidden">
                         <span>
                             <i class="uil uil-bell">
                                 <small class="notification-count">{{ pending_requests|length }}</small>
                             </i>
                         </span>
                         <h3>Notifications</h3>
-
-                        <!-- Friend Requests Popup INSIDE the bell/menu-item -->
-                        <div id="notifications-popup" class="popup hidden">
-                            <h4>Friend Requests</h4>
-                            {% if pending_requests %}
-                                <ul class="friend-request-list">
-                                    {% for profile in pending_requests %}
-                                        <li class="friend-request-item" data-profile-id="{{ profile.user.id }}">
-                                            <div class="avatar-container">
-                                                {% if profile.profile_picture %}
-                                                    <img src="{{ profile.profile_picture.url }}" alt="Profile Photo" class="popup-avatar">
-                                                {% else %}
-                                                    <img src="{% static 'images/default-profile.png' %}" alt="Default" class="popup-avatar">
-                                                {% endif %}
-                                            </div>
-                                            <span class="username">{{ profile.user.username }}</span>
-                                            <div class="action-buttons">
-                                                <button onclick="acceptFriend('{{ profile.id }}')" class="accept-btn">✔️</button>
-                                                <button onclick="declineFriend('{{ profile.id }}')" class="decline-btn">
-                                                    <img src="{% static 'images/default-profile.png' %}">
-                                                </button>
-                                            </div>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            {% else %}
-                                <p>No friend requests</p>
-                            {% endif %}
-                        </div>
                     </a>
-
-                    <a class="menu-item" href="{% url 'settings' %}">
+                    
+                    <!-- Friend Requests Popup -->
+                    <div id="notifications-popup" class="popup hidden">
+                        <h4>Friend Requests</h4>
+                        {% if pending_requests %}
+                            <ul class="friend-request-list">
+                                {% for profile in pending_requests %}
+                                    <li class="friend-request-item" data-profile-id="{{ profile.user.id }}">
+                                        <div class="avatar-container">
+                                            {% if profile.profile_picture %}
+                                                <img src="{{ profile.profile_picture.url }}" alt="Profile Photo" class="popup-avatar">
+                                            {% else %}
+                                                <img src="{% static 'images/default-profile.png' %}" alt="Default" class="popup-avatar">
+                                            {% endif %}
+                                        </div>
+                                        <span class="username">{{ profile.user.username }}</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No friend requests</p>
+                        {% endif %}
+                    </div>
+                
+                    <a class="menu-item">
                         <span><i class="uil uil-setting"></i></span>
                         <h3>Setting</h3>
                     </a>
@@ -119,10 +109,6 @@
                             <strong><p class="match-text">Name: {{ profile.first_name }} {{ profile.last_name }}</p></strong>
                             <strong><p class="match-text">Major: {{ profile.major }}</p></strong> 
                         </div> 
-                    </div>
-                    <div class="ud-buttons">
-                        <button class="btn2 btn-primary"><a href="{% url 'update_profile' profile.id %}" class="btn-links">Update</a></button>
-                        <button class="btn2 btn-primary"><a href="{% url 'delete_profile' profile.id %}" class="btn-links">Delete</a></button>
                     </div>
                 </div>
 
@@ -153,10 +139,11 @@
         </div>
     </main>
 
+
     <script>
         const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
         const csrfToken = csrfInput ? csrfInput.value : '';
-
+    
         function unfriend(profileId) {
             fetch(`/unfriend/${profileId}/`, {
                 method: 'POST',
@@ -173,7 +160,7 @@
                 }
             });
         }
-
+    
         function acceptFriend(profileId) {
             fetch(`/accept-friend-request/${profileId}/`, {
                 method: 'POST',
@@ -183,7 +170,7 @@
                 }
             }).then(() => location.reload());
         }
-
+    
         function declineFriend(profileId) {
             fetch(`/decline-friend-request/${profileId}/`, {
                 method: 'POST',
@@ -193,23 +180,22 @@
                 }
             }).then(() => location.reload());
         }
-
+    
         document.addEventListener('DOMContentLoaded', function () {
             const bell = document.getElementById('notifications');
             const popup = document.getElementById('notifications-popup');
-
+    
             bell.addEventListener('click', function (event) {
                 event.stopPropagation();
                 popup.classList.toggle('hidden');
             });
-
+    
             document.addEventListener('click', function (event) {
                 if (!popup.contains(event.target) && !bell.contains(event.target)) {
                     popup.classList.add('hidden');
                 }
             });
         });
-
     </script>        
 </body>
 </html>

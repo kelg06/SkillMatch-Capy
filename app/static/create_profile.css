@@ -106,8 +106,41 @@ input[type="file"] {
     font-size: 0.95rem;
 }
 
+.navigation-buttons {
+    display: flex;
+    gap: 1em;
+}
+
+.navigation-button {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 14px 20px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    text-align: center;
+}
+
+.navigation-button img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+.hidden {
+    display: none !important;
+}
+
+
 /* Submit button */
-button.btn {
+.btn {
     margin-top: 30px;
     padding: 14px;
     background-color: #3498db;
@@ -121,7 +154,7 @@ button.btn {
     transition: background-color 0.3s ease;
 }
 
-button.btn:hover {
+.btn:hover {
     background-color: #2980b9;
 }
 
