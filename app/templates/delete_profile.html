@@ -3,14 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        form {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        p {
+            margin-bottom: 25px;
+            color: #666;
+        }
+        button {
+            background-color: #e53935;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #d32f2f;
+        }
+        a {
+            color: #555;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h2>Delete Profile</h2>
-    <p>Are you sure you want to delete your profile? This action cannot be undone.</p>
     <form method="POST">
         {% csrf_token %}
+        <h2>Delete Profile</h2>
+        <p>Are you sure you want to delete your profile? This action cannot be undone.</p>
         <button type="submit">Delete</button>
         <a href="{% url 'home' %}">Cancel</a>
     </form>
