@@ -41,7 +41,8 @@ def find_study_partners(user):
 
     # Turn profiles into string features
     def stringify_profile(profile):
-        return f"""{profile.major}, {profile.grade}, 
+        return f"""{profile.major}, {profile.major}, {profile.major},  # triple weight
+        {profile.grade}, 
         {profile.grove_or_game_day}, {profile.ideal_study_spot}, 
         {profile.study_time}, {profile.energy_source}, 
         {profile.group_project_role}, 
