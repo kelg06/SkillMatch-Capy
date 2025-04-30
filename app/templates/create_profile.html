@@ -101,8 +101,8 @@
             </div>
 
             <div class="navigation-buttons mt-4">
-                <button type="button" id="prev-btn" style="display: none;">Previous</button>
-                <button type="button" id="next-btn">Next</button>
+                <button type="button" id="prev-btn" style="display: none;" class="navigation-button"><img src="../static/images/previous.svg">Previous</button>
+                <button type="button" id="next-btn" class="navigation-button"><p>Next</p><img src="../static/images/next.svg"></button>
             </div>
 
             <button type="submit" class="btn btn-primary btn-block">Save Profile</button>
@@ -115,7 +115,7 @@
         const nextBtn = document.getElementById('next-btn');
         const prevBtn = document.getElementById('prev-btn');
         const errorMessages = document.querySelectorAll('.error-message');
-
+    
         function hideErrorMessages() {
             errorMessages.forEach(error => {
                 setTimeout(() => {
@@ -123,32 +123,35 @@
                 }, 3000); 
             });
         }
-
+    
         function showSection(index) {
             sections.forEach((section, i) => {
                 section.style.display = i === index ? 'block' : 'none';
             });
-            prevBtn.style.display = index === 0 ? 'none' : 'inline-block';
-            nextBtn.style.display = index === sections.length - 1 ? 'none' : 'inline-block';
+    
+            // Use .hidden class instead of display inline style
+            prevBtn.classList.toggle('hidden', index === 0);
+            nextBtn.classList.toggle('hidden', index === sections.length - 1);
         }
-
+    
         nextBtn.addEventListener('click', () => {
             if (currentSection < sections.length - 1) {
                 currentSection++;
                 showSection(currentSection);
-                hideErrorMessages();  // Hide error messages after moving to the next section
+                hideErrorMessages();
             }
         });
-
+    
         prevBtn.addEventListener('click', () => {
             if (currentSection > 0) {
                 currentSection--;
                 showSection(currentSection);
-                hideErrorMessages();  // Hide error messages after moving to the previous section
+                hideErrorMessages();
             }
         });
-
+    
         showSection(currentSection);
     </script>
+    
 </body>
 </html>

@@ -46,12 +46,25 @@
         overflow-x: hidden;
     }
 
+    
     /* =============== General Style ============== */
     .container {
         width: min(90%, 1050px);
         margin: 0 auto;
     }
 
+    .profile-content-container {
+        display: flex;
+        gap: 1em;
+    }
+    
+    .handle {    
+        height: 10vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+    }
+    
     .profile-photo-2 {
         width: 2.7em; /* Use 'em' for responsiveness */
         height: 2.7em; /* Ensure height matches width */
@@ -69,17 +82,17 @@
         object-fit: cover; /* Ensures the image covers the circle without stretching */
     }
 
+    
     .profile-photo {
-        width: 2.7em; /* Use 'em' to keep it responsive */
-        height: 2.7em; /* Make sure the height matches the width */
-        aspect-ratio: 1 / 1; /* Keeps the aspect ratio square */
-        border-radius: 50%; /* Makes it a circle */
-        overflow: hidden; /* Hides any overflow (image outside the circle) */
+        width: 2.7em;
+        height: 2.7em;
+        aspect-ratio: 1 / 1;
+        border-radius: 50%;
+        overflow: hidden;
         display: flex;
-        justify-content: center; /* Centers the image */
-        align-items: center; /* Centers the image */
+        justify-content: center;
+        align-items: center;
     }
-
     .profile {
         display: flex;
     }
@@ -175,6 +188,11 @@
         height: max-content;
         top: var(--sticky-top-left);
     }
+    .main .container .left {
+        height: max-content;
+        position: sticky;
+        top: var(--sticky-top-left);
+    }
 
     .main .container .left .profile {
         padding: var(--card-padding);
@@ -185,6 +203,7 @@
         width: 100%;
         align-items: flex-start;
     }
+    
     .left .sidebar {
         margin-top: 1rem;
         background: var(--color-white);
@@ -301,7 +320,6 @@
         height: 1.2rem;
         display: block;
         background: var(--color-white);
-        position: absolute;
         left: -0.6rem;
         transform: rotate(45deg);
     }
@@ -539,7 +557,7 @@
 
     .unfriend-btn {
         background-color: #ff4d4d;
-        width: 100px;
+        width: 50px;
         color: white;
         border: none;
         padding: 0.5rem 1rem;
@@ -780,9 +798,9 @@
 
     /* =============== Popup and Friend Request ============== */
     .popup {
-        background: white;
+        background-color: white;
         border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         padding: 1rem;
     }
     .friend-request-list {

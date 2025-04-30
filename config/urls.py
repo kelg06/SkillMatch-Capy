@@ -14,6 +14,7 @@ urlpatterns = [
     path('home/', home_view, name='home'),
     path('profile/', profile_view, name='profile'),
     path('contact/', contact_view,name='contact'),
+    path('settings/', settings_view, name='settings'),
     path('next-match/', next_match, name='next_match'),
     path('create-profile/', create_profile, name='create_profile'),
     path('accept-friend-request/<int:profile_id>/', accept_friend_request, name='accept_friend_request'),

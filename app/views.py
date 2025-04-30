@@ -17,6 +17,8 @@ from django.utils import timezone
 from django.core.mail import send_mail
 from .models import *
 from datetime import datetime
+from django.utils.timesince import timesince
+from django.utils import timezone
 
 # Third-party imports
 import os
@@ -327,6 +329,7 @@ def get_next_match_data(user):
         user.profile.save()
         return {"no_matches": True}
 
+
 @login_required
 def create_profile(request):
     try:
@@ -496,10 +499,6 @@ def decline_friend_request(request, profile_id):
 
     except Exception as e:
         return JsonResponse({"success": False, "message": str(e)}, status=500)
-
-
-from django.utils.timesince import timesince
-from django.utils import timezone
 
 @login_required
 def chat_detail(request, chat_id):
@@ -809,6 +808,11 @@ def contact_view(request):
         form = ContactForm()
 
     return render(request, 'contact.html', {'form': form})
+
+@login_required
+def settings_view(request):
+    return render(request, 'settings.html')
+
 
 def team(request):
     return render(request, 'team.html')
