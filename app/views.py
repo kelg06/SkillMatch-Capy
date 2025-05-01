@@ -177,7 +177,7 @@ def next_match(request):
         "profile_picture_url": top_match.profile_picture.url if top_match.profile_picture else None,
     })
 
-
+@login_required
 def logout_view(request):
     logout(request)
     return redirect("landing")
@@ -229,6 +229,7 @@ def profile_view(request):
         "friends": user_profile.friends.all(),
         "sent_requests": sent_ids,
     })
+
 
 def landing(request):
     return render(request, "landing.html")
@@ -291,6 +292,7 @@ def swipe_profile(request, profile_id):
 
     return JsonResponse({"status": "error", "message": "Invalid swipe direction."}, status=400)
 
+@login_required
 def get_next_match_data(user):
     matches = find_study_partners(user)
     if isinstance(matches, str) and matches == "No matches yet!":
@@ -681,6 +683,7 @@ def unfriend(request, profile_id):
     except Profile.DoesNotExist:
         return JsonResponse({"success": False, "message": "Friend not found."}, status=404)
 
+@login_required
 def calendar(request):
     if not Event.objects.exists():
         json_file_path = os.path.join(settings.BASE_DIR, 'data', 'events.json')
@@ -809,9 +812,9 @@ def contact_view(request):
 
     return render(request, 'contact.html', {'form': form})
 
-@login_required
-def settings_view(request):
-    return render(request, 'settings.html')
+# @login_required
+# def settings_view(request):
+#     return render(request, 'settings.html')
 
 
 def team(request):

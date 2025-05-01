@@ -6,6 +6,10 @@ body {
     padding: 20px;
 }
 
+.back-home {
+    width:100%;
+}
+
 /* Back button */
 button {
     background-color: #CE1126;
@@ -94,6 +98,7 @@ form {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    width: 100%;
 }
 
 form p {
@@ -105,7 +110,7 @@ form input[type="text"], form textarea {
     border: 1px solid #ccc;
     border-radius: 8px;
     font-size: 1em;
-    width: 100%;
+    width: 97%;
 }
 
 form button[type="submit"] {
@@ -152,5 +157,12 @@ form button[type="submit"]:hover {
     }
     .message.sent {
         max-width: 200px;
+    }
+    form input[type="text"], form textarea {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 1em;
+        width: 94%;
     }
 }

@@ -49,7 +49,7 @@ body {
 
 /* =============== General Style ============== */
 .container {
-    width: 1050px;
+    width: min(90%, 1050px);
     margin: 0 auto;
 }
 
@@ -175,6 +175,9 @@ nav .create {
     width: 100%;
     align-items: flex-start;
 }
+/* .profile {
+   
+} */
 
 /* =============== Sidebar ============== */
 .left .sidebar {
@@ -184,6 +187,15 @@ nav .create {
 }
 
 .left .sidebar .menu-item {
+    display: flex;
+    align-items: center;
+    height: 4rem;
+    cursor: pointer;
+    transition: all 300ms ease;
+    position: relative;
+    color: rgb(86, 86, 86);
+}
+.menu-item {
     display: flex;
     align-items: center;
     height: 4rem;
@@ -222,23 +234,12 @@ nav .create {
     font-size: 1rem;
 }
 
-.left .sidebar .active {
-    background: var(--color-light);
-}
 
 .left .sidebar .active i, 
 .left .sidebar .active h3 {
     color: var(--color-primary);
 }
 
-.left .sidebar .active::before {
-    content: "";
-    display: block;
-    width: 0.5rem;
-    height: 100%;
-    position: absolute;
-    background: var(--color-primary);
-}
 
 .left .sidebar .menu-item:first-child.active {
     border-top-left-radius: var(--card-border-radius);

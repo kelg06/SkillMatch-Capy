@@ -6,20 +6,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Profile</title>
-    <!-- IconScout CDN -->
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.6/css/unicons.css">
-
-
-
-    <link rel="stylesheet" href="../static/profile-basics.css" media="screen and (min-width: 1024px)" />
-    <link rel="stylesheet" href="../static/profile-mobile.css" media="screen and (max-width: 1024px)" />
+    <link rel="stylesheet" href="../static/profile-basics.css" media="screen and (min-width: 1024px) and (orientation: landscape)" />
+    <link rel="stylesheet" href="../static/profile-mobile.css" media="screen and (max-width: 1024px) and (orientation: portrait)" />
 </head>
 <body>
     <nav>
         <div class="container">
-            <h2 class="logo">
-                ClassMatch
-            </h2>
+            <h2 class="logo">ClassMatch</h2>
             <div class="create">
                 <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
                 <div class="profile-photo">
@@ -36,32 +30,31 @@
                     <div class="profile-photo">
                         <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="profile-pic">
                     </div>
-            
                     <div class="handle">
                         <p style="color: black;">{{ profile.first_name }} <br> {{ profile.last_name }}</p>
                         <h4 class="text-muted">{{ user.username }}</h4>
                     </div>
                 </a>
+                <div class="sidebar-calendar">
+                    <div class="sidebar">
+                        <a class="menu-item" href="{% url 'home' %}">
+                            <span><i class="uil uil-home"></i></span>
+                            <h3>Home</h3>
+                        </a>
+                        <a href="{% url 'group_post_list' %}" class="menu-item">
+                            <span><i class="uil uil-compass"></i></span>
+                            <h3>Events</h3>
+                        </a>
 
-                <div class="sidebar">
-                    <a class="menu-item" href="{% url 'home' %}">
-                        <span><i class="uil uil-home"></i></span>
-                        <h3>Home</h3>
-                    </a>
-                    <a href="{% url 'group_post_list' %}" class="menu-item">
-                        <span><i class="uil uil-compass"></i></span>
-                        <h3>Events</h3>
-                    </a>
-
-                    <a class="menu-item" id="notifications">
-                        <span>
-                            <i class="uil uil-bell">
-                                <small class="notification-count">{{ pending_requests|length }}</small>
-                            </i>
-                        </span>
-                        <h3>Notifications</h3>
-
-                        <!-- Friend Requests Popup INSIDE the bell/menu-item -->
+                        <a class="menu-item" id="notifications" class="popup hidden">
+                            <span>
+                                <i class="uil uil-bell">
+                                    <small class="notification-count">{{ pending_requests|length }}</small>
+                                </i>
+                            </span>
+                            <h3>Notifications</h3>
+                        </a>
+                        
                         <div id="notifications-popup" class="popup hidden">
                             <h4>Friend Requests</h4>
                             {% if pending_requests %}
@@ -77,9 +70,11 @@
                                             </div>
                                             <span class="username">{{ profile.user.username }}</span>
                                             <div class="action-buttons">
-                                                <button onclick="acceptFriend('{{ profile.id }}')" class="accept-btn">✔️</button>
+                                                <button onclick="acceptFriend('{{ profile.id }}')" class="accept-btn">
+                                                    <img src="{% static '../static/images/check-mark.svg' %}">
+                                                </button>
                                                 <button onclick="declineFriend('{{ profile.id }}')" class="decline-btn">
-                                                    <img src="{% static 'images/default-profile.png' %}">
+                                                    <img src="{% static '../static/images/close.svg' %}">
                                                 </button>
                                             </div>
                                         </li>
@@ -89,44 +84,35 @@
                                 <p>No friend requests</p>
                             {% endif %}
                         </div>
-                    </a>
-
-                    <a class="menu-item" href="{% url 'settings' %}">
-                        <span><i class="uil uil-setting"></i></span>
-                        <h3>Setting</h3>
-                    </a>
-
+                    </div>
+                    <a href="{% url 'calendar' %}" class="btn btn-primary">Go to Calendar</a>
                 </div>
-                <a href="{% url 'calendar' %}" class="btn btn-primary">Go to Calendar</a>
             </div>
 
             <div class="second-container">
                 <div class="middle">
-                {% if profile.cover_photo %}
-                    <div class="match" 
-                        style="background-image: url('{{ profile.cover_photo.url }}'); background-size: cover; background-position: center;">
-                {% else %}
-                    <div class="match" 
-                        style="background-color: grey;"> 
-                {% endif %}
-                        <div class="match-card">
-                            <div class="profile-photo-2" style="border: 1px solid white;">
-                                {% if profile.profile_picture %}
-                                    <img src="{{ profile.profile_picture.url }}" alt="{{ profile.user.username }}'s Profile Picture">
-                                {% endif %}
+                    {% if profile.cover_photo %}
+                        <div class="match" style="background-image: url('{{ profile.cover_photo.url }}'); background-size: cover; background-position: center;">
+                    {% else %}
+                        <div class="match" style="background-color: grey;">
+                    {% endif %}
+                            <div class="match-card">
+                                <div class="profile-photo-2" style="border: 1px solid white;">
+                                    {% if profile.profile_picture %}
+                                        <img src="{{ profile.profile_picture.url }}" alt="{{ profile.user.username }}'s Profile Picture">
+                                    {% endif %}
+                                </div>
+                                <h3 id="match-username" class="match-text">{{ profile.user.username }}</h3>
+                                <strong><p class="match-text">Name: {{ profile.first_name }} {{ profile.last_name }}</p></strong>
+                                <strong><p class="match-text">Major: {{ profile.major }}</p></strong> 
                             </div>
-                            <h3 id="match-username" class="match-text">{{ profile.user.username }}</h3>
-                            <strong><p class="match-text">Name: {{ profile.first_name }} {{ profile.last_name }}</p></strong>
-                            <strong><p class="match-text">Major: {{ profile.major }}</p></strong> 
-                        </div> 
-                    </div>
+                        </div>
                     <div class="ud-buttons">
                         <button class="btn2 btn-primary"><a href="{% url 'update_profile' profile.id %}" class="btn-links">Update</a></button>
                         <button class="btn2 btn-primary"><a href="{% url 'delete_profile' profile.id %}" class="btn-links">Delete</a></button>
                     </div>
                 </div>
 
-                <!-- Friends List -->
                 <div id="friends-section" class="friends-container">
                     {% if friends %}
                         <ul class="friends-list">
@@ -140,7 +126,9 @@
                                         </div>
                                         <span class="username">{{ friend.user.username }}</span>
                                     </div>
-                                    <button onclick="unfriend('{{ friend.id }}')" class="unfriend-btn"><img src="{% static '../static/images/white-close.svg' %}"></button>
+                                    <button onclick="unfriend('{{ friend.id }}')" class="unfriend-btn">
+                                        <img src="{% static '../static/images/white-close.svg' %}">
+                                    </button>
                                 </li>
                             {% endfor %}
                         </ul>
@@ -148,14 +136,12 @@
                         <p class="no-friends-text">No friends yet</p>
                     {% endif %}
                 </div>
-                
             </div>
         </div>
     </main>
 
     <script>
-        const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
-        const csrfToken = csrfInput ? csrfInput.value : '';
+        const csrfToken = '{{ csrf_token }}';
 
         function unfriend(profileId) {
             fetch(`/unfriend/${profileId}/`, {
@@ -209,7 +195,6 @@
                 }
             });
         });
-
     </script>        
 </body>
 </html>

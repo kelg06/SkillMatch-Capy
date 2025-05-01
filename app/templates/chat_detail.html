@@ -10,7 +10,9 @@
 </head>
 <body>
     <div class="chat-container">
-        <button onclick="window.location.href='{% url 'home' %}'">Back to Home</button>
+        <div class="back-home">
+            <button onclick="window.location.href='{% url 'home' %}'">Back to Home</button>
+        </div>
         <h2>Chat with {{ other_user.username }}</h2>
         
 
