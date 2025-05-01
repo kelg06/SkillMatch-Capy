@@ -90,17 +90,9 @@
                             <p>No friend requests</p>
                         {% endif %}
                     </div>
-        
-
-                    <a class="menu-item">
-                        <span><i class="uil uil-setting"></i></span>
-                        <h3>Setting</h3>
-                    </a>
-
                 </div>
                 <a href="{% url 'calendar' %}" class="btn btn-primary">Go to Calendar</a>
             </div>
-
             <div class="middle">
                 {% if message %}
                     <p>{{ message }}</p>
@@ -120,8 +112,8 @@
                                         {% endif %}
                                     </div>
                                     <h3 id="match-username" class="match-text">{{ match.user.username }}</h3>
-                                    <strong><p class="match-text">Name: {{ profile.first_name }} {{ profile.last_name }}</p></strong>
-                                    <strong><p class="match-text">Major: {{ profile.major }}</p></strong> 
+                                    <strong><p class="match-text">Name: {{ match.first_name }} {{ match.last_name }}</p></strong>
+                                    <strong><p class="match-text">Major: {{ match.major }}</p></strong> 
                                 </div>
                                 <div class="button-group">
                                     <button onclick="swipeLeft('{{match.id}}')">❌ Skip</button>
@@ -133,8 +125,6 @@
                     {% endfor %}
                 {% endif %}
             </div>
-            
-
             <div class="right">
                 <div class="messages">
                     <div class="heading">
@@ -148,7 +138,6 @@
                     <div class="category">
                         <h6 class="active" onclick="toggleCategory('messages')">Messages</h6>
                     </div>
-            
                     <!-- Messages List -->
                     <div id="messages-section">
                         {% if chats %}
@@ -187,31 +176,25 @@
             </div>
         </div>
     </main>
-
     <script src='../static/home.js' ></script>
-
     <script >
         const csrfToken = '{{ csrf_token }}';
         function toggleCategory(category, event) {
             const messageSec = document.getElementById("messages-section");
             const requestSec = document.getElementById("friendrequest-section");
             const friendsSec = document.getElementById("friends-section");
-        
             // Toggle visibility of sections
             messageSec.style.display = category === "messages" ? "block" : "none";
             requestSec.style.display = category === "friendrequest" ? "block" : "none";
             friendsSec.style.display = category === "friends" ? "block" : "none";
-        
             // Remove 'active' class from all category headers
             const cats = document.querySelectorAll(".category h6");
-            cats.forEach(h => h.classList.remove("active"));
-        
+            cats.forEach(h => h.classList.remove("active"));    
             // Add 'active' class to the clicked category header
             if (event && event.target) {
                 event.target.classList.add("active");
             }
         }
-
         const defaultProfilePic = "{% static 'default_profile_pic.jpg' %}";
 
         function loadNextMatch() {
@@ -248,8 +231,8 @@
                                                         {% endif %}
                                                     </div>
                                                     <h3 id="match-username" class="match-text">{{ match.user.username }}</h3>
-                                                    <strong><p class="match-text">Name: {{ profile.first_name }} {{ profile.last_name }}</p></strong>
-                                                    <strong><p class="match-text">Major: {{ profile.major }}</p></strong> 
+                                                    <strong><p class="match-text">Name: {{ match.first_name }} {{ match.last_name }}</p></strong>
+                                                    <strong><p class="match-text">Major: {{ match.major }}</p></strong> 
                                                 </div>
                                                 <div class="button-group">
                                                     <button onclick="swipeLeft('{{ match.id }}')">❌ Skip</button>
