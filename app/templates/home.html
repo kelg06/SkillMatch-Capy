@@ -98,7 +98,6 @@
                     <a href="{% url 'calendar' %}" class="btn btn-primary">Go to Calendar</a>
                 </div>
             </div>
-
             <div class="middle">
                 {% if message %}
                     <p>{{ message }}</p>
@@ -131,8 +130,6 @@
                     {% endfor %}
                 {% endif %}
             </div>
-            
-
             <div class="right">
                 <div class="messages">
                     <div class="heading">
@@ -146,7 +143,6 @@
                     <div class="category">
                         <h6 class="active" onclick="toggleCategory('messages')">Messages</h6>
                     </div>
-            
                     <!-- Messages List -->
                     <div id="messages-section">
                         {% if chats %}
@@ -185,31 +181,25 @@
             </div>
         </div>
     </main>
-
     <script src='../static/home.js' ></script>
-
     <script >
         const csrfToken = '{{ csrf_token }}';
         function toggleCategory(category, event) {
             const messageSec = document.getElementById("messages-section");
             const requestSec = document.getElementById("friendrequest-section");
             const friendsSec = document.getElementById("friends-section");
-        
             // Toggle visibility of sections
             messageSec.style.display = category === "messages" ? "block" : "none";
             requestSec.style.display = category === "friendrequest" ? "block" : "none";
             friendsSec.style.display = category === "friends" ? "block" : "none";
-        
             // Remove 'active' class from all category headers
             const cats = document.querySelectorAll(".category h6");
-            cats.forEach(h => h.classList.remove("active"));
-        
+            cats.forEach(h => h.classList.remove("active"));    
             // Add 'active' class to the clicked category header
             if (event && event.target) {
                 event.target.classList.add("active");
             }
         }
-
         const defaultProfilePic = "{% static 'default_profile_pic.jpg' %}";
 
         function loadNextMatch() {
