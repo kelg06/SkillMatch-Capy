@@ -39,7 +39,43 @@
 }
 
 @media screen and (max-width: 1024px)  and (orientation: portrait){
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    ul li {
+        border-bottom: 1px solid #ddd;
+    }
 
+    .chat-btn {
+        display: flex
+;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 10px;
+        border: none;
+        background: transparent;
+        width: 100%;
+        cursor: pointer;
+        text-align: left;
+        transition: background-color 0.2s;
+    }
+    .chat-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    .right img {
+        border-radius: 50%;
+    }
+    .username {
+        flex: 1;
+        margin-left: 0.5rem;
+        font-weight: bold;
+    }
 
     *, *::before, *::after {
         margin: 0;
@@ -156,9 +192,9 @@
 
     .search-bar input[type="search"] {
         background: transparent;
-        width: 30vw;
-        margin-left: 1rem;
-        font-size: 0.9rem;
+        /* width: 30vw; */
+        /* margin-left: 1rem; */
+        font-size: .9rem;
         color: var(--color-dark);
     }
 
@@ -300,7 +336,6 @@
     /* =============== Middle Section ============== */
     .middle {
         display: flex;
-        margin-top: 20px;
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
@@ -417,7 +452,6 @@
     .button-group {
         display: flex;
         gap: 1rem;
-        margin-bottom: 5%;
         width: 100%;
         opacity: 90%;
         justify-content: space-evenly;
@@ -616,13 +650,14 @@
         top: var(--sticky-top-right);
     }
     .messages, .request {
+        width: 95dvw;
         background: var(--color-white);
         border-radius: var(--card-border-radius);
         padding: var(--card-padding);
     }
     .messages .heading, .messages .search-bar, .messages .category {
         display: flex;
-        justify-content: space-between;
+        /* justify-content: space-between; */
         align-items: center;
         margin-bottom: 1rem;
     }
@@ -882,9 +917,6 @@
         grid-column: auto;
     }
 
-    .main .container .right {
-        display: none;
-    }
 
     .second-container {
         width: 95vw;
@@ -920,9 +952,6 @@
         position: absolute;
         top: -0.2rem;
         right: -0.3rem;
-    }
-    nav .search-bar input[type="search"] {
-        width: 60vw;
     }
 
     .match {
@@ -1107,6 +1136,14 @@
 
 /* For very small screens (below 480px) */
 @media screen and (max-width: 480px)  and (orientation: portrait){
+    .button-group button {
+        padding: 0.5rem 1.2rem;
+        font-size: 1rem;
+        cursor: pointer;
+        height: 40px;
+        width: 250px;
+        border-radius: var(--card-border-radius);
+    }
     .btn2 {
         width: 45%;
     }
@@ -1177,7 +1214,8 @@
     }
 
     .button-group {
-        flex-direction: column;
+        display: flex;
+        flex-direction: row;
         align-items: center;
     }
 
