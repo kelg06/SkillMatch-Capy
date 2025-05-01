@@ -11,9 +11,13 @@
     <!-- IconScout CDN -->
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.6/css/unicons.css">
     <!-- Stylesheet -->
-    <link rel="stylesheet" href="../static/group-posts.css">
+    
+    <link rel="stylesheet" href="../static/group-posts.css" />
+    <link rel="stylesheet" href="../static/group-mobile.css" media="screen and (max-width: 1024px) and (orientation: portrait)" />
+
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 </head>
 <body>
     <nav>
@@ -21,7 +25,7 @@
             <h2 class="logo">ClassMatch</h2>
             <div class="create">
                 <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
-                <a class="profile" href="{% url 'profile' %}">
+                <a class="profile-1" href="{% url 'profile' %}">
                     <div class="profile-photo">
                         <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="profile-pic">
                     </div>
@@ -42,57 +46,55 @@
                         <h4 class="text-muted">{{ user.username }}</h4>
                     </div>
                 </a>
-                <div class="sidebar">
-                    <a class="menu-item" href="{% url 'home' %}">
-                        <span><i class="uil uil-home"></i></span>
-                        <h3>Home</h3>   
-                    </a>
-                    <a href="{% url 'group_post_list' %}" class="menu-item active">
-                        <span><i class="uil uil-compass"></i></span>
-                        <h3>Events</h3>
-                    </a>
-                    <a class="menu-item" id="notifications" class="popup hidden">
-                        <span>
-                            <i class="uil uil-bell">
-                                <small class="notification-count">{{ pending_requests|length }}</small>
-                            </i>
-                        </span>
-                        <h3>Notifications</h3>
-                    </a>
-                    
-                    <!-- Friend Requests Popup -->
-                    <div id="notifications-popup" class="popup hidden">
-                        <h4>Friend Requests</h4>
-                        {% if pending_requests %}
-                            <ul class="friend-request-list">
-                                {% for profile in pending_requests %}
-                                    <li class="friend-request-item" data-profile-id="{{ profile.user.id }}">
-                                        <div class="avatar-container">
-                                            {% if profile.profile_picture %}
-                                                <img src="{{ profile.profile_picture.url }}" alt="Profile Photo" class="popup-avatar">
-                                            {% else %}
-                                                <img src="{% static 'images/default-profile.png' %}" alt="Default" class="popup-avatar">
-                                            {% endif %}
-                                        </div>
-                                        <span class="username">{{ profile.user.username }}</span>
-                                        <div class="action-buttons">
-                                            <button onclick="acceptFriend('{{ profile.id }}')" class="accept-btn">✔️</button>
-                                            <button onclick="declineFriend('{{ profile.id }}')" class="decline-btn">❌</button>
-                                        </div>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <p>No friend requests</p>
-                        {% endif %}
-                    </div>
+                <div class="sidebar-calendar">
+                    <div class="sidebar">
+                        <a class="menu-item" href="{% url 'home' %}">
+                            <span><i class="uil uil-home"></i></span>
+                            <h3>Home</h3>   
+                        </a>
+                        <a href="{% url 'group_post_list' %}" class="menu-item active">
+                            <span><i class="uil uil-compass"></i></span>
+                            <h3>Events</h3>
+                        </a>
+                        <a class="menu-item" id="notifications" class="popup hidden">
+                            <span>
+                                <i class="uil uil-bell">
+                                    <small class="notification-count">{{ pending_requests|length }}</small>
+                                </i>
+                            </span>
+                            <h3>Notifications</h3>
+                        </a>
+                        
+                        <!-- Friend Requests Popup -->
+                        <div id="notifications-popup" class="popup hidden">
+                            <h4>Friend Requests</h4>
+                            {% if pending_requests %}
+                                <ul class="friend-request-list">
+                                    {% for profile in pending_requests %}
+                                        <li class="friend-request-item" data-profile-id="{{ profile.user.id }}">
+                                            <div class="avatar-container">
+                                                {% if profile.profile_picture %}
+                                                    <img src="{{ profile.profile_picture.url }}" alt="Profile Photo" class="popup-avatar">
+                                                {% else %}
+                                                    <img src="{% static 'images/default-profile.png' %}" alt="Default" class="popup-avatar">
+                                                {% endif %}
+                                            </div>
+                                            <span class="username">{{ profile.user.username }}</span>
+                                            <div class="action-buttons">
+                                                <button onclick="acceptFriend('{{ profile.id }}')" class="accept-btn">✔️</button>
+                                                <button onclick="declineFriend('{{ profile.id }}')" class="decline-btn">❌</button>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p>No friend requests</p>
+                            {% endif %}
+                        </div>
 
-                    <a class="menu-item">
-                        <span><i class="uil uil-setting"></i></span>
-                        <h3>Setting</h3>
-                    </a>
+                    </div>
+                    <a href="{% url 'calendar' %}" class="btn btn-primary">Go to Calendar</a>
                 </div>
-                <a href="{% url 'calendar' %}" class="btn btn-primary">Go to Calendar</a>
             </div>
 
             <div class="middle">

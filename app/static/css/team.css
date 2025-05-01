@@ -57,3 +57,26 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
+
+@media screen and (max-width: 760px) {
+    .container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+    .left-section {
+        width: 100%;
+        background-color: #f8f7f3;
+        padding: 60px;
+        box-sizing: border-box;
+        color: #0a2940;
+    }
+    .right-section {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+}
