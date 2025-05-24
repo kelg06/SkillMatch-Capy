@@ -47,7 +47,7 @@
                 </a>
                 <div class="sidebar-calendar">
                     <div class="sidebar">
-                        <a class="menu-item" href="{% url 'home' %}">
+                        <a class="menu-item active" href="{% url 'home' %}">
                             <span><i class="uil uil-home"></i></span>
                             <h3>Home</h3>
                         </a>
@@ -181,7 +181,6 @@
             </div>
         </div>
     </main>
-    <script src='../static/home.js' ></script>
     <script >
         const csrfToken = '{{ csrf_token }}';
         function toggleCategory(category, event) {
@@ -217,42 +216,42 @@
                             : `background-color: grey;`;
         
                         container.innerHTML = `
-                            <div class="middle">
-                                {% if message %}
-                                    <p>{{ message }}</p>
-                                {% else %}
-                                    {% for match in matches %}
-                                        {% if match.cover_photo %}
-                                            <div class="match" 
-                                                style="background-image: url('{{ match.cover_photo.url }}'); background-size: cover; background-position: center;">
+                                    <div class="middle">
+                                        {% if message %}
+                                            <p>{{ message }}</p>
                                         {% else %}
-                                            <div class="match" 
-                                                style="background-color: grey;"> 
-                                        {% endif %}
-                                                <div class="match-card">
-                                                    <div class="profile-photo" style="border: 1px solid white;">
-                                                        {% if match.profile_picture %}
-                                                            <img src="{{ match.profile_picture.url }}" alt="{{ match.user.username }}'s Profile Picture" class="profile-pic">
-                                                        {% endif %}
+                                            {% for match in matches %}
+                                                {% if match.cover_photo %}
+                                                    <div class="match" 
+                                                        style="background-image: url('{{ match.cover_photo.url }}'); background-size: cover; background-position: center;">
+                                                {% else %}
+                                                    <div class="match" 
+                                                        style="background-color: grey;"> 
+                                                {% endif %}
+                                                        <div class="match-card">
+                                                            <div class="profile-photo" style="border: 1px solid white;">
+                                                                {% if match.profile_picture %}
+                                                                    <img src="{{ match.profile_picture.url }}" alt="{{ match.user.username }}'s Profile Picture" class="profile-pic">
+                                                                {% endif %}
+                                                            </div>
+                                                            <h3 id="match-username" class="match-text">{{ match.user.username }}</h3>
+                                                            <strong><p class="match-text">Name: {{ match.first_name }} {{ match.last_name }}</p></strong>
+                                                            <strong><p class="match-text">Major: {{ match.major }}</p></strong> 
+                                                        </div>
+                                                        <div class="button-group">
+                                                            <button onclick="swipeLeft('{{ match.id }}')">❌ Skip</button>
+                                                            <button onclick="swipeRight('{{ match.id }}')">✅ Match</button>
+                                                        </div>
                                                     </div>
-                                                    <h3 id="match-username" class="match-text">{{ match.user.username }}</h3>
-                                                    <strong><p class="match-text">Name: {{ match.first_name }} {{ match.last_name }}</p></strong>
-                                                    <strong><p class="match-text">Major: {{ match.major }}</p></strong> 
-                                                </div>
-                                                <div class="button-group">
-                                                    <button onclick="swipeLeft('{{ match.id }}')">❌ Skip</button>
-                                                    <button onclick="swipeRight('{{ match.id }}')">✅ Match</button>
-                                                </div>
-                                            </div>
-                                    {% empty %}
-                                        <p>No study partners found.</p>
-                                    {% endfor %}
-                                {% endif %}
-                            </div>
-                        `;
+                                            {% empty %}
+                                                <p>No study partners found.</p>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                `;
+                            }
+                        });
                     }
-                });
-        }
         
         function swipe(direction) {
             const profileId = document.getElementById("match-card").dataset.profileId;
@@ -277,7 +276,7 @@
         }
 
         function swipeLeft(profileId) {
-            const direction = "dislike";  // Set the direction to "dislike"
+            const direction = "dislike";
             fetch(`/swipe-profile/${profileId}/`, {
                 method: "POST",
                 headers: {
@@ -289,17 +288,13 @@
             .then((res) => res.json())
             .then((data) => {
                 console.log(data.message);
-                window.location.reload();  // Refresh the page to load the next match
-            })
-            .then((data) => {
-                console.log(data.message);
-                loadNextMatch();  // Load the next match after the swipe action
+                location.reload();  // ✅ Just this, nothing after
             })
             .catch((err) => {
                 console.error("Swipe failed:", err);
             });
         }
-
+        
         function swipeRight(profileId) {
             const direction = "like";
             fetch(`/swipe-profile/${profileId}/`, {
@@ -308,18 +303,18 @@
                     "Content-Type": "application/x-www-form-urlencoded",
                     "X-CSRFToken": csrfToken,
                 },
-                body: `direction=${direction}`,  // Send direction "like" and profileId
+                body: `direction=${direction}`,
             })
             .then((res) => res.json())
             .then((data) => {
                 console.log(data.message);
-                // Immediately refresh the page to load the next profile after match
-                window.location.reload();  // Refresh the page to load the next match
+                location.reload();  // ✅ Just this
             })
             .catch((err) => {
                 console.error("Swipe failed:", err);
             });
         }
+        
 
         function unfriend(profileId) {
             fetch(`/unfriend/${profileId}/`, {

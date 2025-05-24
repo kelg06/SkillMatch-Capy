@@ -8,16 +8,21 @@ class GroupPostAdmin(admin.ModelAdmin):
     readonly_fields = ('created_by', 'created_at', 'updated_at')  # Make certain fields readonly
 
     def has_change_permission(self, request, obj=None):
-        # Restrict editing to super admins only
-        if request.user.profile.is_super_admin:
+        if request.user.is_superuser:
             return True
-        return False
+        try:
+            return request.user.profile.is_super_admin
+        except Profile.DoesNotExist:
+            return False
 
     def has_delete_permission(self, request, obj=None):
-        # Restrict deletion to super admins only
-        if request.user.profile.is_super_admin:
+        if request.user.is_superuser:
             return True
-        return False
+        try:
+            return request.user.profile.is_super_admin
+        except Profile.DoesNotExist:
+            return False
+
 
 # Register GroupPost model with the admin site
 admin.site.register(GroupPost, GroupPostAdmin)

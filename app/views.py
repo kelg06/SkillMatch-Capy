@@ -65,7 +65,8 @@ def signup_view(request):
             return redirect("home")
     else:
         form = CustomSignupForm()
-    return render(request, "signup.html", {"form": form})
+    return render(request, "sign.html", {"form": form})
+
 
 
 @login_required
