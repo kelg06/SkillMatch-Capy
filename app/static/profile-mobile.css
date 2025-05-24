@@ -930,6 +930,12 @@
     }
 }
 @media screen and (max-width: 1300px)  and (orientation: portrait){
+    .popup {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+    }
     
     .left .sidebar {
         margin: 0;

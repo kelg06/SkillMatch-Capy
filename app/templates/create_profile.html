@@ -15,6 +15,7 @@
         {% csrf_token %}
         <div class="container">
             <h2 class="text-center mb-4">Profile Information</h2>
+            <h2 class="text-center mb-4" style="font-size: 15pt">Please make sure everything is spelled correctly.</h2>
 
             <div class="form-row">
                 <div class="form-group">
@@ -29,9 +30,11 @@
 
             <div class="form-row">
                 <div class="form-group">
+                    <label>First Name</label>
                     {{ profile_form.first_name }}
                 </div>
                 <div class="form-group">
+                    <label>Last Name</label>
                     {{ profile_form.last_name }}
                 </div>
             </div>
@@ -53,27 +56,33 @@
 
             <div class="form-row">
                 <div class="form-group">
+                    <label>Hometown</label>
                     {{ profile_form.hometown }}
                 </div>
                 <div class="form-group">
+                    <label>Major</label>
                     {{ profile_form.major }}
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
+                    <label>Minor (optional)</label>
                     {{ profile_form.minor }}
                 </div>
                 <div class="form-group">
+                    <label>Grade</label>
                     {{ profile_form.grade }}
                 </div>
             </div>
 
             <div class="form-group">
+                <label>Hobbies (optional)</label>
                 {{ profile_form.hobbies }}
             </div>
 
             <div class="form-group">
+                <label>Extracurriculars (optional)</label>
                 {{ profile_form.clubs_and_extracurriculars }}
             </div>
 
